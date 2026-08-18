@@ -11,9 +11,9 @@ import re
 
 from .workbook import SHEET_ORDER
 
-# NetBox <4.0 calls a device's role field "device_role"; 4.0+ renamed it to
-# "role". Flip this if you're running 4.0+.
-DEVICE_ROLE_FIELD = "device_role"
+# NetBox 4.0+ calls a device's role field "role" (it was "device_role" in
+# older versions). Flip this if you're running NetBox < 4.0.
+DEVICE_ROLE_FIELD = "role"
 
 
 def slugify(value):

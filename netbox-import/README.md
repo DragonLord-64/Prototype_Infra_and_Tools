@@ -69,9 +69,9 @@ whole run -- everything else still gets synced.
 
 ## NetBox version note
 
-NetBox renamed a device's role field from `device_role` (< 4.0) to `role`
-(4.0+). This tool targets < 4.0 by default; if you're on 4.0+, change
-`DEVICE_ROLE_FIELD` at the top of `netbox_import/sync.py`.
+This tool targets NetBox 4.0+ by default (`role` is a device's role
+field). If you're on an older NetBox (< 4.0, where it's `device_role`),
+change `DEVICE_ROLE_FIELD` at the top of `netbox_import/sync.py`.
 
 ## Running the tests
 

@@ -49,7 +49,7 @@ class RunSyncTests(unittest.TestCase):
         device = nb.dcim.devices.objects[0]
         rack = nb.dcim.racks.objects[0]
         self.assertEqual(device.rack, rack.id)
-        self.assertEqual(device.device_role, nb.dcim.device_roles.objects[0].id)
+        self.assertEqual(device.role, nb.dcim.device_roles.objects[0].id)
 
         ip = nb.ipam.ip_addresses.objects[0]
         self.assertEqual(device.primary_ip4, ip.id)
