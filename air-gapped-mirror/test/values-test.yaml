@@ -10,9 +10,9 @@ fullnameOverride: mirror
 image:
   registry: ""
   tag: test
-  # The images are side-loaded into the node, so nothing should be pulled;
-  # IfNotPresent finds them locally without reaching out to a registry.
-  pullPolicy: IfNotPresent
+  # pullPolicy inherits the chart default (Never). up.sh side-loads every
+  # image, so a load that silently failed shows up as ErrImageNeverPull
+  # instead of the node reaching out to Docker Hub.
 
 storage:
   accessMode: ReadWriteOnce

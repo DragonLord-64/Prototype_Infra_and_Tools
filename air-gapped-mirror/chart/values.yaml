@@ -1,16 +1,27 @@
 # Default values for the air-gapped-mirror chart.
 # Override any of these with `-f my-values.yaml` or `--set key=value`.
 
-# Where the four custom images live. Leave `registry` empty to use bare
-# image names (useful with a local build, e.g. `minikube image load`).
+# The four images built from this repo. There is no registry by default:
+# build them locally and load them onto the node (see chart/README.md), and
+# the bare names below match what you built.
 image:
+  # Leave empty for local images. Set it only if you do push to a registry,
+  # e.g. `registry.example.com` -> registry.example.com/air-gapped-mirror/<name>:<tag>.
   registry: ""
   tag: latest
-  pullPolicy: IfNotPresent
+  # Never, not IfNotPresent: these images exist only on the node you loaded
+  # them onto. IfNotPresent would fall back to pulling `air-gapped-mirror/<name>`
+  # from Docker Hub, which is not ours -- a missing image must fail loudly
+  # (ErrImageNeverPull) rather than quietly fetch a stranger's. Set this to
+  # IfNotPresent if you set `registry` above.
+  pullPolicy: Never
 
-# The stock upstream image used for the file-serving sidecar.
+# The stock upstream image used for the file-serving sidecar. This one is a
+# real Docker Hub image, so it pulls normally -- side-load it too if the
+# node has no internet, and IfNotPresent will use the local copy.
 nginx:
   image: nginx:1.27-alpine
+  pullPolicy: IfNotPresent
 
 replicaCount: 1
 

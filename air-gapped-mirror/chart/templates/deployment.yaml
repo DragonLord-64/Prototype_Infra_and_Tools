@@ -1,8 +1,8 @@
 {{- $fullName := include "air-gapped-mirror.fullname" . -}}
-# The 4 long-running services, as one Deployment. (The sync job is the
-# separate CronJob -- not a container here.) Single replica: stateful
-# w.r.t. the shared volumes, and there's no need for more than one copy on
-# an internal, low-traffic network.
+# The 4 long-running services, as one Deployment, plus the sync sidecar
+# when it's enabled. Single replica: stateful w.r.t. the shared volumes,
+# and there's no need for more than one copy on an internal, low-traffic
+# network.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -44,7 +44,9 @@ spec:
 
         - name: nginx
           image: {{ .Values.nginx.image }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # Its own policy: this is a stock upstream image, not one of ours,
+          # so it must stay pullable even when ours are pullPolicy: Never.
+          imagePullPolicy: {{ .Values.nginx.pullPolicy }}
           ports:
             - { containerPort: 80, name: http }
           volumeMounts:

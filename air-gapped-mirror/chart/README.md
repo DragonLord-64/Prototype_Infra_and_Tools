@@ -5,24 +5,43 @@ bundle of templated manifests plus a `values.yaml` of settings.
 
 ## 1. Get the images onto the cluster
 
-The cluster must be able to pull the four images:
+No registry is involved: build the four images locally, then load them
+onto the node the cluster runs on.
+
+Build, then load in the same loop — this is the minikube version:
 
 ```sh
 cd ..
 for i in git-daemon devpi apt-cacher-ng sync-job; do
-  docker build -t registry.example.com/air-gapped-mirror/$i:0.1.0 $i
-  docker push  registry.example.com/air-gapped-mirror/$i:0.1.0
+  docker build -t air-gapped-mirror/$i:latest $i
+  minikube image load air-gapped-mirror/$i:latest
 done
 ```
+
+Swap the load line for whatever your cluster uses:
+
+| Cluster | Load line |
+| --- | --- |
+| minikube | `minikube image load air-gapped-mirror/$i:latest` |
+| kind | `kind load docker-image air-gapped-mirror/$i:latest` |
+| k3s | `docker save air-gapped-mirror/$i:latest \| sudo k3s ctr images import -` |
+| Docker Desktop | drop it — the cluster shares the daemon's images |
+
+The chart runs these with `imagePullPolicy: Never`, so a missing image
+fails immediately with `ErrImageNeverPull` instead of trying to pull a
+name that isn't ours from Docker Hub.
+
+A node with no internet also needs `nginx:1.27-alpine` side-loaded the
+same way; it's a stock upstream image and otherwise pulls on its own.
 
 ## 2. Install
 
 ```sh
 helm install air-gapped-mirror ./chart \
-  --namespace air-gapped-mirror --create-namespace \
-  --set image.registry=registry.example.com \
-  --set image.tag=0.1.0
+  --namespace air-gapped-mirror --create-namespace
 ```
+
+The defaults expect local images, so there is nothing to configure here.
 
 - `air-gapped-mirror` (first argument) is the **release name** — Helm's
   label for this install. Reuse it to upgrade or uninstall.
@@ -39,8 +58,8 @@ k9s -n air-gapped-mirror
 
 One pod, **4/4** containers ready (**5/5** after step 4). Useful keys: `l`
 logs, `d` describe, `s` shell, `:svc` services, `:pvc` volumes, `esc` back.
-`ImagePullBackOff` means step 1's images aren't reachable; `Pending`
-usually means no storage available.
+`ErrImageNeverPull` means step 1's images didn't make it onto the node;
+`Pending` usually means no storage available.
 
 ## 4. Turn on mirroring (optional)
 
@@ -92,6 +111,8 @@ Override with `--set key=value`, or copy `values.yaml` and pass
 
 | Key | Default | Notes |
 | --- | --- | --- |
+| `image.tag` | `latest` | Must match the tag you built and loaded |
+| `image.registry` | `""` | Empty = local images. Set only if you push to one |
 | `storage.sizes.mirrorFiles` | `200Gi` | Largest volume; tarballs/binaries |
 | `storage.className` | `""` | Empty = cluster default |
 | `storage.accessMode` | `ReadWriteOnce` | Fine as-is; one pod mounts everything |

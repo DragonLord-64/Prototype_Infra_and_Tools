@@ -97,11 +97,13 @@ missing-binary error.
 
 ```sh
 cd air-gapped-mirror
-docker build -t air-gapped-mirror/git-daemon git-daemon
-docker build -t air-gapped-mirror/devpi devpi
-docker build -t air-gapped-mirror/apt-cacher-ng apt-cacher-ng
-docker build -t air-gapped-mirror/sync-job sync-job
+for i in git-daemon devpi apt-cacher-ng sync-job; do
+  docker build -t air-gapped-mirror/$i:latest $i
+done
 ```
+
+These bare names are what the chart expects by default. Load them onto
+the node afterwards -- see [`chart/README.md`](chart/README.md) step 1.
 
 [`test/`](test) builds all four, deploys the chart to a throwaway
 minikube cluster, and exercises every component end to end.
@@ -113,9 +115,12 @@ step-by-step guide**, written for someone new to Kubernetes:
 
 ```sh
 helm install air-gapped-mirror ./chart \
-  --namespace air-gapped-mirror --create-namespace \
-  --set image.registry=registry.example.com --set image.tag=0.1.0
+  --namespace air-gapped-mirror --create-namespace
 ```
+
+No registry is needed: build the images locally, load them onto the node
+(`minikube image load`, `kind load docker-image`, or `k3s ctr images
+import`), and the chart's defaults pick them up by bare name.
 
 There are no hand-written manifests to keep in sync -- `helm template`
 renders the plain YAML if you want to read or diff it.
