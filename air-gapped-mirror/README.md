@@ -13,7 +13,6 @@ TLS -- the network is trusted and internal.
 | `nginx` | Directory listing of tarballs/binaries over HTTP | [`nginx/`](nginx) |
 | `devpi` | Caching PyPI proxy -- caches on first `pip install` | [`devpi/`](devpi) |
 | `apt-cacher-ng` | Caching apt proxy -- caches on first `apt install` | [`apt-cacher-ng/`](apt-cacher-ng) |
-| `ssh-upload` | No-shell, chrooted SFTP for local-file uploads | [`ssh-upload/`](ssh-upload) — **not currently deployed** |
 | sync | Reconcile loop, a sidecar in the same pod | [`sync-job/`](sync-job) |
 
 All five run as one Deployment sharing volumes -- the sync loop is a
@@ -21,12 +20,13 @@ sidecar rather than a separate CronJob, so exactly one pod mounts the
 volumes and `ReadWriteOnce` storage is enough. Deploy it with the Helm
 chart -- see [`chart/README.md`](chart/README.md).
 
-`ssh-upload` is currently scoped out — the deployed mirror covers git,
-apt, and pip only. Its image and config are kept in-tree; see the note at
-the top of `ssh-upload/Dockerfile` for what re-enabling it takes (it needs
-`/var/mirror/files` pinned to `root:root 755` for sshd's `ChrootDirectory`
-check, which conflicts with the non-root sync loop writing to that same
-volume).
+The mirror covers git, apt, and pip. An earlier design also had an
+`ssh-upload` container (a no-shell, chrooted SFTP endpoint for pushing
+local-only files straight into the nginx-served volume); it was never
+deployed and has been removed. It needed `/var/mirror/files` pinned to
+`root:root 755` for sshd's `ChrootDirectory` check, which conflicts with
+the non-root sync loop writing to that same volume. The code is preserved
+on the `archive/ssh-upload` branch.
 
 ## Data ingress
 
@@ -34,14 +34,13 @@ volume).
 | --- | --- |
 | Git repos (public upstream) | Manifest entry in config repo → MR → sync loop `git clone --mirror` / `git remote update` |
 | Tarballs/binaries (public upstream) | Manifest entry (URL + dest) in config repo → MR → sync loop downloads it |
-| Local-only (192 network) files | Direct SCP/SFTP into the shared volume (`ssh-upload`, not currently deployed) |
 | Python / apt packages | Not pre-populated -- devpi/apt-cacher-ng cache on first client request |
 
 ## The config repo as the control plane
 
-A **private** git repo holds the three manifests the sync loop reads: the
-git-repo manifest, the tarball manifest, and the SSH public-key manifest
-(format documented in `mirror_sync/manifest.py`). Changes go through merge
+A **private** git repo holds the two manifests the sync loop reads: the
+git-repo manifest and the tarball manifest (format documented in
+`mirror_sync/manifest.py`). Changes go through merge
 requests for review and an audit trail. It must stay private -- merge
 access there means "can point the sync loop at an arbitrary URL."
 
@@ -67,7 +66,6 @@ air-gapped-mirror/
 ├── nginx/                 nginx.conf (autoindex on, no auth)
 ├── devpi/                 Dockerfile + entrypoint
 ├── apt-cacher-ng/         Dockerfile + acng.conf
-├── ssh-upload/            Dockerfile, sshd_config, entrypoint
 └── sync-job/              The sync sidecar's image: source + tests
 ```
 
@@ -76,11 +74,11 @@ air-gapped-mirror/
 The only component with real logic, so it's a small Python package rather
 than a shell script:
 
-- `mirror_sync/manifest.py` -- loads/validates the three YAML manifests
-  (rejects path traversal, bad URL schemes, malformed keys, duplicates)
+- `mirror_sync/manifest.py` -- loads/validates the two YAML manifests
+  (rejects path traversal, bad URL schemes, duplicates)
 - `mirror_sync/sync.py` -- git mirror/update reconciliation, tarball
-  diff-and-download with atomic writes, `authorized_keys` regeneration,
-  and the `sync_forever` loop the container runs
+  diff-and-download with atomic writes, and the `sync_forever` loop the
+  container runs
 
 Every side effect (subprocess runner, HTTP downloader, sleep) is passed in
 rather than hardcoded, which is what makes the tests below possible
@@ -99,7 +97,7 @@ Ubuntu that binary ships in `git-daemon-run`; on Alpine it's the separate
 `git-daemon` package. Without it those tests fail with a confusing
 "Connection refused" rather than a missing-binary error.
 
-38 tests, all passing:
+30 tests, all passing:
 
 - `tests/test_manifest.py`, `tests/test_sync.py` -- unit tests against
   fakes/mocks (no network, no real git)
@@ -119,8 +117,6 @@ docker build -t air-gapped-mirror/git-daemon git-daemon
 docker build -t air-gapped-mirror/devpi devpi
 docker build -t air-gapped-mirror/apt-cacher-ng apt-cacher-ng
 docker build -t air-gapped-mirror/sync-job sync-job
-# ssh-upload is not currently deployed -- see Components above
-# docker build -t air-gapped-mirror/ssh-upload ssh-upload
 ```
 
 All four images have since been built and run for real: see
@@ -149,13 +145,9 @@ pod, so nothing else mounts those volumes.
 - `git-daemon`, `nginx`, `devpi`, `apt-cacher-ng` are unauthenticated and
   unencrypted by design -- only safe because the 192 network is internal
   and trusted.
-- Public keys in the config repo aren't a risk -- they're meant to be
-  public. The config repo itself is the sensitive asset; keep it private,
-  restrict approvers.
-- `ssh-upload` (not currently deployed) trades strict isolation for
-  convenience on purpose: one low-privilege `uploader` account, chrooted
-  straight to the nginx-served root, so anyone with upload access can
-  write anywhere in that tree. Fine for a small, trusted team.
+- The config repo is the sensitive asset -- merge access there means "can
+  point the sync loop at an arbitrary URL". Keep it private, restrict
+  approvers.
 - `mirror_sync.manifest` rejects absolute paths, `..` traversal, and
   non-http(s)/git/ssh URL schemes on every entry; `sync_tarballs`
   re-checks the resolved destination stays under the artifacts root as

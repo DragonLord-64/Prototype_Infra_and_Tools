@@ -2,9 +2,9 @@
 
 Deliberately dumb: every `interval` seconds, re-read the manifests from the
 config repo at HEAD and reconcile -- mirror git repos, download any tarball
-we don't already have, regenerate authorized_keys. No GitLab API, no
-webhooks, no change detection, no state carried between passes. The config
-repo *is* the desired state; each pass just makes the disk match it.
+we don't already have. No GitLab API, no webhooks, no change detection, no
+state carried between passes. The config repo *is* the desired state; each
+pass just makes the disk match it.
 
 That means the only credential this needs is whatever `git clone` needs for
 the config repo, and the loop is unaffected by a token expiring, GitLab
@@ -32,9 +32,7 @@ import requests
 
 from .manifest import (
     GitRepoEntry,
-    SshKeyEntry,
     TarballEntry,
-    load_authorized_keys_manifest,
     load_git_repo_manifest,
     load_tarball_manifest,
 )
@@ -133,38 +131,6 @@ def download_to_file(url: str, dest: Path) -> None:
                 f.write(chunk)
 
 
-# ---- authorized_keys regeneration ----
-
-AUTHORIZED_KEYS_HEADER = (
-    "# Managed by the air-gapped mirror sync job -- do not edit by hand.\n"
-    "# Source of truth: the public-keys manifest in the private config repo.\n"
-)
-
-
-def regenerate_authorized_keys(entries: List[SshKeyEntry], output_path) -> None:
-    output_path = Path(output_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    lines = [AUTHORIZED_KEYS_HEADER] + [f"{e.key}\n" for e in sorted(entries, key=lambda e: e.name)]
-    tmp_path = output_path.with_name(output_path.name + ".tmp")
-    tmp_path.write_text("".join(lines))
-    # sshd reads AuthorizedKeysFile by temporarily switching its effective
-    # uid to the *connecting* user first (defense against a root process
-    # reading an arbitrary path), so this needs to be world-readable, not
-    # just root-readable, even though it also has to be root-owned and
-    # not group/other-*writable* for sshd's separate ownership check.
-    tmp_path.chmod(0o644)
-    try:
-        # sshd also requires the file be owned by root or by the connecting
-        # user. Best-effort: the sync job runs non-root, so this only
-        # succeeds if the caller happens to be privileged -- part of the
-        # unresolved chroot/ownership conflict that keeps ssh-upload out of
-        # the deployment for now (see ssh-upload/Dockerfile).
-        os.chown(tmp_path, 0, 0)
-    except PermissionError:
-        pass
-    os.replace(tmp_path, output_path)  # atomic: no half-written file for a connecting client
-
-
 # ---- orchestration ----
 
 def _checkout_config_repo(url: str, branch: str, dest: Path, run=subprocess.run) -> None:
@@ -200,23 +166,11 @@ def run_sync(config: Dict[str, Any]) -> Dict[str, Any]:
 
     git_entries = load_git_repo_manifest(config_repo_path / config["git_manifest"])
     tarball_entries = load_tarball_manifest(config_repo_path / config["tarball_manifest"])
-    key_entries = load_authorized_keys_manifest(config_repo_path / config["keys_manifest"])
 
     git_report = mirror_git_repos(git_entries, config["git_repos_root"])
     tarball_report = sync_tarballs(tarball_entries, config["artifacts_root"], download=download_to_file)
 
-    # The SFTP upload endpoint is currently not deployed (see the note on
-    # ssh-upload in ssh-upload/Dockerfile). Without AUTHORIZED_KEYS_PATH set
-    # there's nothing consuming these keys, so skip writing them.
-    keys_enabled = bool(config.get("authorized_keys_path"))
-    if keys_enabled:
-        regenerate_authorized_keys(key_entries, config["authorized_keys_path"])
-
-    return {
-        "git": git_report,
-        "tarballs": tarball_report,
-        "keys_synced": len(key_entries) if keys_enabled else 0,
-    }
+    return {"git": git_report, "tarballs": tarball_report}
 
 
 def config_from_env() -> Dict[str, Any]:
@@ -226,12 +180,8 @@ def config_from_env() -> Dict[str, Any]:
         "config_repo_path": os.environ.get("CONFIG_REPO_PATH", "/var/mirror/config-repo"),
         "git_manifest": os.environ.get("GIT_MANIFEST", "git-repos.yaml"),
         "tarball_manifest": os.environ.get("TARBALL_MANIFEST", "tarballs.yaml"),
-        "keys_manifest": os.environ.get("KEYS_MANIFEST", "authorized_keys.yaml"),
         "git_repos_root": os.environ.get("GIT_REPOS_ROOT", "/var/git/repos"),
         "artifacts_root": os.environ.get("ARTIFACTS_ROOT", "/var/mirror/files"),
-        # Unset -> authorized_keys regeneration is skipped entirely; set it
-        # to /var/mirror/ssh/uploader when the ssh-upload endpoint is redeployed.
-        "authorized_keys_path": os.environ.get("AUTHORIZED_KEYS_PATH"),
         "interval_seconds": int(os.environ.get("SYNC_INTERVAL_SECONDS", DEFAULT_INTERVAL_SECONDS)),
     }
 

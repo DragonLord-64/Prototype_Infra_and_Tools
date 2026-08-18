@@ -7,9 +7,8 @@
 #                      standing in for a public upstream the sync job mirrors.
 # fixture-http      -- nginx serving a static fixture file (stand-in tarball).
 # config-repo       -- a git-daemon serving the seeded manifests
-#                      (git-repos.yaml / tarballs.yaml / authorized_keys.yaml)
-#                      that the sync job reads, standing in for the private
-#                      GitLab config repo.
+#                      (git-repos.yaml / tarballs.yaml) that the sync job
+#                      reads, standing in for the private GitLab config repo.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -144,13 +143,7 @@ spec:
                   dest: test/fixture-file.txt
               EOF
 
-              cat > authorized_keys.yaml <<'EOF'
-              keys:
-                - name: test-uploader
-                  key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKC72DL3HWQvJ0DBWm3dxhvgrYDQgMLlgOvJz3ij4ToK test-uploader"
-              EOF
-
-              git add git-repos.yaml tarballs.yaml authorized_keys.yaml
+              git add git-repos.yaml tarballs.yaml
               git commit -q -m "seed manifests"
               git clone -q --bare /work /repos/mirror-config.git
               chmod -R a+rX /repos/mirror-config.git

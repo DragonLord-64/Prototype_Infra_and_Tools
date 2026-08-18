@@ -1,13 +1,12 @@
 """Loaders/validators for the manifests stored in the private config repo.
 
-Three manifests drive the sync job:
+Two manifests drive the sync job:
   * a Git repo manifest (name/url/dest -> mirrored as bare repos)
   * a tarball/binary manifest (url/dest -> downloaded into the nginx tree)
-  * an authorized_keys manifest (name/key -> regenerated for the SCP user)
 
 All destination paths are validated as relative, traversal-free paths since
-they land directly in directory trees served over plain HTTP or reachable
-by SFTP -- a bad manifest entry must not be able to write outside its root.
+they land directly in directory trees served over plain HTTP -- a bad
+manifest entry must not be able to write outside its root.
 """
 from __future__ import annotations
 
@@ -35,23 +34,8 @@ class TarballEntry:
     dest: str  # relative path under the nginx-served root
 
 
-@dataclasses.dataclass(frozen=True)
-class SshKeyEntry:
-    name: str
-    key: str  # full authorized_keys line, e.g. "ssh-ed25519 AAAA... alice"
-
-
 _ALLOWED_FETCH_SCHEMES = ("http://", "https://")
 _ALLOWED_GIT_SCHEMES = ("http://", "https://", "git://", "ssh://", "git@")
-_ALLOWED_KEY_TYPES = (
-    "ssh-ed25519",
-    "ssh-rsa",
-    "ecdsa-sha2-nistp256",
-    "ecdsa-sha2-nistp384",
-    "ecdsa-sha2-nistp521",
-    "sk-ssh-ed25519@openssh.com",
-    "sk-ecdsa-sha2-nistp256@openssh.com",
-)
 
 
 def load_git_repo_manifest(path) -> List[GitRepoEntry]:
@@ -86,23 +70,6 @@ def load_tarball_manifest(path) -> List[TarballEntry]:
             raise ManifestError(f"files[{i}]: duplicate dest {dest!r}")
         seen_dest.add(dest)
         entries.append(TarballEntry(url=url, dest=dest))
-    return entries
-
-
-def load_authorized_keys_manifest(path) -> List[SshKeyEntry]:
-    entries: List[SshKeyEntry] = []
-    seen_names = set()
-    for i, raw in enumerate(_load_yaml_list(path, key="keys")):
-        name = _require_str(raw, "name", i)
-        key = _require_str(raw, "key", i)
-        if not key.startswith(_ALLOWED_KEY_TYPES):
-            raise ManifestError(f"keys[{i}] ({name}): unrecognized key type")
-        if len(key.split()) < 2:
-            raise ManifestError(f"keys[{i}] ({name}): malformed public key")
-        if name in seen_names:
-            raise ManifestError(f"keys[{i}]: duplicate name {name!r}")
-        seen_names.add(name)
-        entries.append(SshKeyEntry(name=name, key=key))
     return entries
 
 

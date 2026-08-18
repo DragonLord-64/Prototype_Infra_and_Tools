@@ -2,7 +2,6 @@ import pytest
 
 from mirror_sync.manifest import (
     ManifestError,
-    load_authorized_keys_manifest,
     load_git_repo_manifest,
     load_tarball_manifest,
 )
@@ -116,45 +115,3 @@ files:
 """)
         with pytest.raises(ManifestError):
             load_tarball_manifest(path)
-
-
-class TestAuthorizedKeysManifest:
-    def test_valid_entries(self, tmp_path):
-        path = write(tmp_path, "keys.yaml", """
-keys:
-  - name: alice
-    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIabc alice@laptop"
-  - name: bob
-    key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAB bob@workstation"
-""")
-        entries = load_authorized_keys_manifest(path)
-        assert {e.name for e in entries} == {"alice", "bob"}
-
-    def test_unrecognized_key_type_rejected(self, tmp_path):
-        path = write(tmp_path, "keys.yaml", """
-keys:
-  - name: mallory
-    key: "not-a-real-key AAAA mallory"
-""")
-        with pytest.raises(ManifestError, match="key type"):
-            load_authorized_keys_manifest(path)
-
-    def test_malformed_key_rejected(self, tmp_path):
-        path = write(tmp_path, "keys.yaml", """
-keys:
-  - name: mallory
-    key: "ssh-ed25519"
-""")
-        with pytest.raises(ManifestError, match="malformed"):
-            load_authorized_keys_manifest(path)
-
-    def test_duplicate_name_rejected(self, tmp_path):
-        path = write(tmp_path, "keys.yaml", """
-keys:
-  - name: alice
-    key: "ssh-ed25519 AAAA alice-key-1"
-  - name: alice
-    key: "ssh-ed25519 BBBB alice-key-2"
-""")
-        with pytest.raises(ManifestError, match="duplicate"):
-            load_authorized_keys_manifest(path)

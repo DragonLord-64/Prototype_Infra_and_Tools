@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 # Spin up a minikube cluster running the air-gapped-mirror stack (git,
-# apt, and pip mirroring -- the ssh-upload/SFTP endpoint is not currently
-# deployed, see ../ssh-upload/Dockerfile) plus self-contained test
-# fixtures (a fake upstream git repo, a fake tarball host + stubbed GitLab
-# API, and a fake private config repo) so the sync job's real logic can be
-# exercised without any real GitLab/internet dependency.
+# apt, and pip mirroring) plus self-contained test fixtures (a fake
+# upstream git repo, a fake tarball host + stubbed GitLab API, and a fake
+# private config repo) so the sync job's real logic can be exercised
+# without any real GitLab/internet dependency.
 # Idempotent: safe to re-run to redeploy after code changes.
 #
 # Usage: ./up.sh

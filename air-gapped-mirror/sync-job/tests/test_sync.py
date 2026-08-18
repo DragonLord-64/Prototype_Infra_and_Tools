@@ -3,12 +3,11 @@ from pathlib import Path
 
 import pytest
 
-from mirror_sync.manifest import GitRepoEntry, SshKeyEntry, TarballEntry
+from mirror_sync.manifest import GitRepoEntry, TarballEntry
 from mirror_sync.sync import (
     _checkout_config_repo,
     describe_changes,
     mirror_git_repos,
-    regenerate_authorized_keys,
     sync_forever,
     sync_tarballs,
 )
@@ -147,47 +146,6 @@ class TestSyncTarballs:
         assert not (tmp_path / "escape.txt").exists()
 
 
-# ---- regenerate_authorized_keys ----
-
-class TestRegenerateAuthorizedKeys:
-    def test_writes_sorted_deterministic_content(self, tmp_path):
-        entries = [
-            SshKeyEntry(name="bob", key="ssh-rsa BBBB bob@work"),
-            SshKeyEntry(name="alice", key="ssh-ed25519 AAAA alice@laptop"),
-        ]
-        out = tmp_path / "ssh" / "uploader"
-
-        regenerate_authorized_keys(entries, out)
-
-        content = out.read_text()
-        assert content.index("ssh-ed25519 AAAA alice@laptop") < content.index("ssh-rsa BBBB bob@work")
-        assert content.startswith("# Managed by the air-gapped mirror sync job")
-
-    def test_written_atomically_no_tmp_file_left_behind(self, tmp_path):
-        out = tmp_path / "ssh" / "uploader"
-        regenerate_authorized_keys([SshKeyEntry(name="alice", key="ssh-ed25519 AAAA alice")], out)
-
-        assert out.exists()
-        assert not (tmp_path / "ssh" / "uploader.tmp").exists()
-
-    def test_permissions_not_group_or_other_writable(self, tmp_path):
-        out = tmp_path / "ssh" / "uploader"
-        regenerate_authorized_keys([SshKeyEntry(name="alice", key="ssh-ed25519 AAAA alice")], out)
-
-        # sshd reads this by temporarily assuming the connecting user's
-        # uid, so it must stay world-readable -- just not writable.
-        assert (out.stat().st_mode & 0o777) == 0o644
-
-    def test_overwrites_removed_keys(self, tmp_path):
-        out = tmp_path / "ssh" / "uploader"
-        regenerate_authorized_keys([SshKeyEntry(name="alice", key="ssh-ed25519 AAAA alice")], out)
-        regenerate_authorized_keys([SshKeyEntry(name="bob", key="ssh-rsa BBBB bob")], out)
-
-        content = out.read_text()
-        assert "alice" not in content
-        assert "bob" in content
-
-
 # ---- describe_changes / sync_forever ----
 
 class _Report:
@@ -202,8 +160,7 @@ class _Report:
 
 def _result(**kw):
     return {"git": _Report(**kw.get("git", {})),
-            "tarballs": _Report(**kw.get("tarballs", {})),
-            "keys_synced": 0}
+            "tarballs": _Report(**kw.get("tarballs", {}))}
 
 
 class TestDescribeChanges:

@@ -94,7 +94,7 @@ def publish_bare_repo(base_path: Path, name: str) -> Path:
 
 
 def make_config_repo(path: Path, *, git_repo_url: str, tarball_url: str) -> Path:
-    """A bare repo containing the three manifests, standing in for the
+    """A bare repo containing the two manifests, standing in for the
     private GitLab repo. Cloned locally via file:// purely as test-harness
     plumbing to get the manifests onto disk -- not something the design
     itself ever does (git_repo_url below is what's actually validated
@@ -114,11 +114,6 @@ repos:
 files:
   - url: {tarball_url}
     dest: tools/tool.txt
-""")
-    (work / "authorized_keys.yaml").write_text("""
-keys:
-  - name: alice
-    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIabc alice@laptop"
 """)
     run_git(["add", "."], cwd=work)
     run_git(["commit", "-q", "-m", "add manifests"], cwd=work)
@@ -158,10 +153,8 @@ def build_config(tmp_path, git_daemon, http_server) -> dict:
         "config_repo_path": str(tmp_path / "pod" / "config-repo"),
         "git_manifest": "git-repos.yaml",
         "tarball_manifest": "tarballs.yaml",
-        "keys_manifest": "authorized_keys.yaml",
         "git_repos_root": str(tmp_path / "pod" / "git-repos"),
         "artifacts_root": str(tmp_path / "pod" / "files"),
-        "authorized_keys_path": str(tmp_path / "pod" / "ssh" / "uploader"),
         "interval_seconds": 0,
     }
     return config, upstream_work
@@ -176,7 +169,6 @@ class TestRunSyncEndToEnd:
         assert result["git"].cloned == ["widgets"]
         assert result["git"].failed == []
         assert result["tarballs"].downloaded == ["tools/tool.txt"]
-        assert result["keys_synced"] == 1
 
         mirrored_repo = Path(config["git_repos_root"]) / "widgets.git"
         assert mirrored_repo.is_dir()
@@ -186,13 +178,6 @@ class TestRunSyncEndToEnd:
 
         tarball = Path(config["artifacts_root"]) / "tools" / "tool.txt"
         assert tarball.read_text() == "a mirrored tool\n"
-
-        keys_file = Path(config["authorized_keys_path"])
-        assert "alice" in keys_file.read_text()
-        # 0644, not 0600: sshd reads AuthorizedKeysFile after dropping to
-        # the connecting user's uid, so it has to be world-readable -- it
-        # just must not be group/other-writable.
-        assert (keys_file.stat().st_mode & 0o777) == 0o644
 
     def test_second_pass_is_idempotent(self, tmp_path, git_daemon, http_server):
         config, _ = build_config(tmp_path, git_daemon, http_server)

@@ -93,10 +93,5 @@ syncJob:
   # private repo the URL contains a token.
   configRepoUrl: ""
 
-# NOTE: the design's SSH/SFTP upload endpoint (../ssh-upload) is not part
-# of this chart. It needs /var/mirror/files pinned to root:root 755 for
-# sshd's ChrootDirectory check, which conflicts with the non-root sync job
-# writing to that same volume. See the note in ../ssh-upload/Dockerfile.
-
 nameOverride: ""
 fullnameOverride: ""

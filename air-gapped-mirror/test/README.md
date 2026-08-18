@@ -35,9 +35,6 @@ Checks 4 and 5 need outbound internet from the cluster; they report SKIP
 rather than FAIL without it, since that's an environment limitation
 rather than a defect in the mirror.
 
-The SFTP upload endpoint (`ssh-upload/`) is not covered — it isn't
-currently deployed. See the note in `../ssh-upload/Dockerfile`.
-
 ## Fixtures
 
 `manifests/10-fixtures.yaml` deploys three stand-ins, all in-cluster:
@@ -47,8 +44,8 @@ currently deployed. See the note in `../ssh-upload/Dockerfile`.
 - **`fixture-http`** — nginx serving a static file, standing in for a
   public tarball/binary the mirror downloads.
 - **`config-repo`** — a `git-daemon` serving the seeded manifests
-  (`git-repos.yaml`, `tarballs.yaml`, `authorized_keys.yaml`) that the
-  sync loop reconciles against, standing in for the private config repo.
+  (`git-repos.yaml`, `tarballs.yaml`) that the sync loop reconciles
+  against, standing in for the private config repo.
 
 The mirror itself is installed from the same Helm chart used in
 production (`../chart`), with `values-test.yaml` overriding only the
