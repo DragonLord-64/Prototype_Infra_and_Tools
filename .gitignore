@@ -8,3 +8,8 @@ air-gapped-mirror/k8s/secret.yaml
 
 # monitoring
 monitoring/k8s/grafana-admin-secret.yaml
+
+# netbox-import
+netbox-import/.venv/
+netbox-import/**/__pycache__/
+netbox-import/.pytest_cache/
