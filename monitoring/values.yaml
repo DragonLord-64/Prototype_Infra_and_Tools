@@ -1,0 +1,62 @@
+# Values for the prometheus-community/kube-prometheus-stack chart.
+# Install/upgrade with (see README.md for the full walkthrough):
+#   helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
+#     --namespace monitoring --create-namespace -f values.yaml
+
+grafana:
+  enabled: true
+  # Credentials come from a Secret (see k8s/grafana-admin-secret.example.yaml),
+  # not a plaintext password in this file.
+  admin:
+    existingSecret: grafana-admin
+    userKey: admin-user
+    passwordKey: admin-password
+  persistence:
+    enabled: true
+    size: 5Gi
+  defaultDashboardsEnabled: true
+  # No Ingress by default -- internal lab tool. Reach it with:
+  #   kubectl -n monitoring port-forward svc/monitoring-grafana 3000:80
+
+prometheus:
+  prometheusSpec:
+    retention: 15d
+    resources:
+      requests: { cpu: 200m, memory: 512Mi }
+      limits: { memory: 2Gi }
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources: { requests: { storage: 20Gi } }
+    # The chart's built-in node-exporter DaemonSet only covers nodes that
+    # are *in* the k8s cluster. A small lab usually also has bare-metal or
+    # VM servers that aren't -- switches' host OS, NAS, a hypervisor box,
+    # etc. Point those at this list once node_exporter is running on them
+    # (see README.md "Adding non-Kubernetes lab servers").
+    additionalScrapeConfigs:
+      - job_name: lab-servers-node-exporter
+        static_configs:
+          - targets:
+              # - "10.0.0.11:9100"   # REPLACE: e.g. nas.lab.internal:9100
+              # - "10.0.0.12:9100"
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: instance
+
+alertmanager:
+  enabled: true
+  # Default config just holds the chart's built-in alert routing with no
+  # external receiver wired up -- alerts fire and are visible in the
+  # Alertmanager/Grafana UI but nothing pages anyone yet. Configure a
+  # receiver (Slack webhook, email, etc.) under alertmanager.config once
+  # you know where you want notifications to go.
+
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true
+
+defaultRules:
+  create: true
