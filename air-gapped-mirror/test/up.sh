@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # Spin up a minikube cluster running the air-gapped-mirror stack (git,
-# apt, and pip mirroring) plus self-contained test fixtures (a fake
-# upstream git repo, a fake tarball host, and a fake config repo) so the
-# sync job's real logic can be exercised without any real forge or
-# internet dependency.
+# apt, and pip mirroring) plus a self-contained fixture upstream git repo,
+# so the sync job's real logic can be exercised without any external
+# dependency.
 # Idempotent: safe to re-run to redeploy after code changes.
 #
 # Usage: ./up.sh
@@ -49,14 +48,12 @@ for img in git-daemon devpi apt-cacher-ng sync-job; do
   $MINIKUBE image rm "air-gapped-mirror/$img:test" >/dev/null 2>&1 || true
   $MINIKUBE image load "air-gapped-mirror/$img:test"
 done
-# Base images used as-is (nginx sidecar, alpine initContainers) -- load
-# once so redeploys don't depend on the node having internet.
-for base in nginx:1.27-alpine alpine:3.20; do
-  $DOCKER pull "$base"
-  $MINIKUBE image load "$base"
-done
+# Base image used as-is (the fixture's alpine initContainer) -- load once
+# so redeploys don't depend on the node having internet.
+$DOCKER pull alpine:3.20
+$MINIKUBE image load alpine:3.20
 
-echo "==> applying test fixtures"
+echo "==> applying the test fixture"
 kubectl apply -f manifests/00-namespace.yaml
 kubectl apply -f manifests/10-fixtures.yaml
 
@@ -68,10 +65,8 @@ helm upgrade --install mirror ../chart \
   --namespace "$NAMESPACE" \
   -f values-test.yaml
 
-echo "==> waiting for fixtures to roll out"
+echo "==> waiting for the fixture to roll out"
 kubectl -n "$NAMESPACE" rollout status deployment/fixture-git --timeout=120s
-kubectl -n "$NAMESPACE" rollout status deployment/fixture-http --timeout=120s
-kubectl -n "$NAMESPACE" rollout status deployment/config-repo --timeout=120s
 
 echo "==> waiting for the mirror deployment to roll out"
 kubectl -n "$NAMESPACE" rollout status deployment/mirror --timeout=180s

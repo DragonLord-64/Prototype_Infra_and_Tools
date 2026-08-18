@@ -1,14 +1,12 @@
-# Test-only fixtures that stand in for the real upstream internet and the
-# real config repo, so the sync loop's actual logic (git mirroring,
-# tarball download) can be exercised end to end inside minikube with no
-# external dependencies.
+# Test-only fixture standing in for a public upstream repo, so the sync
+# loop's actual git-mirroring logic can be exercised end to end inside
+# minikube with no external dependencies.
 #
-# fixture-git      -- a git-daemon serving one seeded repo ("hello.git"),
-#                      standing in for a public upstream the sync job mirrors.
-# fixture-http      -- nginx serving a static fixture file (stand-in tarball).
-# config-repo       -- a git-daemon serving the seeded manifests
-#                      (git-repos.yaml / tarballs.yaml) that the sync job
-#                      reads, standing in for the real config repo.
+# fixture-git -- a git-daemon serving one seeded repo ("hello.git"),
+#                standing in for a public upstream the sync job mirrors.
+#
+# The repo list itself is no longer a fixture: it comes from the chart's
+# ConfigMap, seeded by values-test.yaml.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -55,113 +53,4 @@ metadata:
   namespace: air-gapped-mirror
 spec:
   selector: { app: fixture-git }
-  ports: [{ name: git, port: 9418, targetPort: 9418 }]
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: fixture-http-conf
-  namespace: air-gapped-mirror
-data:
-  default.conf: |
-    server {
-        listen 80 default_server;
-        server_name _;
-        root /usr/share/nginx/html;
-
-        location / { try_files $uri $uri/ =404; }
-    }
-  fixture-file.txt: |
-    this is a fixture file standing in for a mirrored tarball/binary
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: fixture-http
-  namespace: air-gapped-mirror
-spec:
-  replicas: 1
-  selector: { matchLabels: { app: fixture-http } }
-  template:
-    metadata: { labels: { app: fixture-http } }
-    spec:
-      containers:
-        - name: nginx
-          image: nginx:1.27-alpine
-          imagePullPolicy: IfNotPresent
-          ports: [{ containerPort: 80, name: http }]
-          volumeMounts:
-            - { name: conf, mountPath: /etc/nginx/conf.d/default.conf, subPath: default.conf }
-            - { name: conf, mountPath: /usr/share/nginx/html/fixture-file.txt, subPath: fixture-file.txt }
-      volumes:
-        - { name: conf, configMap: { name: fixture-http-conf } }
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: fixture-http
-  namespace: air-gapped-mirror
-spec:
-  selector: { app: fixture-http }
-  ports: [{ name: http, port: 80, targetPort: 80 }]
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: config-repo
-  namespace: air-gapped-mirror
-spec:
-  replicas: 1
-  selector: { matchLabels: { app: config-repo } }
-  template:
-    metadata: { labels: { app: config-repo } }
-    spec:
-      initContainers:
-        - name: seed
-          image: alpine:3.20
-          imagePullPolicy: IfNotPresent
-          command: ["sh", "-c"]
-          args:
-            - |
-              set -e
-              apk add --no-cache git >/dev/null
-              git init -q -b main /work
-              cd /work
-              git config user.email test@example.com
-              git config user.name fixture
-
-              cat > git-repos.yaml <<'EOF'
-              repos:
-                - name: hello
-                  url: git://fixture-git/hello.git
-                  dest: test/hello
-              EOF
-
-              cat > tarballs.yaml <<'EOF'
-              files:
-                - url: http://fixture-http/fixture-file.txt
-                  dest: test/fixture-file.txt
-              EOF
-
-              git add git-repos.yaml tarballs.yaml
-              git commit -q -m "seed manifests"
-              git clone -q --bare /work /repos/mirror-config.git
-              chmod -R a+rX /repos/mirror-config.git
-          volumeMounts: [{ name: repos, mountPath: /repos }]
-      containers:
-        - name: git-daemon
-          image: air-gapped-mirror/git-daemon:test
-          imagePullPolicy: Never
-          ports: [{ containerPort: 9418, name: git }]
-          volumeMounts: [{ name: repos, mountPath: /var/git/repos }]
-      volumes:
-        - { name: repos, emptyDir: {} }
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: config-repo
-  namespace: air-gapped-mirror
-spec:
-  selector: { app: config-repo }
   ports: [{ name: git, port: 9418, targetPort: 9418 }]

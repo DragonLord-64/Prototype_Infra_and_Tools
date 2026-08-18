@@ -1,7 +1,6 @@
 {{- $fullName := include "air-gapped-mirror.fullname" . -}}
 {{- $claims := list
       (dict "suffix" "git-repos"          "size" .Values.storage.sizes.gitRepos)
-      (dict "suffix" "mirror-files"       "size" .Values.storage.sizes.mirrorFiles)
       (dict "suffix" "devpi-data"         "size" .Values.storage.sizes.devpiData)
       (dict "suffix" "apt-cacher-ng-data" "size" .Values.storage.sizes.aptCacherNgData)
 -}}

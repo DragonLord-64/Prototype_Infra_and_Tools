@@ -1,10 +1,6 @@
 import pytest
 
-from mirror_sync.manifest import (
-    ManifestError,
-    load_git_repo_manifest,
-    load_tarball_manifest,
-)
+from mirror_sync.manifest import ManifestError, load_git_repo_manifest
 
 
 def write(tmp_path, name, content):
@@ -19,16 +15,15 @@ class TestGitRepoManifest:
 repos:
   - name: widgets
     url: https://example.com/widgets.git
-    dest: widgets
-  - name: gadgets
-    url: git://example.com/gadgets.git
-    dest: sub/gadgets.git
+    dest: org/widgets
+  - name: tooling
+    url: git://example.com/tooling.git
+    dest: vendor/tooling.git
 """)
         entries = load_git_repo_manifest(path)
-        assert [e.name for e in entries] == ["widgets", "gadgets"]
-        # .git suffix is appended when missing, left alone when present
-        assert entries[0].dest == "widgets.git"
-        assert entries[1].dest == "sub/gadgets.git"
+        assert [e.name for e in entries] == ["widgets", "tooling"]
+        # `.git` is appended when it's missing, left alone when it isn't.
+        assert [e.dest for e in entries] == ["org/widgets.git", "vendor/tooling.git"]
 
     def test_missing_field_rejected(self, tmp_path):
         path = write(tmp_path, "repos.yaml", """
@@ -56,7 +51,7 @@ repos:
     url: https://example.com/evil.git
     dest: /etc/evil
 """)
-        with pytest.raises(ManifestError, match="absolute"):
+        with pytest.raises(ManifestError, match="relative"):
             load_git_repo_manifest(path)
 
     def test_bad_scheme_rejected(self, tmp_path):
@@ -74,44 +69,21 @@ repos:
 repos:
   - name: one
     url: https://example.com/one.git
-    dest: shared
+    dest: same
   - name: two
     url: https://example.com/two.git
-    dest: shared
+    dest: same.git
 """)
         with pytest.raises(ManifestError, match="duplicate"):
             load_git_repo_manifest(path)
 
     def test_missing_top_level_key_rejected(self, tmp_path):
-        path = write(tmp_path, "repos.yaml", "not_repos: []\n")
+        path = write(tmp_path, "repos.yaml", "somethingelse: []\n")
         with pytest.raises(ManifestError, match="repos"):
             load_git_repo_manifest(path)
 
-
-class TestTarballManifest:
-    def test_valid_entries(self, tmp_path):
-        path = write(tmp_path, "tarballs.yaml", """
-files:
-  - url: https://example.com/tool.tar.gz
-    dest: tools/tool.tar.gz
-""")
-        entries = load_tarball_manifest(path)
-        assert entries[0].dest == "tools/tool.tar.gz"
-
-    def test_git_scheme_rejected_for_tarballs(self, tmp_path):
-        path = write(tmp_path, "tarballs.yaml", """
-files:
-  - url: git://example.com/tool.tar.gz
-    dest: tools/tool.tar.gz
-""")
-        with pytest.raises(ManifestError, match="scheme"):
-            load_tarball_manifest(path)
-
-    def test_traversal_rejected(self, tmp_path):
-        path = write(tmp_path, "tarballs.yaml", """
-files:
-  - url: https://example.com/tool.tar.gz
-    dest: ../outside.tar.gz
-""")
-        with pytest.raises(ManifestError):
-            load_tarball_manifest(path)
+    def test_empty_manifest_is_valid(self, tmp_path):
+        """An empty repo list is a legitimate steady state, not an error --
+        the ConfigMap renders `repos: []` when nothing is configured yet."""
+        path = write(tmp_path, "repos.yaml", "repos: []\n")
+        assert load_git_repo_manifest(path) == []

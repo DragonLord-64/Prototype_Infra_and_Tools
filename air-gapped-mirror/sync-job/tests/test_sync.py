@@ -1,15 +1,12 @@
 import subprocess
 from pathlib import Path
 
-import pytest
-
-from mirror_sync.manifest import GitRepoEntry, TarballEntry
+from mirror_sync.manifest import GitRepoEntry
 from mirror_sync.sync import (
-    _checkout_config_repo,
     describe_changes,
     mirror_git_repos,
+    run_sync,
     sync_forever,
-    sync_tarballs,
 )
 
 
@@ -91,94 +88,64 @@ class TestMirrorGitRepos:
         assert report.cloned == ["ok"]
 
 
-# ---- sync_tarballs ----
+# ---- run_sync reads the manifest every pass ----
 
-def fake_download_writer(content: bytes):
-    def _download(url, dest: Path):
-        dest.write_bytes(content)
-    return _download
+class TestRunSyncRereadsManifest:
+    def test_manifest_edit_is_picked_up_without_restart(self, tmp_path):
+        """The ConfigMap is remounted in place, so a pass must re-read the
+        file rather than caching entries from a previous pass."""
+        manifest = tmp_path / "git-repos.yaml"
+        manifest.write_text("""
+repos:
+  - name: first
+    url: https://example.com/first.git
+    dest: first
+""")
+        run = FakeRun()
+        config = {"git_manifest": str(manifest), "git_repos_root": str(tmp_path / "repos")}
 
+        assert run_sync(config, run=run)["git"].cloned == ["first"]
 
-def failing_download(url, dest: Path):
-    raise ConnectionError("upstream unreachable")
+        manifest.write_text("""
+repos:
+  - name: first
+    url: https://example.com/first.git
+    dest: first
+  - name: second
+    url: https://example.com/second.git
+    dest: second
+""")
 
-
-class TestSyncTarballs:
-    def test_downloads_new_file(self, tmp_path):
-        entries = [TarballEntry(url="https://example.com/tool.tar.gz", dest="tools/tool.tar.gz")]
-
-        report = sync_tarballs(entries, tmp_path / "files", download=fake_download_writer(b"payload"))
-
-        assert report.downloaded == ["tools/tool.tar.gz"]
-        assert (tmp_path / "files" / "tools" / "tool.tar.gz").read_bytes() == b"payload"
-
-    def test_skips_existing_file_without_downloading(self, tmp_path):
-        artifacts_root = tmp_path / "files"
-        existing = artifacts_root / "tool.tar.gz"
-        existing.parent.mkdir(parents=True)
-        existing.write_bytes(b"original")
-        entries = [TarballEntry(url="https://example.com/tool.tar.gz", dest="tool.tar.gz")]
-        calls = []
-
-        report = sync_tarballs(entries, artifacts_root, download=lambda url, dest: calls.append(url))
-
-        assert report.skipped == ["tool.tar.gz"]
-        assert calls == []
-        assert existing.read_bytes() == b"original"  # untouched
-
-    def test_failed_download_does_not_leave_partial_file(self, tmp_path):
-        entries = [TarballEntry(url="https://example.com/tool.tar.gz", dest="tool.tar.gz")]
-
-        report = sync_tarballs(entries, tmp_path / "files", download=failing_download)
-
-        assert report.failed == ["tool.tar.gz"]
-        assert not (tmp_path / "files" / "tool.tar.gz").exists()
-        assert list((tmp_path / "files").iterdir()) == []
-
-    def test_refuses_to_escape_artifacts_root(self, tmp_path):
-        # manifest.py normally blocks '..' in dest; this is sync_tarballs's
-        # own belt-and-suspenders check on whatever it's handed.
-        entries = [TarballEntry(url="https://example.com/evil", dest="../escape.txt")]
-
-        report = sync_tarballs(entries, tmp_path / "files", download=fake_download_writer(b"x"))
-
-        assert report.failed == ["../escape.txt"]
-        assert not (tmp_path / "escape.txt").exists()
+        second = run_sync(config, run=run)
+        assert second["git"].cloned == ["second"]   # the new one
+        assert second["git"].updated == ["first"]   # the existing one
 
 
 # ---- describe_changes / sync_forever ----
 
 class _Report:
-    """Minimal stand-in for the Git/Tarball report dataclasses."""
-    def __init__(self, cloned=(), updated=(), downloaded=(), skipped=(), failed=()):
+    """Minimal stand-in for GitSyncReport."""
+    def __init__(self, cloned=(), updated=(), failed=()):
         self.cloned = list(cloned)
         self.updated = list(updated)
-        self.downloaded = list(downloaded)
-        self.skipped = list(skipped)
         self.failed = list(failed)
 
 
 def _result(**kw):
-    return {"git": _Report(**kw.get("git", {})),
-            "tarballs": _Report(**kw.get("tarballs", {}))}
+    return {"git": _Report(**kw)}
 
 
 class TestDescribeChanges:
     def test_steady_state_is_silent(self):
-        # Nothing new: repos merely re-fetched, tarballs already present.
-        # This is what almost every pass looks like, so it must not log.
-        assert describe_changes(_result(git={"updated": ["widgets"]},
-                                        tarballs={"skipped": ["tools/tool.txt"]})) == ""
+        # Nothing new: repos merely re-fetched. This is what almost every
+        # pass looks like, so it must not log.
+        assert describe_changes(_result(updated=["widgets"])) == ""
 
     def test_reports_new_content(self):
-        out = describe_changes(_result(git={"cloned": ["widgets"]},
-                                        tarballs={"downloaded": ["tools/tool.txt"]}))
-        assert "cloned widgets" in out
-        assert "downloaded tools/tool.txt" in out
+        assert "cloned widgets" in describe_changes(_result(cloned=["widgets"]))
 
     def test_reports_failures(self):
-        out = describe_changes(_result(git={"failed": ["widgets"]}))
-        assert "FAILED git widgets" in out
+        assert "FAILED git widgets" in describe_changes(_result(failed=["widgets"]))
 
 
 class TestSyncForever:
@@ -190,8 +157,8 @@ class TestSyncForever:
         def flaky(config):
             calls.append(1)
             if len(calls) == 1:
-                raise RuntimeError("config repo unreachable")
-            return _result(git={"cloned": ["widgets"]})
+                raise RuntimeError("manifest unreadable")
+            return _result(cloned=["widgets"])
 
         sync_forever({"interval_seconds": 0}, sleep=lambda _: None,
                      run_once=flaky, iterations=3)
@@ -204,32 +171,3 @@ class TestSyncForever:
                      run_once=lambda c: _result(), iterations=3)
         # Sleeps between passes, not after the last one.
         assert slept == [60, 60]
-
-
-# ---- _checkout_config_repo ----
-
-class TestCheckoutConfigRepo:
-    def test_captures_git_output_so_steady_state_is_silent(self, tmp_path):
-        """git chatters to stderr on every fetch. At one pass a minute that
-        buries real events, so the output must be captured, not inherited."""
-        calls = []
-
-        def fake_run(args, **kwargs):
-            calls.append(kwargs)
-            return subprocess.CompletedProcess(args, 0, "", "")
-
-        _checkout_config_repo("https://example.com/c.git", "main",
-                              tmp_path / "checkout", run=fake_run)
-
-        assert calls, "expected git to be invoked"
-        assert all(kw.get("capture_output") for kw in calls)
-
-    def test_failure_surfaces_git_stderr(self, tmp_path):
-        """Quiet must not mean undiagnosable -- the reason has to survive."""
-        def fake_run(args, **kwargs):
-            raise subprocess.CalledProcessError(
-                128, args, output="", stderr="fatal: Authentication failed")
-
-        with pytest.raises(RuntimeError, match="Authentication failed"):
-            _checkout_config_repo("https://example.com/c.git", "main",
-                                  tmp_path / "checkout", run=fake_run)

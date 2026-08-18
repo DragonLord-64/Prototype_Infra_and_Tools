@@ -1,8 +1,8 @@
 {{- $fullName := include "air-gapped-mirror.fullname" . -}}
-# The 4 long-running services, as one Deployment, plus the sync sidecar
-# when it's enabled. Single replica: stateful w.r.t. the shared volumes,
-# and there's no need for more than one copy on an internal, low-traffic
-# network.
+# The 3 long-running services (git, pip, apt), as one Deployment, plus the
+# sync sidecar when it's enabled. Single replica: stateful w.r.t. the
+# shared volumes, and there's no need for more than one copy on an
+# internal, low-traffic network.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,9 +20,6 @@ spec:
       {{- include "air-gapped-mirror.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      # Roll the pods automatically when the nginx config changes.
-      annotations:
-        checksum/nginx-config: {{ include (print $.Template.BasePath "/configmap-nginx.yaml") . | sha256sum }}
       labels:
         {{- include "air-gapped-mirror.selectorLabels" . | nindent 8 }}
     spec:
@@ -41,22 +38,6 @@ spec:
             initialDelaySeconds: 5
           resources:
             {{- toYaml .Values.resources.gitDaemon | nindent 12 }}
-
-        - name: nginx
-          image: {{ .Values.nginx.image }}
-          # Its own policy: this is a stock upstream image, not one of ours,
-          # so it must stay pullable even when ours are pullPolicy: Never.
-          imagePullPolicy: {{ .Values.nginx.pullPolicy }}
-          ports:
-            - { containerPort: 80, name: http }
-          volumeMounts:
-            - { name: mirror-files, mountPath: /usr/share/nginx/html, readOnly: true }
-            - { name: nginx-conf, mountPath: /etc/nginx/conf.d, readOnly: true }
-          readinessProbe:
-            httpGet: { path: /healthz, port: 80 }
-            initialDelaySeconds: 5
-          resources:
-            {{- toYaml .Values.resources.nginx | nindent 12 }}
 
         - name: devpi
           image: {{ include "air-gapped-mirror.image" (dict "ctx" . "name" "devpi") }}
@@ -92,33 +73,26 @@ spec:
           image: {{ include "air-gapped-mirror.image" (dict "ctx" . "name" "sync-job") }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-{{- if not .Values.syncJob.configRepoUrl }}
-{{- fail "syncJob.enabled is true but syncJob.configRepoUrl is not set." }}
-{{- end }}
-            # Plain value, not a Secret: the config repo is public, so the
-            # clone URL carries no credential.
-            - { name: CONFIG_REPO_URL, value: {{ .Values.syncJob.configRepoUrl | quote }} }
             - { name: SYNC_INTERVAL_SECONDS, value: {{ .Values.syncJob.intervalSeconds | quote }} }
-            - { name: CONFIG_REPO_BRANCH, value: {{ .Values.syncJob.configRepoBranch | quote }} }
             - { name: GIT_REPOS_ROOT, value: /var/git/repos }
-            - { name: ARTIFACTS_ROOT, value: /var/mirror/files }
-            - { name: CONFIG_REPO_PATH, value: /var/mirror/config-repo }
+            - { name: GIT_MANIFEST, value: /etc/mirror/git-repos.yaml }
           volumeMounts:
             - { name: git-repos, mountPath: /var/git/repos }
-            - { name: mirror-files, mountPath: /var/mirror/files }
-            - { name: config-repo-checkout, mountPath: /var/mirror/config-repo }
+            # Mounted as a directory, not a subPath file: subPath mounts do
+            # not get the kubelet's in-place refresh, so a `helm upgrade`
+            # would need a pod restart to take effect.
+            - { name: manifest, mountPath: /etc/mirror, readOnly: true }
           resources:
             {{- toYaml .Values.resources.syncJob | nindent 12 }}
 {{- end }}
 
       volumes:
 {{- if .Values.syncJob.enabled }}
-        # No PVC: every pass re-fetches the config repo at HEAD anyway, so
-        # there is nothing worth persisting across restarts.
-        - { name: config-repo-checkout, emptyDir: {} }
+        # Deliberately no checksum annotation on the pod template: the sync
+        # loop re-reads this file every pass, so a changed repo list applies
+        # on its own rather than forcing a restart.
+        - { name: manifest, configMap: { name: {{ $fullName }}-manifest } }
 {{- end }}
         - { name: git-repos, persistentVolumeClaim: { claimName: {{ $fullName }}-git-repos } }
-        - { name: mirror-files, persistentVolumeClaim: { claimName: {{ $fullName }}-mirror-files } }
         - { name: devpi-data, persistentVolumeClaim: { claimName: {{ $fullName }}-devpi-data } }
         - { name: apt-cacher-ng-data, persistentVolumeClaim: { claimName: {{ $fullName }}-apt-cacher-ng-data } }
-        - { name: nginx-conf, configMap: { name: {{ $fullName }}-nginx-conf } }

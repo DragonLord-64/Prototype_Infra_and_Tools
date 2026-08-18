@@ -6,7 +6,8 @@ bundle of templated manifests plus a `values.yaml` of settings.
 ## 1. Get the images onto the cluster
 
 No registry is involved: build the four images locally, then load them
-onto the node the cluster runs on.
+onto the node the cluster runs on. (Four images, three services — the
+fourth is the sync sidecar.)
 
 Build, then load in the same loop — this is the minikube version:
 
@@ -31,9 +32,6 @@ The chart runs these with `imagePullPolicy: Never`, so a missing image
 fails immediately with `ErrImageNeverPull` instead of trying to pull a
 name that isn't ours from Docker Hub.
 
-A node with no internet also needs `nginx:1.27-alpine` side-loaded the
-same way; it's a stock upstream image and otherwise pulls on its own.
-
 ## 2. Install
 
 ```sh
@@ -48,7 +46,7 @@ The defaults expect local images, so there is nothing to configure here.
 - `--namespace` puts everything in its own slice of the cluster;
   `--create-namespace` makes it if missing.
 
-That's it. Four services start: git, files (HTTP), pip, and apt.
+That's it. Three services start: git, pip, and apt.
 
 ## 3. Check it in k9s
 
@@ -56,34 +54,57 @@ That's it. Four services start: git, files (HTTP), pip, and apt.
 k9s -n air-gapped-mirror
 ```
 
-One pod, **4/4** containers ready (**5/5** after step 4). Useful keys: `l`
+One pod, **3/3** containers ready (**4/4** after step 4). Useful keys: `l`
 logs, `d` describe, `s` shell, `:svc` services, `:pvc` volumes, `esc` back.
 `ErrImageNeverPull` means step 1's images didn't make it onto the node;
 `Pending` usually means no storage available.
 
-## 4. Turn on mirroring (optional)
+## 4. Turn on git mirroring (optional)
 
 Steps 1–3 already give you a working pip and apt cache — they fill
-themselves as people use them. Mirroring git repos and files needs your
-config repo (the one holding the manifests):
+themselves as people use them. Mirroring git repos means listing the ones
+you want. Put them in a values file:
+
+```yaml
+# my-values.yaml
+syncJob:
+  enabled: true
+  repos:
+    - name: widgets
+      url: https://github.com/your-org/widgets.git
+      dest: your-org/widgets
+    - name: tooling
+      url: https://github.com/someone/tooling.git
+      dest: vendor/tooling
+```
 
 ```sh
 helm upgrade air-gapped-mirror ./chart --namespace air-gapped-mirror \
-  --reuse-values \
-  --set syncJob.enabled=true \
-  --set syncJob.configRepoUrl=https://gitlab.com/your-org/mirror-config.git
+  --reuse-values -f my-values.yaml
 ```
 
-The config repo is public, so its clone URL is a plain value — there is no
-Secret to create.
+Each entry needs three fields:
 
-That adds a `sync` sidecar that re-reads the config repo every 60s and
-makes the volumes match it — nothing to trigger. It logs only on change or
+| Field | Meaning |
+| --- | --- |
+| `name` | Label only — what shows up in the sync log |
+| `url` | Upstream to mirror. `http://`, `https://`, `git://`, `ssh://`, or `git@` |
+| `dest` | Path under the mirror. Relative, no `..`; `.git` is appended if missing |
+
+`dest` is also the path clients clone from, so `dest: your-org/widgets`
+becomes `git clone git://air-gapped-mirror/your-org/widgets.git`.
+
+That adds a `sync` sidecar that re-reads the list every 60s and makes the
+git volume match it — nothing to trigger. It logs only on change or
 failure, so an empty log means "up to date":
 
 ```sh
 kubectl -n air-gapped-mirror logs deploy/air-gapped-mirror -c sync -f
 ```
+
+The list is rendered into a ConfigMap and mounted into the sidecar. To
+change it, edit the values and `helm upgrade` again — the mounted file
+refreshes in place, so the next pass picks it up with no restart.
 
 ## 5. Point clients at it
 
@@ -92,7 +113,6 @@ From inside the cluster (use the port-forward below from outside):
 | Use | Setting |
 | --- | --- |
 | git | `git clone git://air-gapped-mirror/<repo>.git` |
-| files | `http://air-gapped-mirror/` |
 | pip | `--index-url http://air-gapped-mirror:3141/root/pypi/+simple/ --trusted-host air-gapped-mirror` |
 | apt | `Acquire::HTTP::Proxy "http://air-gapped-mirror:3142";` |
 
@@ -100,8 +120,8 @@ From inside the cluster (use the port-forward below from outside):
 without it.
 
 ```sh
-kubectl -n air-gapped-mirror port-forward svc/air-gapped-mirror 8080:80
-curl http://localhost:8080/healthz   # -> ok
+kubectl -n air-gapped-mirror port-forward svc/air-gapped-mirror 9418:9418
+git clone git://localhost:9418/<repo>.git
 ```
 
 ## Common settings
@@ -113,7 +133,8 @@ Override with `--set key=value`, or copy `values.yaml` and pass
 | --- | --- | --- |
 | `image.tag` | `latest` | Must match the tag you built and loaded |
 | `image.registry` | `""` | Empty = local images. Set only if you push to one |
-| `storage.sizes.mirrorFiles` | `200Gi` | Largest volume; tarballs/binaries |
+| `syncJob.repos` | `[]` | The repos to mirror; required if `syncJob.enabled` |
+| `storage.sizes.gitRepos` | `50Gi` | Holds every mirrored bare repo |
 | `storage.className` | `""` | Empty = cluster default |
 | `storage.accessMode` | `ReadWriteOnce` | Fine as-is; one pod mounts everything |
 | `syncJob.intervalSeconds` | `60` | Each pass fetches every mirrored repo — see below |

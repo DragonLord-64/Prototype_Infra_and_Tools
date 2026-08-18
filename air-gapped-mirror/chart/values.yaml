@@ -1,7 +1,7 @@
 # Default values for the air-gapped-mirror chart.
 # Override any of these with `-f my-values.yaml` or `--set key=value`.
 
-# The four images built from this repo. There is no registry by default:
+# The three images built from this repo. There is no registry by default:
 # build them locally and load them onto the node (see chart/README.md), and
 # the bare names below match what you built.
 image:
@@ -16,13 +16,6 @@ image:
   # IfNotPresent if you set `registry` above.
   pullPolicy: Never
 
-# The stock upstream image used for the file-serving sidecar. This one is a
-# real Docker Hub image, so it pulls normally -- side-load it too if the
-# node has no internet, and IfNotPresent will use the local copy.
-nginx:
-  image: nginx:1.27-alpine
-  pullPolicy: IfNotPresent
-
 replicaCount: 1
 
 # Shared gid so the sync job and the long-running containers can all read
@@ -34,7 +27,6 @@ service:
   type: ClusterIP
   ports:
     git: 9418
-    http: 80
     pypi: 3141
     apt: 3142
 
@@ -48,15 +40,11 @@ storage:
   accessMode: ReadWriteOnce
   sizes:
     gitRepos: 50Gi
-    mirrorFiles: 200Gi
     devpiData: 50Gi
     aptCacherNgData: 50Gi
 
 resources:
   gitDaemon:
-    requests: { cpu: 50m, memory: 64Mi }
-    limits: { memory: 256Mi }
-  nginx:
     requests: { cpu: 50m, memory: 64Mi }
     limits: { memory: 256Mi }
   devpi:
@@ -72,30 +60,36 @@ resources:
     requests: { cpu: 100m, memory: 128Mi }
     limits: { memory: 512Mi }
 
-# The sync sidecar: re-reads the config repo every `intervalSeconds` and
-# makes the volumes match it. No forge API, no webhooks, no state.
+# The sync sidecar: re-reads the repo list below every `intervalSeconds`
+# and makes the git volume match it. No API, no webhooks, no state.
 #
-# Disabled by default so `helm install` works with no configuration at
-# all: the four mirror services come up and are immediately usable (devpi
-# and apt-cacher-ng need no config; nginx and git-daemon serve whatever is
-# on the volumes). Enable this once you have a config repo to point it at.
+# Disabled by default so `helm install` works with no configuration at all:
+# pip and apt caching need none, and git-daemon serves whatever is already
+# on the volume. Enable this once you have repos to mirror.
 syncJob:
   enabled: false
 
-  # Seconds between reconciliation passes. Each pass is one `git fetch` of
-  # the config repo plus one per mirrored repo, so this multiplies against
-  # your repo count: 10s across 20 repos is ~180k upstream fetches a day,
-  # which public forges like GitHub will rate-limit. Lower it freely for a
-  # handful of internal repos; raise it if you mirror a lot of public ones.
+  # Seconds between reconciliation passes. Each pass is one `git fetch` per
+  # mirrored repo, so this multiplies against your repo count: 10s across 20
+  # repos is ~180k upstream fetches a day, which public forges like GitHub
+  # will rate-limit. Lower it freely for a handful of repos; raise it if you
+  # mirror a lot of them.
   intervalSeconds: 60
-  configRepoBranch: main
 
-  # Clone URL of the config repo holding the manifests. Required when
-  # `enabled` is true. It's a public repo, so this is a plain value with no
-  # credential in it -- nothing here needs a Secret.
+  # The repos to mirror. Rendered into a ConfigMap and mounted into the
+  # sidecar, so `helm upgrade` is the whole config path -- no separate
+  # config repo, nothing to clone, no credentials.
   #
-  #   configRepoUrl: https://gitlab.com/your-org/mirror-config.git
-  configRepoUrl: ""
+  #   name  label used in the sync log
+  #   url   upstream to mirror (http://, https://, git://, ssh://, git@)
+  #   dest  path under the mirror; relative, no "..". `.git` is appended if
+  #         missing. Clients then clone git://<service>/<dest>
+  #
+  # Required when `enabled` is true.
+  repos: []
+  #  - name: widgets
+  #    url: https://github.com/your-org/widgets.git
+  #    dest: your-org/widgets
 
 nameOverride: ""
 fullnameOverride: ""

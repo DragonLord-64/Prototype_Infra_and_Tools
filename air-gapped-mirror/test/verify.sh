@@ -2,9 +2,8 @@
 # Exercises every functional piece of the air-gapped-mirror stack against
 # the running minikube deployment from up.sh:
 #   - waits for the sync sidecar's reconcile loop to mirror the fixture
-#     upstream git repo and fixture tarball, with nothing triggering it
+#     upstream git repo, with nothing triggering it
 #   - git-daemon: clones the now-mirrored repo
-#   - nginx: serves the now-mirrored tarball + /healthz
 #   - devpi / apt-cacher-ng: proxy+cache a real PyPI package / Debian
 #     index through the mirror (best-effort: skipped, not failed, if the
 #     cluster has no outbound internet access)
@@ -33,7 +32,7 @@ if ! kx "test -f /tmp/.provisioned"; then
 fi
 
 echo
-echo "==> [1/6] sync sidecar: waiting for it to mirror the fixtures"
+echo "==> [1/5] sync sidecar: waiting for it to mirror the fixture repo"
 # The sidecar reconciles on a loop, so there's nothing to trigger -- just
 # wait for the mirrored content to show up on the volumes.
 SYNCED=""
@@ -54,7 +53,7 @@ echo "     --- sync sidecar logs (quiet unless something changed/failed) ---"
 kubectl -n "$NAMESPACE" logs deploy/mirror -c sync --tail=15 2>&1 | sed 's/^/     /'
 
 echo
-echo "==> [2/6] git-daemon: cloning the mirrored fixture repo"
+echo "==> [2/5] git-daemon: cloning the mirrored fixture repo"
 if kx "rm -rf /tmp/check-hello && git clone -q git://mirror/test/hello.git /tmp/check-hello && grep -q 'hello from fixture upstream repo' /tmp/check-hello/README.md"; then
   pass "git-daemon serves the mirrored repo with correct content"
 else
@@ -62,20 +61,7 @@ else
 fi
 
 echo
-echo "==> [3/6] nginx: /healthz and the mirrored fixture file"
-if kx "curl -sf http://mirror/healthz | grep -q ok"; then
-  pass "nginx /healthz"
-else
-  fail "nginx /healthz"
-fi
-if kx "curl -sf http://mirror/test/fixture-file.txt | grep -q 'fixture file standing in'"; then
-  pass "nginx serves the mirrored tarball fixture"
-else
-  fail "nginx did not serve the mirrored tarball fixture"
-fi
-
-echo
-echo "==> [4/6] devpi: real pip install through the caching proxy (best-effort, needs outbound internet)"
+echo "==> [3/5] devpi: real pip install through the caching proxy (best-effort, needs outbound internet)"
 # --trusted-host is required for any plain-HTTP index: without it pip
 # silently *ignores* the --index-url entirely and reports "no versions
 # found", which looks identical to devpi being down. Real clients on the
@@ -87,7 +73,7 @@ else
 fi
 
 echo
-echo "==> [5/6] apt-cacher-ng: proxying a real Debian index (best-effort, needs outbound internet)"
+echo "==> [4/5] apt-cacher-ng: proxying a real Debian index (best-effort, needs outbound internet)"
 if kx "curl -x http://mirror:3142 -sf http://deb.debian.org/debian/dists/bookworm/InRelease -o /tmp/InRelease && test -s /tmp/InRelease"; then
   pass "apt-cacher-ng proxied a real Debian repo request"
 else
@@ -95,10 +81,10 @@ else
 fi
 
 echo
-echo "==> [6/6] all mirror pods report Ready"
-NOT_READY="$(kubectl -n "$NAMESPACE" get pods -l app.kubernetes.io/component=mirror -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.containerStatuses[*].ready}{"\n"}{end}' | grep -v ' true true true true true' || true)"
+echo "==> [5/5] all mirror pods report Ready"
+NOT_READY="$(kubectl -n "$NAMESPACE" get pods -l app.kubernetes.io/component=mirror -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.containerStatuses[*].ready}{"\n"}{end}' | grep -v ' true true true true' || true)"
 if [ -z "$NOT_READY" ]; then
-  pass "mirror deployment: all 5 containers ready"
+  pass "mirror deployment: all 4 containers ready"
 else
   fail "mirror deployment: not all containers ready: $NOT_READY"
 fi

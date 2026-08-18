@@ -1,4 +1,4 @@
-# ---- Sync job image: reconciles the mirror against the config repo ----
+# ---- Sync job image: mirrors the git repos listed in the manifest ----
 FROM python:3.11-alpine
 
 RUN apk add --no-cache git openssh-client \

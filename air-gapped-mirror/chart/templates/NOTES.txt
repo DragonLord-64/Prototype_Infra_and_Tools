@@ -1,6 +1,6 @@
 {{ include "air-gapped-mirror.fullname" . }} is installed in namespace {{ .Release.Namespace }}.
 
-Watch it come up (all 4 containers should reach Running):
+Watch it come up (all 3 containers should reach Running):
 
   kubectl -n {{ .Release.Namespace }} get pods -w
   # or just: k9s -n {{ .Release.Namespace }}
@@ -8,7 +8,6 @@ Watch it come up (all 4 containers should reach Running):
 Clients on the internal network reach it at these in-cluster addresses:
 
   git    git://{{ include "air-gapped-mirror.fullname" . }}:{{ .Values.service.ports.git }}/<repo>.git
-  files  http://{{ include "air-gapped-mirror.fullname" . }}:{{ .Values.service.ports.http }}/
   pip    pip install --index-url http://{{ include "air-gapped-mirror.fullname" . }}:{{ .Values.service.ports.pypi }}/root/pypi/+simple/ \
            --trusted-host {{ include "air-gapped-mirror.fullname" . }} <package>
   apt    Acquire::HTTP::Proxy "http://{{ include "air-gapped-mirror.fullname" . }}:{{ .Values.service.ports.apt }}";
@@ -17,19 +16,27 @@ Clients on the internal network reach it at these in-cluster addresses:
 
 To reach it from your laptop instead, port-forward:
 
-  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "air-gapped-mirror.fullname" . }} 8080:{{ .Values.service.ports.http }}
-  curl http://localhost:8080/healthz
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "air-gapped-mirror.fullname" . }} 9418:{{ .Values.service.ports.git }}
+  git clone git://localhost:9418/<repo>.git
 
 {{ if .Values.syncJob.enabled -}}
-The sync sidecar re-reads the config repo every {{ .Values.syncJob.intervalSeconds }}s and makes
-the volumes match it. It is quiet on purpose: it logs only when something
-actually changes or fails, so an empty log means "up to date".
+The sync sidecar mirrors {{ len .Values.syncJob.repos }} repo(s) every {{ .Values.syncJob.intervalSeconds }}s. It is quiet
+on purpose: it logs only when something actually changes or fails, so an
+empty log means "up to date".
 
   kubectl -n {{ .Release.Namespace }} logs deploy/{{ include "air-gapped-mirror.fullname" . }} -c sync -f
-{{- else -}}
-The sync sidecar is DISABLED, so nothing is populating the git and file
-volumes yet. devpi (pip) and apt-cacher-ng work regardless -- they cache
-on demand. To enable mirroring, re-run helm pointed at your config repo:
 
-  --set syncJob.enabled=true --set syncJob.configRepoUrl=<clone-url>
+To change the repo list, edit syncJob.repos and re-run helm upgrade. The
+mounted manifest refreshes in place, so no restart is needed.
+{{- else -}}
+The sync sidecar is DISABLED, so nothing is populating the git volume yet.
+devpi (pip) and apt-cacher-ng work regardless -- they cache on demand. To
+enable mirroring, list the repos you want and re-run helm:
+
+  --set syncJob.enabled=true \
+  --set syncJob.repos[0].name=widgets \
+  --set syncJob.repos[0].url=https://github.com/your-org/widgets.git \
+  --set syncJob.repos[0].dest=your-org/widgets
+
+(Past one or two repos, put them in a values file instead.)
 {{- end }}

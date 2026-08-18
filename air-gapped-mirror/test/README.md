@@ -1,11 +1,11 @@
 # Minikube smoke test
 
 Self-contained functional test of the air-gapped mirror. Spins up a
-dedicated minikube profile (`air-mirror-test`), deploys the stack plus
-fixtures that stand in for the internet and the config repo, exercises
-every component, then tears the whole thing down.
+dedicated minikube profile (`air-mirror-test`), deploys the stack plus a
+fixture that stands in for a public upstream repo, exercises every
+component, then tears the whole thing down.
 
-Nothing external is required: no real forge, no real upstream repos.
+Nothing external is required: no real upstream repos.
 Outbound internet is used only by the devpi/apt-cacher-ng checks, which
 are the point of those two components.
 
@@ -24,28 +24,25 @@ nothing is left consuming resources between test runs.
 
 | # | Component | Check |
 | --- | --- | --- |
-| 1 | sync sidecar | Waits for the reconcile loop to mirror the fixture git repo + tarball (nothing triggers it) |
+| 1 | sync sidecar | Waits for the reconcile loop to mirror the fixture git repo (nothing triggers it) |
 | 2 | `git-daemon` | Clones the just-mirrored repo over `git://` and diffs the content |
-| 3 | `nginx` | `/healthz`, plus serving the just-mirrored tarball |
-| 4 | `devpi` | Real `pip install six` through the proxy, cached from PyPI |
-| 5 | `apt-cacher-ng` | Real Debian `InRelease` fetch through the proxy |
-| 6 | Deployment | All 5 containers report Ready |
+| 3 | `devpi` | Real `pip install six` through the proxy, cached from PyPI |
+| 4 | `apt-cacher-ng` | Real Debian `InRelease` fetch through the proxy |
+| 5 | Deployment | All 4 containers report Ready |
 
-Checks 4 and 5 need outbound internet from the cluster; without it they
+Checks 3 and 4 need outbound internet from the cluster; without it they
 report SKIP, not FAIL.
 
-## Fixtures
+## Fixture
 
-`manifests/10-fixtures.yaml` deploys three stand-ins, all in-cluster:
+`manifests/10-fixtures.yaml` deploys one stand-in, in-cluster:
 
 - **`fixture-git`** — a `git-daemon` serving a seeded `hello.git`, playing
   the part of a public upstream repo the mirror pulls from.
-- **`fixture-http`** — nginx serving a static file, standing in for a
-  public tarball/binary the mirror downloads.
-- **`config-repo`** — a `git-daemon` serving the seeded manifests
-  (`git-repos.yaml`, `tarballs.yaml`) that the sync loop reconciles
-  against, standing in for the real config repo.
+
+The repo list is not a fixture: it comes from the chart's ConfigMap,
+seeded by `values-test.yaml`, which is the same path production uses.
 
 The mirror is installed from the production Helm chart (`../chart`), with
-`values-test.yaml` overriding only the images, storage sizes, and the sync
-loop interval (5s instead of 60s).
+`values-test.yaml` overriding only the images, storage sizes, the repo
+list, and the sync loop interval (5s instead of 60s).

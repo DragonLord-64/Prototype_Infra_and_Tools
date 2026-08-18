@@ -1,21 +1,15 @@
-"""End-to-end test of run_sync() against a real git-daemon and a real HTTP server.
+"""End-to-end test of run_sync() against a real git-daemon.
 
-Everything network-shaped is swapped for a local stand-in: the "config
-repo" is a real bare git repo cloned over file://
-(only the test harness's own setup uses that transport -- see note below),
-the "public git upstream" is served by a real `git daemon` over git://
-(the same protocol the design's git-daemon component speaks), and "the
-public tarball" is served by a throwaway http.server thread. This exercises
-the actual subprocess/filesystem/network code paths, not just the pure
-logic covered in the other test files.
+The "public git upstream" is served by a real `git daemon` over git:// (the
+same protocol the design's git-daemon component speaks), and the manifest is
+a real file on disk, standing in for the mounted ConfigMap. This exercises
+the actual subprocess/filesystem/network code paths, not just the pure logic
+covered in the other test files.
 """
 from __future__ import annotations
 
-import functools
-import http.server
 import socket
 import subprocess
-import threading
 import time
 from pathlib import Path
 
@@ -93,82 +87,35 @@ def publish_bare_repo(base_path: Path, name: str) -> Path:
     return work
 
 
-def make_config_repo(path: Path, *, git_repo_url: str, tarball_url: str) -> Path:
-    """A bare repo containing the two manifests, standing in for the
-    real config repo. Cloned locally via file:// purely as test-harness
-    plumbing to get the manifests onto disk -- not something the design
-    itself ever does (git_repo_url below is what's actually validated
-    against the manifest's scheme allowlist).
-    """
-    work = path.parent / (path.name + "-work")
-    work.mkdir(parents=True)
-    run_git(["init", "-q", "-b", "main"], cwd=work)
-
-    (work / "git-repos.yaml").write_text(f"""
-repos:
-  - name: widgets
-    url: {git_repo_url}
-    dest: widgets
-""")
-    (work / "tarballs.yaml").write_text(f"""
-files:
-  - url: {tarball_url}
-    dest: tools/tool.txt
-""")
-    run_git(["add", "."], cwd=work)
-    run_git(["commit", "-q", "-m", "add manifests"], cwd=work)
-    run_git(["clone", "-q", "--bare", str(work), str(path)], cwd=path.parent)
-    return path
-
-
-@pytest.fixture
-def http_server(tmp_path):
-    """Serves tmp_path/served over HTTP on localhost, for tarball downloads."""
-    served_dir = tmp_path / "served"
-    served_dir.mkdir()
-    (served_dir / "tool.txt").write_text("a mirrored tool\n")
-
-    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(served_dir))
-    server = http.server.HTTPServer(("127.0.0.1", 0), handler)
-    thread = threading.Thread(target=server.serve_forever, daemon=True)
-    thread.start()
-    try:
-        yield f"http://127.0.0.1:{server.server_port}"
-    finally:
-        server.shutdown()
-        thread.join(timeout=5)
-
-
-def build_config(tmp_path, git_daemon, http_server) -> dict:
+def build_config(tmp_path, git_daemon) -> tuple:
+    """Write the manifest the chart's ConfigMap would mount, and point the
+    sync job at it."""
     base_path, port = git_daemon
     upstream_work = publish_bare_repo(base_path, "widgets")
-    config_repo = make_config_repo(
-        tmp_path / "config-repo-remote.git",
-        git_repo_url=f"git://127.0.0.1:{port}/widgets.git",
-        tarball_url=f"{http_server}/tool.txt",
-    )
+
+    manifest = tmp_path / "git-repos.yaml"
+    manifest.write_text(f"""
+repos:
+  - name: widgets
+    url: git://127.0.0.1:{port}/widgets.git
+    dest: widgets
+""")
     config = {
-        "config_repo_url": f"file://{config_repo}",
-        "config_repo_branch": "main",
-        "config_repo_path": str(tmp_path / "pod" / "config-repo"),
-        "git_manifest": "git-repos.yaml",
-        "tarball_manifest": "tarballs.yaml",
+        "git_manifest": str(manifest),
         "git_repos_root": str(tmp_path / "pod" / "git-repos"),
-        "artifacts_root": str(tmp_path / "pod" / "files"),
         "interval_seconds": 0,
     }
     return config, upstream_work
 
 
 class TestRunSyncEndToEnd:
-    def test_first_run_populates_everything(self, tmp_path, git_daemon, http_server):
-        config, _ = build_config(tmp_path, git_daemon, http_server)
+    def test_first_run_populates_everything(self, tmp_path, git_daemon):
+        config, _ = build_config(tmp_path, git_daemon)
 
         result = sync.run_sync(config)
 
         assert result["git"].cloned == ["widgets"]
         assert result["git"].failed == []
-        assert result["tarballs"].downloaded == ["tools/tool.txt"]
 
         mirrored_repo = Path(config["git_repos_root"]) / "widgets.git"
         assert mirrored_repo.is_dir()
@@ -176,34 +123,27 @@ class TestRunSyncEndToEnd:
                               check=True, capture_output=True, text=True, env=GIT_ENV)
         assert "initial" in log.stdout
 
-        tarball = Path(config["artifacts_root"]) / "tools" / "tool.txt"
-        assert tarball.read_text() == "a mirrored tool\n"
-
-    def test_second_pass_is_idempotent(self, tmp_path, git_daemon, http_server):
-        config, _ = build_config(tmp_path, git_daemon, http_server)
+    def test_second_pass_is_idempotent(self, tmp_path, git_daemon):
+        config, _ = build_config(tmp_path, git_daemon)
 
         sync.run_sync(config)
         second = sync.run_sync(config)
 
         assert second["git"].updated == ["widgets"]
         assert second["git"].cloned == []
-        assert second["tarballs"].skipped == ["tools/tool.txt"]
-        assert second["tarballs"].downloaded == []
 
-    def test_loop_reconciles_repeatedly_against_real_repos(self, tmp_path, git_daemon, http_server):
+    def test_loop_reconciles_repeatedly_against_real_repos(self, tmp_path, git_daemon):
         """sync_forever driving the real run_sync, not a stub: three passes
         over a real git daemon must leave the mirror correct and must not
         raise out of the loop."""
-        config, _ = build_config(tmp_path, git_daemon, http_server)
+        config, _ = build_config(tmp_path, git_daemon)
 
         sync.sync_forever(config, sleep=lambda _: None, iterations=3)
 
-        mirrored_repo = Path(config["git_repos_root"]) / "widgets.git"
-        assert mirrored_repo.is_dir()
-        assert (Path(config["artifacts_root"]) / "tools" / "tool.txt").exists()
+        assert (Path(config["git_repos_root"]) / "widgets.git").is_dir()
 
-    def test_new_upstream_commit_is_picked_up_on_update(self, tmp_path, git_daemon, http_server):
-        config, upstream_work = build_config(tmp_path, git_daemon, http_server)
+    def test_new_upstream_commit_is_picked_up_on_update(self, tmp_path, git_daemon):
+        config, upstream_work = build_config(tmp_path, git_daemon)
         sync.run_sync(config)
 
         (upstream_work / "NEW.md").write_text("more content\n")

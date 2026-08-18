@@ -1,11 +1,12 @@
-"""Loaders/validators for the manifests stored in the config repo.
+"""Loader/validator for the git-repo manifest.
 
-Two manifests drive the sync job:
-  * a Git repo manifest (name/url/dest -> mirrored as bare repos)
-  * a tarball/binary manifest (url/dest -> downloaded into the nginx tree)
+One manifest drives the sync job: name/url/dest per repo, mirrored as bare
+repos under the git-daemon's root. It's mounted from a ConfigMap rendered
+by the Helm chart, so this is the second line of validation -- the values
+have already been through `helm template` by the time they land here.
 
-All destination paths are validated as relative, traversal-free paths since
-they land directly in directory trees served over plain HTTP -- a bad
+Destination paths are validated as relative, traversal-free paths since
+they land directly in a directory tree served over `git://` -- a bad
 manifest entry must not be able to write outside its root.
 """
 from __future__ import annotations
@@ -28,13 +29,6 @@ class GitRepoEntry:
     dest: str  # relative path under the bare-repo root, e.g. "org/project.git"
 
 
-@dataclasses.dataclass(frozen=True)
-class TarballEntry:
-    url: str
-    dest: str  # relative path under the nginx-served root
-
-
-_ALLOWED_FETCH_SCHEMES = ("http://", "https://")
 _ALLOWED_GIT_SCHEMES = ("http://", "https://", "git://", "ssh://", "git@")
 
 
@@ -54,22 +48,6 @@ def load_git_repo_manifest(path) -> List[GitRepoEntry]:
             raise ManifestError(f"repos[{i}] ({name}): duplicate dest {dest!r}")
         seen_dest.add(dest)
         entries.append(GitRepoEntry(name=name, url=url, dest=dest))
-    return entries
-
-
-def load_tarball_manifest(path) -> List[TarballEntry]:
-    entries: List[TarballEntry] = []
-    seen_dest = set()
-    for i, raw in enumerate(_load_yaml_list(path, key="files")):
-        url = _require_str(raw, "url", i)
-        dest = _require_str(raw, "dest", i)
-        if not url.startswith(_ALLOWED_FETCH_SCHEMES):
-            raise ManifestError(f"files[{i}]: unsupported url scheme: {url!r}")
-        dest = _validate_relative_dest(dest, f"files[{i}]")
-        if dest in seen_dest:
-            raise ManifestError(f"files[{i}]: duplicate dest {dest!r}")
-        seen_dest.add(dest)
-        entries.append(TarballEntry(url=url, dest=dest))
     return entries
 
 
