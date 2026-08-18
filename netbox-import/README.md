@@ -2,10 +2,7 @@
 
 A small Python tool that reads a spreadsheet of your existing lab
 inventory and pushes it into a running NetBox instance via its REST API
-(`pynetbox`), instead of hand-entering everything through the UI. Same
-spirit as `air-gapped-mirror/sync-job`: a manifest (here, an Excel
-workbook) drives reconciliation, with tests against fakes so it doesn't
-need a real NetBox instance to verify.
+(`pynetbox`), instead of hand-entering everything through the UI.
 
 Assumes NetBox is already deployed and reachable -- this only talks to
 its API.
@@ -81,10 +78,10 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt pytest
 PYTHONPATH=. .venv/bin/python -m pytest tests -v
 ```
 
-12 tests, all passing, against `tests/fakes.py` (no network, no real
-NetBox) -- covers dependency-ordered creation, idempotent re-runs,
-dry-run writing nothing, unrecognized references being reported instead
-of raising, and the workbook parser's validation/blank-row handling.
+Tests run against `tests/fakes.py` (no network, no real NetBox) and cover
+dependency-ordered creation, idempotent re-runs, dry-run writing nothing,
+unrecognized references being reported instead of raising, and the
+workbook parser's validation/blank-row handling.
 
 ## Security notes
 

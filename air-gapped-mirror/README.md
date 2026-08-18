@@ -20,14 +20,6 @@ sidecar rather than a separate CronJob, so exactly one pod mounts the
 volumes and `ReadWriteOnce` storage is enough. Deploy it with the Helm
 chart -- see [`chart/README.md`](chart/README.md).
 
-The mirror covers git, apt, and pip. An earlier design also had an
-`ssh-upload` container (a no-shell, chrooted SFTP endpoint for pushing
-local-only files straight into the nginx-served volume); it was never
-deployed and has been removed. It needed `/var/mirror/files` pinned to
-`root:root 755` for sshd's `ChrootDirectory` check, which conflicts with
-the non-root sync loop writing to that same volume. The code is preserved
-on the `archive/ssh-upload` branch.
-
 ## Data ingress
 
 | Content | How it's added |
@@ -51,10 +43,6 @@ re-fetches) the config repo every `intervalSeconds`, reads the manifests at
 HEAD, and makes the volumes match. Nothing is remembered between passes, so
 there is no cursor to corrupt and no event to miss -- a pass that runs
 after a change picks it up, and a pass that fails just runs again.
-
-An earlier version polled the forge's merge-requests API to build an
-audit log; it was dropped in favour of reading the config repo's own git
-history, which says the same thing with one less moving part.
 
 ## Repo layout
 
@@ -80,9 +68,8 @@ than a shell script:
   diff-and-download with atomic writes, and the `sync_forever` loop the
   container runs
 
-Every side effect (subprocess runner, HTTP downloader, sleep) is passed in
-rather than hardcoded, which is what makes the tests below possible
-without a real cluster.
+Every side effect (subprocess runner, HTTP downloader, sleep) is injected
+rather than hardcoded, so the tests run without a cluster.
 
 ### Running the tests
 
@@ -92,22 +79,19 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt pytest
 PYTHONPATH=. .venv/bin/python -m pytest tests -v
 ```
 
-`tests/test_integration.py` shells out to a real `git daemon`. On Debian/
-Ubuntu that binary ships in `git-daemon-run`; on Alpine it's the separate
-`git-daemon` package. Without it those tests fail with a confusing
-"Connection refused" rather than a missing-binary error.
-
-30 tests, all passing:
-
 - `tests/test_manifest.py`, `tests/test_sync.py` -- unit tests against
   fakes/mocks (no network, no real git)
-- `tests/test_integration.py` -- runs `run_sync()` end to end against
-  **real** subprocesses and network calls: a real `git daemon` process
-  (the same binary the `git-daemon` container runs) serving a bare repo
-  over `git://`, a real `http.server` thread serving a tarball, and a
-  real config-repo checkout. Covers first-pass population, second-pass
-  idempotency, picking up a new upstream commit on the next pass, and the
-  `sync_forever` loop driving all of it repeatedly.
+- `tests/test_integration.py` -- runs `run_sync()` end to end against real
+  subprocesses and network calls: a `git daemon` serving a bare repo over
+  `git://`, an `http.server` thread serving a tarball, and a real
+  config-repo checkout. Covers first-pass population, second-pass
+  idempotency, picking up a new upstream commit, and the `sync_forever`
+  loop driving all of it repeatedly.
+
+`tests/test_integration.py` needs a real `git daemon` binary: on Debian/
+Ubuntu it ships in `git-daemon-run`, on Alpine in `git-daemon`. Without
+it those tests fail with "Connection refused" rather than a
+missing-binary error.
 
 ## Building the images
 
@@ -119,9 +103,8 @@ docker build -t air-gapped-mirror/apt-cacher-ng apt-cacher-ng
 docker build -t air-gapped-mirror/sync-job sync-job
 ```
 
-All four images have since been built and run for real: see
-[`test/`](test), which deploys this chart to a throwaway minikube cluster
-and exercises every component end to end (`test/verify.sh`).
+[`test/`](test) builds all four, deploys the chart to a throwaway
+minikube cluster, and exercises every component end to end.
 
 ## Deploying
 

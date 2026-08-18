@@ -31,9 +31,8 @@ nothing is left consuming resources between test runs.
 | 5 | `apt-cacher-ng` | Real Debian `InRelease` fetch through the proxy |
 | 6 | Deployment | All 5 containers report Ready |
 
-Checks 4 and 5 need outbound internet from the cluster; they report SKIP
-rather than FAIL without it, since that's an environment limitation
-rather than a defect in the mirror.
+Checks 4 and 5 need outbound internet from the cluster; without it they
+report SKIP, not FAIL.
 
 ## Fixtures
 
@@ -47,7 +46,6 @@ rather than a defect in the mirror.
   (`git-repos.yaml`, `tarballs.yaml`) that the sync loop reconciles
   against, standing in for the real config repo.
 
-The mirror itself is installed from the same Helm chart used in
-production (`../chart`), with `values-test.yaml` overriding only the
-images, storage sizes, and the sync loop interval (5s instead of 60s, so
-tests don't wait). There's no separate copy of the manifests to drift.
+The mirror is installed from the production Helm chart (`../chart`), with
+`values-test.yaml` overriding only the images, storage sizes, and the sync
+loop interval (5s instead of 60s).

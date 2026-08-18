@@ -55,8 +55,8 @@ helm upgrade air-gapped-mirror ./chart --namespace air-gapped-mirror \
   --set syncJob.configRepoUrl=https://gitlab.com/your-org/mirror-config.git
 ```
 
-The config repo is public, so its clone URL carries no credential and
-goes straight into values — there is no Secret to create.
+The config repo is public, so its clone URL is a plain value — there is no
+Secret to create.
 
 That adds a `sync` sidecar that re-reads the config repo every 60s and
 makes the volumes match it — nothing to trigger. It logs only on change or

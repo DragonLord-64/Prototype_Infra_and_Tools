@@ -1,10 +1,9 @@
 # Monitoring
 
 Prometheus, Alertmanager, and Grafana for the lab, deployed via the
-`prometheus-community/kube-prometheus-stack` Helm chart rather than
-hand-written manifests -- it bundles the Prometheus Operator, CRDs,
-default alert rules, kube-state-metrics, and a node-exporter DaemonSet,
-which would be impractical to maintain by hand.
+`prometheus-community/kube-prometheus-stack` Helm chart. The chart bundles
+the Prometheus Operator, CRDs, default alert rules, kube-state-metrics,
+and a node-exporter DaemonSet.
 
 ## What you get
 
@@ -64,10 +63,8 @@ running k8s at all. For each of those:
    `prometheus.prometheusSpec.additionalScrapeConfigs` in `values.yaml`.
 3. Re-run the `helm upgrade --install` command above.
 
-These targets aren't secret (just internal IPs/hostnames), so they're
-tracked directly in `values.yaml` rather than pulled from a gitignored
-file -- keeps it reviewable in one place, same spirit as the manifest
-approach in `air-gapped-mirror`.
+These targets are just internal IPs/hostnames, so they're tracked
+directly in `values.yaml` rather than in a gitignored file.
 
 ## Alerting
 
