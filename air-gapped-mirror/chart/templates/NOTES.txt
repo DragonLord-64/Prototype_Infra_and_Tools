@@ -1,0 +1,36 @@
+{{ include "air-gapped-mirror.fullname" . }} is installed in namespace {{ .Release.Namespace }}.
+
+Watch it come up (all 4 containers should reach Running):
+
+  kubectl -n {{ .Release.Namespace }} get pods -w
+  # or just: k9s -n {{ .Release.Namespace }}
+
+Clients on the internal network reach it at these in-cluster addresses:
+
+  git    git://{{ include "air-gapped-mirror.fullname" . }}:{{ .Values.service.ports.git }}/<repo>.git
+  files  http://{{ include "air-gapped-mirror.fullname" . }}:{{ .Values.service.ports.http }}/
+  pip    pip install --index-url http://{{ include "air-gapped-mirror.fullname" . }}:{{ .Values.service.ports.pypi }}/root/pypi/+simple/ \
+           --trusted-host {{ include "air-gapped-mirror.fullname" . }} <package>
+  apt    Acquire::HTTP::Proxy "http://{{ include "air-gapped-mirror.fullname" . }}:{{ .Values.service.ports.apt }}";
+
+(--trusted-host is required: pip silently ignores a plain-HTTP index without it.)
+
+To reach it from your laptop instead, port-forward:
+
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "air-gapped-mirror.fullname" . }} 8080:{{ .Values.service.ports.http }}
+  curl http://localhost:8080/healthz
+
+{{ if .Values.syncJob.enabled -}}
+The sync sidecar re-reads the config repo every {{ .Values.syncJob.intervalSeconds }}s and makes
+the volumes match it. It is quiet on purpose: it logs only when something
+actually changes or fails, so an empty log means "up to date".
+
+  kubectl -n {{ .Release.Namespace }} logs deploy/{{ include "air-gapped-mirror.fullname" . }} -c sync -f
+{{- else -}}
+The sync sidecar is DISABLED, so nothing is populating the git and file
+volumes yet. devpi (pip) and apt-cacher-ng work regardless -- they cache
+on demand. To enable mirroring, create a Secret holding your config repo
+URL and re-run helm with:
+
+  --set syncJob.enabled=true --set syncJob.existingSecret=<secret-name>
+{{- end }}

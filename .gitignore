@@ -4,7 +4,7 @@
 air-gapped-mirror/sync-job/.venv/
 air-gapped-mirror/sync-job/**/__pycache__/
 air-gapped-mirror/sync-job/.pytest_cache/
-air-gapped-mirror/k8s/secret.yaml
+air-gapped-mirror/test/keys/
 
 # monitoring
 monitoring/k8s/grafana-admin-secret.yaml

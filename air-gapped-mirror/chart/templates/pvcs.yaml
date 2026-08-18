@@ -1,0 +1,24 @@
+{{- $fullName := include "air-gapped-mirror.fullname" . -}}
+{{- $claims := list
+      (dict "suffix" "git-repos"          "size" .Values.storage.sizes.gitRepos)
+      (dict "suffix" "mirror-files"       "size" .Values.storage.sizes.mirrorFiles)
+      (dict "suffix" "devpi-data"         "size" .Values.storage.sizes.devpiData)
+      (dict "suffix" "apt-cacher-ng-data" "size" .Values.storage.sizes.aptCacherNgData)
+-}}
+{{- range $claims }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $fullName }}-{{ .suffix }}
+  labels:
+    {{- include "air-gapped-mirror.labels" $ | nindent 4 }}
+spec:
+  accessModes: [{{ $.Values.storage.accessMode | quote }}]
+  {{- if $.Values.storage.className }}
+  storageClassName: {{ $.Values.storage.className | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .size | quote }}
+{{- end }}

@@ -1,0 +1,29 @@
+# Chart values for the minikube smoke test. Overrides ../chart/values.yaml:
+#   - locally built :test images (loaded with `minikube image load`)
+#   - storage shrunk from production sizes to what a laptop can spare
+#   - the sync sidecar pointed at the in-cluster fixture config repo, on a
+#     fast 5s loop so tests don't wait a minute for the first pass
+#   - fullnameOverride so resources are named `mirror` / `mirror-sync`,
+#     which is what clients in verify.sh connect to
+fullnameOverride: mirror
+
+image:
+  registry: ""
+  tag: test
+  # The images are side-loaded into the node, so nothing should be pulled;
+  # IfNotPresent finds them locally without reaching out to a registry.
+  pullPolicy: IfNotPresent
+
+storage:
+  accessMode: ReadWriteOnce
+  sizes:
+    gitRepos: 1Gi
+    mirrorFiles: 1Gi
+    devpiData: 1Gi
+    aptCacherNgData: 1Gi
+
+syncJob:
+  enabled: true
+  # Fast loop so the test doesn't wait a minute for the first pass.
+  intervalSeconds: 5
+  configRepoUrl: git://config-repo/mirror-config.git

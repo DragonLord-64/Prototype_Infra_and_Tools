@@ -1,14 +1,15 @@
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from mirror_sync.manifest import GitRepoEntry, SshKeyEntry, TarballEntry
 from mirror_sync.sync import (
-    GitLabClient,
-    MergedMergeRequest,
-    load_state,
+    _checkout_config_repo,
+    describe_changes,
     mirror_git_repos,
     regenerate_authorized_keys,
-    save_state,
+    sync_forever,
     sync_tarballs,
 )
 
@@ -169,11 +170,13 @@ class TestRegenerateAuthorizedKeys:
         assert out.exists()
         assert not (tmp_path / "ssh" / "uploader.tmp").exists()
 
-    def test_permissions_restricted(self, tmp_path):
+    def test_permissions_not_group_or_other_writable(self, tmp_path):
         out = tmp_path / "ssh" / "uploader"
         regenerate_authorized_keys([SshKeyEntry(name="alice", key="ssh-ed25519 AAAA alice")], out)
 
-        assert (out.stat().st_mode & 0o777) == 0o600
+        # sshd reads this by temporarily assuming the connecting user's
+        # uid, so it must stay world-readable -- just not writable.
+        assert (out.stat().st_mode & 0o777) == 0o644
 
     def test_overwrites_removed_keys(self, tmp_path):
         out = tmp_path / "ssh" / "uploader"
@@ -185,136 +188,91 @@ class TestRegenerateAuthorizedKeys:
         assert "bob" in content
 
 
-# ---- GitLabClient.fetch_merged_mrs ----
+# ---- describe_changes / sync_forever ----
 
-class FakeResponse:
-    def __init__(self, payload):
-        self._payload = payload
-
-    def raise_for_status(self):
-        pass
-
-    def json(self):
-        return self._payload
-
-
-class FakeSession:
-    """Records requests and serves canned pages, keyed by page number."""
-
-    def __init__(self, pages):
-        self.pages = pages
-        self.requests = []
-
-    def get(self, url, headers=None, params=None, timeout=None):
-        self.requests.append({"url": url, "headers": headers, "params": dict(params)})
-        return FakeResponse(self.pages.get(params["page"], []))
+class _Report:
+    """Minimal stand-in for the Git/Tarball report dataclasses."""
+    def __init__(self, cloned=(), updated=(), downloaded=(), skipped=(), failed=()):
+        self.cloned = list(cloned)
+        self.updated = list(updated)
+        self.downloaded = list(downloaded)
+        self.skipped = list(skipped)
+        self.failed = list(failed)
 
 
-def mr(iid, title="a change"):
-    return {"iid": iid, "title": title, "merged_at": "2026-01-01T00:00:00Z",
-            "web_url": f"https://gitlab.com/x/-/merge_requests/{iid}"}
+def _result(**kw):
+    return {"git": _Report(**kw.get("git", {})),
+            "tarballs": _Report(**kw.get("tarballs", {})),
+            "keys_synced": 0}
 
 
-class TestFetchMergedMrs:
-    def test_returns_all_when_no_since_iid(self):
-        session = FakeSession({1: [mr(1), mr(2)]})
-        client = GitLabClient("https://gitlab.com", "group/project", session=session)
+class TestDescribeChanges:
+    def test_steady_state_is_silent(self):
+        # Nothing new: repos merely re-fetched, tarballs already present.
+        # This is what almost every pass looks like, so it must not log.
+        assert describe_changes(_result(git={"updated": ["widgets"]},
+                                        tarballs={"skipped": ["tools/tool.txt"]})) == ""
 
-        results = client.fetch_merged_mrs()
+    def test_reports_new_content(self):
+        out = describe_changes(_result(git={"cloned": ["widgets"]},
+                                        tarballs={"downloaded": ["tools/tool.txt"]}))
+        assert "cloned widgets" in out
+        assert "downloaded tools/tool.txt" in out
 
-        assert [r.iid for r in results] == [1, 2]
-
-    def test_filters_by_since_iid(self):
-        session = FakeSession({1: [mr(1), mr(2), mr(3)]})
-        client = GitLabClient("https://gitlab.com", "group/project", session=session)
-
-        results = client.fetch_merged_mrs(since_iid=1)
-
-        assert [r.iid for r in results] == [2, 3]
-
-    def test_paginates_until_short_page(self):
-        session = FakeSession({1: [mr(1), mr(2)], 2: [mr(3)]})
-        client = GitLabClient("https://gitlab.com", "group/project", session=session)
-
-        results = client.fetch_merged_mrs(per_page=2)
-
-        assert [r.iid for r in results] == [1, 2, 3]
-        assert len(session.requests) == 2
-
-    def test_stops_on_empty_page(self):
-        session = FakeSession({1: []})
-        client = GitLabClient("https://gitlab.com", "group/project", session=session)
-
-        assert client.fetch_merged_mrs() == []
-        assert len(session.requests) == 1
-
-    def test_project_path_is_url_encoded(self):
-        session = FakeSession({1: []})
-        client = GitLabClient("https://gitlab.com", "group/sub/project", session=session)
-
-        client.fetch_merged_mrs()
-
-        assert "group%2Fsub%2Fproject" in session.requests[0]["url"]
-
-    def test_sends_private_token_header_when_configured(self):
-        session = FakeSession({1: []})
-        client = GitLabClient("https://gitlab.com", "group/project", token="secret-pat", session=session)
-
-        client.fetch_merged_mrs()
-
-        assert session.requests[0]["headers"]["PRIVATE-TOKEN"] == "secret-pat"
-
-    def test_omits_token_header_when_not_configured(self):
-        session = FakeSession({1: []})
-        client = GitLabClient("https://gitlab.com", "group/project", session=session)
-
-        client.fetch_merged_mrs()
-
-        assert "PRIVATE-TOKEN" not in session.requests[0]["headers"]
+    def test_reports_failures(self):
+        out = describe_changes(_result(git={"failed": ["widgets"]}))
+        assert "FAILED git widgets" in out
 
 
-# ---- state ----
+class TestSyncForever:
+    def test_keeps_going_after_a_failing_pass(self):
+        """A failing pass must not escape the loop -- if this process exits,
+        the mirror silently stops updating."""
+        calls = []
 
-class TestLoadState:
-    def test_missing_file_returns_defaults(self, tmp_path):
-        assert load_state(tmp_path / "does-not-exist.json") == {"last_mr_iid": 0, "last_synced_at": None}
+        def flaky(config):
+            calls.append(1)
+            if len(calls) == 1:
+                raise RuntimeError("config repo unreachable")
+            return _result(git={"cloned": ["widgets"]})
 
-    def test_corrupt_file_falls_back_to_defaults(self, tmp_path):
-        path = tmp_path / "state.json"
-        path.write_text("{not valid json")
+        sync_forever({"interval_seconds": 0}, sleep=lambda _: None,
+                     run_once=flaky, iterations=3)
 
-        assert load_state(path) == {"last_mr_iid": 0, "last_synced_at": None}
+        assert len(calls) == 3  # kept going past the exception
 
-    def test_missing_keys_are_backfilled_with_defaults(self, tmp_path):
-        path = tmp_path / "state.json"
-        path.write_text('{"last_mr_iid": 42}')
-
-        state = load_state(path)
-
-        assert state["last_mr_iid"] == 42
-        assert state["last_synced_at"] is None
+    def test_sleeps_the_configured_interval_between_passes(self):
+        slept = []
+        sync_forever({"interval_seconds": 60}, sleep=slept.append,
+                     run_once=lambda c: _result(), iterations=3)
+        # Sleeps between passes, not after the last one.
+        assert slept == [60, 60]
 
 
-class TestSaveState:
-    def test_round_trip(self, tmp_path):
-        path = tmp_path / "nested" / "state.json"
-        save_state(path, {"last_mr_iid": 7, "last_synced_at": "2026-01-01T00:00:00+00:00"})
+# ---- _checkout_config_repo ----
 
-        state = load_state(path)
+class TestCheckoutConfigRepo:
+    def test_captures_git_output_so_steady_state_is_silent(self, tmp_path):
+        """git chatters to stderr on every fetch. At one pass a minute that
+        buries real events, so the output must be captured, not inherited."""
+        calls = []
 
-        assert state["last_mr_iid"] == 7
-        assert state["last_synced_at"] == "2026-01-01T00:00:00+00:00"
+        def fake_run(args, **kwargs):
+            calls.append(kwargs)
+            return subprocess.CompletedProcess(args, 0, "", "")
 
-    def test_no_tmp_file_left_behind(self, tmp_path):
-        path = tmp_path / "state.json"
-        save_state(path, {"last_mr_iid": 1})
+        _checkout_config_repo("https://example.com/c.git", "main",
+                              tmp_path / "checkout", run=fake_run)
 
-        assert path.exists()
-        assert not (tmp_path / "state.json.tmp").exists()
+        assert calls, "expected git to be invoked"
+        assert all(kw.get("capture_output") for kw in calls)
 
-    def test_overwrites_previous_state(self, tmp_path):
-        path = tmp_path / "state.json"
-        save_state(path, {"last_mr_iid": 1})
-        save_state(path, {"last_mr_iid": 2})
+    def test_failure_surfaces_git_stderr(self, tmp_path):
+        """Quiet must not mean undiagnosable -- the reason has to survive."""
+        def fake_run(args, **kwargs):
+            raise subprocess.CalledProcessError(
+                128, args, output="", stderr="fatal: Authentication failed")
 
-        assert load_state(path)["last_mr_iid"] == 2
+        with pytest.raises(RuntimeError, match="Authentication failed"):
+            _checkout_config_repo("https://example.com/c.git", "main",
+                                  tmp_path / "checkout", run=fake_run)

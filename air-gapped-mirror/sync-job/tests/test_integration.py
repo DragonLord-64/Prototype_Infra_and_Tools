@@ -1,7 +1,7 @@
 """End-to-end test of run_sync() against a real git-daemon and a real HTTP server.
 
-Everything network-shaped is swapped for a local stand-in: the "GitLab API"
-is faked out, the "config repo" is a real bare git repo cloned over file://
+Everything network-shaped is swapped for a local stand-in: the "config
+repo" is a real bare git repo cloned over file://
 (only the test harness's own setup uses that transport -- see note below),
 the "public git upstream" is served by a real `git daemon` over git://
 (the same protocol the design's git-daemon component speaks), and "the
@@ -22,7 +22,6 @@ from pathlib import Path
 import pytest
 
 import mirror_sync.sync as sync
-from mirror_sync.sync import MergedMergeRequest
 
 GIT_ENV = {
     "GIT_AUTHOR_NAME": "test", "GIT_AUTHOR_EMAIL": "test@example.com",
@@ -145,21 +144,6 @@ def http_server(tmp_path):
         thread.join(timeout=5)
 
 
-@pytest.fixture
-def no_gitlab(monkeypatch):
-    """The design has no real GitLab reachable in tests; fake merged-MR polling."""
-    class FakeClient:
-        def __init__(self, *a, **kw):
-            pass
-
-        def fetch_merged_mrs(self, since_iid=None):
-            return [MergedMergeRequest(iid=1, title="add widgets mirror",
-                                        merged_at="2026-01-01T00:00:00Z",
-                                        web_url="https://gitlab.example/x/-/merge_requests/1")]
-
-    monkeypatch.setattr(sync, "GitLabClient", FakeClient)
-
-
 def build_config(tmp_path, git_daemon, http_server) -> dict:
     base_path, port = git_daemon
     upstream_work = publish_bare_repo(base_path, "widgets")
@@ -169,9 +153,6 @@ def build_config(tmp_path, git_daemon, http_server) -> dict:
         tarball_url=f"{http_server}/tool.txt",
     )
     config = {
-        "gitlab_url": "https://gitlab.example",
-        "gitlab_project": "org/mirror-config",
-        "gitlab_token": None,
         "config_repo_url": f"file://{config_repo}",
         "config_repo_branch": "main",
         "config_repo_path": str(tmp_path / "pod" / "config-repo"),
@@ -181,18 +162,17 @@ def build_config(tmp_path, git_daemon, http_server) -> dict:
         "git_repos_root": str(tmp_path / "pod" / "git-repos"),
         "artifacts_root": str(tmp_path / "pod" / "files"),
         "authorized_keys_path": str(tmp_path / "pod" / "ssh" / "uploader"),
-        "state_path": str(tmp_path / "pod" / "state" / "sync-state.json"),
+        "interval_seconds": 0,
     }
     return config, upstream_work
 
 
 class TestRunSyncEndToEnd:
-    def test_first_run_populates_everything(self, tmp_path, git_daemon, http_server, no_gitlab):
+    def test_first_run_populates_everything(self, tmp_path, git_daemon, http_server):
         config, _ = build_config(tmp_path, git_daemon, http_server)
 
         result = sync.run_sync(config)
 
-        assert result["merged_mrs"] == [1]
         assert result["git"].cloned == ["widgets"]
         assert result["git"].failed == []
         assert result["tarballs"].downloaded == ["tools/tool.txt"]
@@ -209,11 +189,12 @@ class TestRunSyncEndToEnd:
 
         keys_file = Path(config["authorized_keys_path"])
         assert "alice" in keys_file.read_text()
-        assert (keys_file.stat().st_mode & 0o777) == 0o600
+        # 0644, not 0600: sshd reads AuthorizedKeysFile after dropping to
+        # the connecting user's uid, so it has to be world-readable -- it
+        # just must not be group/other-writable.
+        assert (keys_file.stat().st_mode & 0o777) == 0o644
 
-        assert Path(config["state_path"]).exists()
-
-    def test_second_run_is_idempotent(self, tmp_path, git_daemon, http_server, no_gitlab):
+    def test_second_pass_is_idempotent(self, tmp_path, git_daemon, http_server):
         config, _ = build_config(tmp_path, git_daemon, http_server)
 
         sync.run_sync(config)
@@ -224,17 +205,19 @@ class TestRunSyncEndToEnd:
         assert second["tarballs"].skipped == ["tools/tool.txt"]
         assert second["tarballs"].downloaded == []
 
-    def test_state_advances_last_mr_iid(self, tmp_path, git_daemon, http_server, no_gitlab):
+    def test_loop_reconciles_repeatedly_against_real_repos(self, tmp_path, git_daemon, http_server):
+        """sync_forever driving the real run_sync, not a stub: three passes
+        over a real git daemon must leave the mirror correct and must not
+        raise out of the loop."""
         config, _ = build_config(tmp_path, git_daemon, http_server)
 
-        sync.run_sync(config)
+        sync.sync_forever(config, sleep=lambda _: None, iterations=3)
 
-        from mirror_sync.sync import load_state
-        state = load_state(config["state_path"])
-        assert state["last_mr_iid"] == 1
-        assert state["last_synced_at"] is not None
+        mirrored_repo = Path(config["git_repos_root"]) / "widgets.git"
+        assert mirrored_repo.is_dir()
+        assert (Path(config["artifacts_root"]) / "tools" / "tool.txt").exists()
 
-    def test_new_upstream_commit_is_picked_up_on_update(self, tmp_path, git_daemon, http_server, no_gitlab):
+    def test_new_upstream_commit_is_picked_up_on_update(self, tmp_path, git_daemon, http_server):
         config, upstream_work = build_config(tmp_path, git_daemon, http_server)
         sync.run_sync(config)
 
