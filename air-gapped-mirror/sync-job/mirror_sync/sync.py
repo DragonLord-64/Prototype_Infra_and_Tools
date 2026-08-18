@@ -2,13 +2,14 @@
 
 Deliberately dumb: every `interval` seconds, re-read the manifests from the
 config repo at HEAD and reconcile -- mirror git repos, download any tarball
-we don't already have. No GitLab API, no webhooks, no change detection, no
+we don't already have. No forge API, no webhooks, no change detection, no
 state carried between passes. The config repo *is* the desired state; each
 pass just makes the disk match it.
 
-That means the only credential this needs is whatever `git clone` needs for
-the config repo, and the loop is unaffected by a token expiring, GitLab
-being down, or a missed event.
+Everything mirrored is public open source and so is the config repo, so
+this needs no credentials at all -- a plain `git clone` is the whole
+input, and the loop is unaffected by the forge being down or an event
+being missed.
 
 Quiet by design: a pass that changes nothing logs nothing, so at one pass a
 minute the log stays empty until something actually happens or breaks.
@@ -223,7 +224,7 @@ def sync_forever(config: Dict[str, Any], sleep=time.sleep, run_once=run_sync,
         except Exception:
             # Includes a config repo that won't clone, which is the normal
             # "misconfigured on day one" case -- keep retrying so it starts
-            # working on its own once the URL/credentials are fixed.
+            # working on its own once the URL is fixed.
             logger.exception("sync pass failed; retrying in %ss", interval)
 
         count += 1

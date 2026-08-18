@@ -38,23 +38,23 @@ on the `archive/ssh-upload` branch.
 
 ## The config repo as the control plane
 
-A **private** git repo holds the two manifests the sync loop reads: the
-git-repo manifest and the tarball manifest (format documented in
-`mirror_sync/manifest.py`). Changes go through merge
-requests for review and an audit trail. It must stay private -- merge
-access there means "can point the sync loop at an arbitrary URL."
+A git repo holds the two manifests the sync loop reads: the git-repo
+manifest and the tarball manifest (format documented in
+`mirror_sync/manifest.py`). Everything mirrored here is public open
+source, so the config repo is public too and its clone URL carries no
+credential -- the mirror needs no secrets at all. Changes still go
+through merge requests: review and an audit trail matter because merge
+access means "can point the sync loop at an arbitrary URL."
 
-**No GitLab API, no webhooks, no state.** The sync sidecar re-clones (then
+**No API, no webhooks, no state.** The sync sidecar re-clones (then
 re-fetches) the config repo every `intervalSeconds`, reads the manifests at
 HEAD, and makes the volumes match. Nothing is remembered between passes, so
 there is no cursor to corrupt and no event to miss -- a pass that runs
 after a change picks it up, and a pass that fails just runs again.
 
-That also means the only credential the mirror needs is whatever `git
-clone` needs for the config repo. An earlier version polled GitLab's
-merge-requests API for an audit log; it was removed because it added a
-token that could expire (and once did, aborting the whole sync) in
-exchange for information already in the config repo's git history.
+An earlier version polled the forge's merge-requests API to build an
+audit log; it was dropped in favour of reading the config repo's own git
+history, which says the same thing with one less moving part.
 
 ## Repo layout
 
@@ -145,9 +145,11 @@ pod, so nothing else mounts those volumes.
 - `git-daemon`, `nginx`, `devpi`, `apt-cacher-ng` are unauthenticated and
   unencrypted by design -- only safe because the 192 network is internal
   and trusted.
-- The config repo is the sensitive asset -- merge access there means "can
-  point the sync loop at an arbitrary URL". Keep it private, restrict
-  approvers.
+- The mirror holds no credentials: everything it mirrors is public open
+  source, and the config repo's clone URL is a plain value in the chart,
+  not a Secret. What still needs guarding is *write* access to the config
+  repo -- merge access there means "can point the sync loop at an
+  arbitrary URL". Restrict approvers.
 - `mirror_sync.manifest` rejects absolute paths, `..` traversal, and
   non-http(s)/git/ssh URL schemes on every entry; `sync_tarballs`
   re-checks the resolved destination stays under the artifacts root as

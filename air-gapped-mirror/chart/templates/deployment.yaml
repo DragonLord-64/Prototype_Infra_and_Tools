@@ -89,10 +89,13 @@ spec:
         - name: sync
           image: {{ include "air-gapped-mirror.image" (dict "ctx" . "name" "sync-job") }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-            - secretRef:
-                name: {{ include "air-gapped-mirror.syncSecretName" . }}
           env:
+{{- if not .Values.syncJob.configRepoUrl }}
+{{- fail "syncJob.enabled is true but syncJob.configRepoUrl is not set." }}
+{{- end }}
+            # Plain value, not a Secret: the config repo is public, so the
+            # clone URL carries no credential.
+            - { name: CONFIG_REPO_URL, value: {{ .Values.syncJob.configRepoUrl | quote }} }
             - { name: SYNC_INTERVAL_SECONDS, value: {{ .Values.syncJob.intervalSeconds | quote }} }
             - { name: CONFIG_REPO_BRANCH, value: {{ .Values.syncJob.configRepoBranch | quote }} }
             - { name: GIT_REPOS_ROOT, value: /var/git/repos }

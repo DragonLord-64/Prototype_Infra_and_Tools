@@ -1,4 +1,4 @@
-# ---- Sync job image: polls GitLab, mirrors git repos/tarballs/keys ----
+# ---- Sync job image: reconciles the mirror against the config repo ----
 FROM python:3.11-alpine
 
 RUN apk add --no-cache git openssh-client \

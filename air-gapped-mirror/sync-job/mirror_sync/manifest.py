@@ -1,4 +1,4 @@
-"""Loaders/validators for the manifests stored in the private config repo.
+"""Loaders/validators for the manifests stored in the config repo.
 
 Two manifests drive the sync job:
   * a Git repo manifest (name/url/dest -> mirrored as bare repos)

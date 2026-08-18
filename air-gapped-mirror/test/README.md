@@ -2,10 +2,10 @@
 
 Self-contained functional test of the air-gapped mirror. Spins up a
 dedicated minikube profile (`air-mirror-test`), deploys the stack plus
-fixtures that stand in for the internet and the private GitLab config
-repo, exercises every component, then tears the whole thing down.
+fixtures that stand in for the internet and the config repo, exercises
+every component, then tears the whole thing down.
 
-Nothing external is required: no real GitLab, no real upstream repos.
+Nothing external is required: no real forge, no real upstream repos.
 Outbound internet is used only by the devpi/apt-cacher-ng checks, which
 are the point of those two components.
 
@@ -45,7 +45,7 @@ rather than a defect in the mirror.
   public tarball/binary the mirror downloads.
 - **`config-repo`** — a `git-daemon` serving the seeded manifests
   (`git-repos.yaml`, `tarballs.yaml`) that the sync loop reconciles
-  against, standing in for the private config repo.
+  against, standing in for the real config repo.
 
 The mirror itself is installed from the same Helm chart used in
 production (`../chart`), with `values-test.yaml` overriding only the

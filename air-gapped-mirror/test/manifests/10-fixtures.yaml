@@ -1,5 +1,5 @@
 # Test-only fixtures that stand in for the real upstream internet and the
-# real private config repo, so the sync loop's actual logic (git mirroring,
+# real config repo, so the sync loop's actual logic (git mirroring,
 # tarball download) can be exercised end to end inside minikube with no
 # external dependencies.
 #
@@ -8,7 +8,7 @@
 # fixture-http      -- nginx serving a static fixture file (stand-in tarball).
 # config-repo       -- a git-daemon serving the seeded manifests
 #                      (git-repos.yaml / tarballs.yaml) that the sync job
-#                      reads, standing in for the private GitLab config repo.
+#                      reads, standing in for the real config repo.
 apiVersion: apps/v1
 kind: Deployment
 metadata:

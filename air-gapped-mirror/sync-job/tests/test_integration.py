@@ -95,7 +95,7 @@ def publish_bare_repo(base_path: Path, name: str) -> Path:
 
 def make_config_repo(path: Path, *, git_repo_url: str, tarball_url: str) -> Path:
     """A bare repo containing the two manifests, standing in for the
-    private GitLab repo. Cloned locally via file:// purely as test-harness
+    real config repo. Cloned locally via file:// purely as test-harness
     plumbing to get the manifests onto disk -- not something the design
     itself ever does (git_repo_url below is what's actually validated
     against the manifest's scheme allowlist).

@@ -62,7 +62,7 @@ resources:
     limits: { memory: 512Mi }
 
 # The sync sidecar: re-reads the config repo every `intervalSeconds` and
-# makes the volumes match it. No GitLab API, no webhooks, no state.
+# makes the volumes match it. No forge API, no webhooks, no state.
 #
 # Disabled by default so `helm install` works with no configuration at
 # all: the four mirror services come up and are immediately usable (devpi
@@ -79,18 +79,11 @@ syncJob:
   intervalSeconds: 60
   configRepoBranch: main
 
-  # Where the manifests live. Either point at a Secret you created
-  # yourself (recommended -- keeps credentials out of Helm values and out
-  # of git):
+  # Clone URL of the config repo holding the manifests. Required when
+  # `enabled` is true. It's a public repo, so this is a plain value with no
+  # credential in it -- nothing here needs a Secret.
   #
-  #   kubectl -n <ns> create secret generic mirror-sync-secrets \
-  #     --from-literal=CONFIG_REPO_URL=https://oauth2:<token>@gitlab.com/your-org/mirror-config.git
-  #
-  # ...then set `existingSecret: mirror-sync-secrets`.
-  existingSecret: ""
-  # ...or let the chart create the Secret from this value. Only do this if
-  # you are passing it via --set / a values file you do not commit -- for a
-  # private repo the URL contains a token.
+  #   configRepoUrl: https://gitlab.com/your-org/mirror-config.git
   configRepoUrl: ""
 
 nameOverride: ""

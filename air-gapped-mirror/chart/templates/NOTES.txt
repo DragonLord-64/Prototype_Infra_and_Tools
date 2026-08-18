@@ -29,8 +29,7 @@ actually changes or fails, so an empty log means "up to date".
 {{- else -}}
 The sync sidecar is DISABLED, so nothing is populating the git and file
 volumes yet. devpi (pip) and apt-cacher-ng work regardless -- they cache
-on demand. To enable mirroring, create a Secret holding your config repo
-URL and re-run helm with:
+on demand. To enable mirroring, re-run helm pointed at your config repo:
 
-  --set syncJob.enabled=true --set syncJob.existingSecret=<secret-name>
+  --set syncJob.enabled=true --set syncJob.configRepoUrl=<clone-url>
 {{- end }}

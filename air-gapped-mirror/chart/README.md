@@ -49,14 +49,14 @@ themselves as people use them. Mirroring git repos and files needs your
 config repo (the one holding the manifests):
 
 ```sh
-kubectl -n air-gapped-mirror create secret generic mirror-sync-secrets \
-  --from-literal=CONFIG_REPO_URL=https://oauth2:<token>@gitlab.com/your-org/mirror-config.git
-
 helm upgrade air-gapped-mirror ./chart --namespace air-gapped-mirror \
   --reuse-values \
   --set syncJob.enabled=true \
-  --set syncJob.existingSecret=mirror-sync-secrets
+  --set syncJob.configRepoUrl=https://gitlab.com/your-org/mirror-config.git
 ```
+
+The config repo is public, so its clone URL carries no credential and
+goes straight into values — there is no Secret to create.
 
 That adds a `sync` sidecar that re-reads the config repo every 60s and
 makes the volumes match it — nothing to trigger. It logs only on change or

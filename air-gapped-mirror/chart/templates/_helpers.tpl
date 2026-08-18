@@ -57,12 +57,3 @@ image's short name, e.g.
 {{- printf "air-gapped-mirror/%s:%s" .name .ctx.Values.image.tag -}}
 {{- end -}}
 {{- end -}}
-
-{{/* Name of the Secret holding the sync job's credentials. */}}
-{{- define "air-gapped-mirror.syncSecretName" -}}
-{{- if .Values.syncJob.existingSecret -}}
-{{- .Values.syncJob.existingSecret -}}
-{{- else -}}
-{{- printf "%s-sync-secrets" (include "air-gapped-mirror.fullname" .) -}}
-{{- end -}}
-{{- end -}}
