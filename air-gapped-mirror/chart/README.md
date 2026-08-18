@@ -103,8 +103,10 @@ kubectl -n air-gapped-mirror logs deploy/air-gapped-mirror -c sync -f
 ```
 
 The list is rendered into a ConfigMap and mounted into the sidecar. To
-change it, edit the values and `helm upgrade` again — the mounted file
-refreshes in place, so the next pass picks it up with no restart.
+change it, edit the values and `helm upgrade` again — no restart needed,
+the mounted file refreshes in place. Allow up to a minute: the kubelet
+pushes the new file into the container on its own schedule, and the next
+pass acts on it after that.
 
 ## 5. Point clients at it
 

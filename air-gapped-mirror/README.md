@@ -46,7 +46,9 @@ anywhere in the system.
 
 Because the manifest is a mounted ConfigMap rather than a file baked into
 the image, the kubelet refreshes it in place. The sync loop re-reads it
-every pass, so a changed repo list applies without restarting the pod.
+every pass, so a changed repo list applies without restarting the pod --
+though not instantly: the kubelet takes up to ~60s to push the new file
+into the container, and the next pass acts on it after that.
 
 **No API, no webhooks, no state.** Every `intervalSeconds`, the sidecar
 re-reads the manifest and makes the git volume match it. Nothing is
