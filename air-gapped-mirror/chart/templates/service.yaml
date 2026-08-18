@@ -1,0 +1,17 @@
+# ClusterIP is enough -- the mirror is only reachable from the trusted
+# internal network in the first place.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "air-gapped-mirror.fullname" . }}
+  labels:
+    {{- include "air-gapped-mirror.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    {{- include "air-gapped-mirror.selectorLabels" . | nindent 4 }}
+  ports:
+    - { name: git,  port: {{ .Values.service.ports.git }},  targetPort: 9418 }
+    - { name: http, port: {{ .Values.service.ports.http }}, targetPort: 80 }
+    - { name: pypi, port: {{ .Values.service.ports.pypi }}, targetPort: 3141 }
+    - { name: apt,  port: {{ .Values.service.ports.apt }},  targetPort: 3142 }

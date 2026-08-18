@@ -1,26 +1,32 @@
-"""Reconciliation + orchestration for the sync CronJob.
+"""Reconciliation loop for the mirror.
 
-Polls GitLab for MRs merged since the last run (audit log only -- the sync
-pod has no public endpoint for webhooks, so this is how "what changed"
-gets tracked), then always reconciles from the manifests at HEAD: mirrors
-git repos, downloads new tarballs, regenerates authorized_keys.
+Deliberately dumb: every `interval` seconds, re-read the manifests from the
+config repo at HEAD and reconcile -- mirror git repos, download any tarball
+we don't already have, regenerate authorized_keys. No GitLab API, no
+webhooks, no change detection, no state carried between passes. The config
+repo *is* the desired state; each pass just makes the disk match it.
 
-Side effects (subprocess runner, HTTP downloader, GitLab session) are
-injectable so this can be unit tested without a network or a real git
-binary; see tests/test_sync.py and tests/test_integration.py.
+That means the only credential this needs is whatever `git clone` needs for
+the config repo, and the loop is unaffected by a token expiring, GitLab
+being down, or a missed event.
+
+Quiet by design: a pass that changes nothing logs nothing, so at one pass a
+minute the log stays empty until something actually happens or breaks.
+
+Side effects (subprocess runner, HTTP downloader) are injectable so this
+can be unit tested without a network or a real git binary; see
+tests/test_sync.py and tests/test_integration.py.
 """
 from __future__ import annotations
 
 import dataclasses
-import datetime
-import json
 import logging
 import os
 import subprocess
 import tempfile
+import time
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
-from urllib.parse import quote
+from typing import Any, Callable, Dict, List
 
 import requests
 
@@ -35,54 +41,7 @@ from .manifest import (
 
 logger = logging.getLogger(__name__)
 
-
-# ---- GitLab polling (audit trail; no webhook is reachable) ----
-
-@dataclasses.dataclass(frozen=True)
-class MergedMergeRequest:
-    iid: int
-    title: str
-    merged_at: str
-    web_url: str
-
-
-class GitLabClient:
-    def __init__(self, base_url: str, project: str, token: Optional[str] = None,
-                 session=None, timeout: float = 30):
-        self.base_url = base_url.rstrip("/")
-        self.project = project
-        self.token = token
-        self.timeout = timeout
-        self.session = session or requests.Session()
-
-    def fetch_merged_mrs(self, since_iid: Optional[int] = None, per_page: int = 100) -> List[MergedMergeRequest]:
-        """Return merged MRs with iid > since_iid, oldest first."""
-        url = f"{self.base_url}/api/v4/projects/{quote(self.project, safe='')}/merge_requests"
-        headers = {"Accept": "application/json"}
-        if self.token:
-            headers["PRIVATE-TOKEN"] = self.token
-        params = {"state": "merged", "order_by": "created_at", "sort": "asc", "per_page": per_page}
-
-        results: List[MergedMergeRequest] = []
-        page = 1
-        while True:
-            params["page"] = page
-            resp = self.session.get(url, headers=headers, params=params, timeout=self.timeout)
-            resp.raise_for_status()
-            batch = resp.json()
-            if not batch:
-                break
-            for raw in batch:
-                if since_iid is not None and raw["iid"] <= since_iid:
-                    continue
-                results.append(MergedMergeRequest(
-                    iid=raw["iid"], title=raw.get("title", ""),
-                    merged_at=raw.get("merged_at") or "", web_url=raw.get("web_url", ""),
-                ))
-            if len(batch) < per_page:
-                break
-            page += 1
-        return results
+DEFAULT_INTERVAL_SECONDS = 60
 
 
 # ---- Git repo mirroring ----
@@ -153,6 +112,9 @@ def sync_tarballs(entries: List[TarballEntry], artifacts_root,
         os.close(tmp_fd)
         try:
             download(entry.url, Path(tmp_path))
+            # mkstemp() creates the temp file 0600 -- nginx's worker process
+            # (a different, non-root uid) needs to read it back out.
+            os.chmod(tmp_path, 0o644)
             os.replace(tmp_path, dest)
             report.downloaded.append(entry.dest)
         except Exception:
@@ -185,58 +147,54 @@ def regenerate_authorized_keys(entries: List[SshKeyEntry], output_path) -> None:
     lines = [AUTHORIZED_KEYS_HEADER] + [f"{e.key}\n" for e in sorted(entries, key=lambda e: e.name)]
     tmp_path = output_path.with_name(output_path.name + ".tmp")
     tmp_path.write_text("".join(lines))
-    tmp_path.chmod(0o600)
-    os.replace(tmp_path, output_path)  # atomic: no half-written file for a connecting client
-
-
-# ---- state (last-seen MR, across runs) ----
-
-DEFAULT_STATE: Dict[str, Any] = {"last_mr_iid": 0, "last_synced_at": None}
-
-
-def load_state(path) -> Dict[str, Any]:
-    path = Path(path)
-    if not path.exists():
-        return dict(DEFAULT_STATE)
+    # sshd reads AuthorizedKeysFile by temporarily switching its effective
+    # uid to the *connecting* user first (defense against a root process
+    # reading an arbitrary path), so this needs to be world-readable, not
+    # just root-readable, even though it also has to be root-owned and
+    # not group/other-*writable* for sshd's separate ownership check.
+    tmp_path.chmod(0o644)
     try:
-        data = json.loads(path.read_text())
-    except (json.JSONDecodeError, OSError):
-        logger.warning("state file at %s unreadable, starting from defaults", path)
-        return dict(DEFAULT_STATE)
-    state = dict(DEFAULT_STATE)
-    if isinstance(data, dict):
-        state.update(data)
-    return state
-
-
-def save_state(path, state: Dict[str, Any]) -> None:
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp_path = path.with_name(path.name + ".tmp")
-    tmp_path.write_text(json.dumps(state, indent=2, sort_keys=True))
-    tmp_path.replace(path)
+        # sshd also requires the file be owned by root or by the connecting
+        # user. Best-effort: the sync job runs non-root, so this only
+        # succeeds if the caller happens to be privileged -- part of the
+        # unresolved chroot/ownership conflict that keeps ssh-upload out of
+        # the deployment for now (see ssh-upload/Dockerfile).
+        os.chown(tmp_path, 0, 0)
+    except PermissionError:
+        pass
+    os.replace(tmp_path, output_path)  # atomic: no half-written file for a connecting client
 
 
 # ---- orchestration ----
 
 def _checkout_config_repo(url: str, branch: str, dest: Path, run=subprocess.run) -> None:
-    if dest.exists():
-        run(["git", "-C", str(dest), "fetch", "origin", branch], check=True)
-        run(["git", "-C", str(dest), "reset", "--hard", f"origin/{branch}"], check=True)
+    # capture_output, not inherited stdio: git writes "From <url> / * branch
+    # main -> FETCH_HEAD / HEAD is now at ..." to stderr on *every* fetch,
+    # which at one pass a minute is thousands of lines a day saying nothing
+    # happened. Failures re-raise with the captured stderr attached, so
+    # quiet doesn't mean undiagnosable.
+    def git(*args):
+        try:
+            run(list(args), check=True, capture_output=True, text=True)
+        except subprocess.CalledProcessError as exc:
+            stderr = (getattr(exc, "stderr", "") or "").strip()
+            raise RuntimeError(f"{' '.join(args)} failed: {stderr}") from exc
+
+    # dest itself always exists on the first run too -- it's a k8s volume
+    # mount point (PVC or emptyDir), created by the kubelet before the
+    # container starts. Check for an actual git repo there, not just a
+    # directory, or the first run tries `git fetch` on a non-repo and fails.
+    if (dest / ".git").exists():
+        git("git", "-C", str(dest), "fetch", "origin", branch)
+        git("git", "-C", str(dest), "reset", "--hard", f"origin/{branch}")
     else:
         dest.parent.mkdir(parents=True, exist_ok=True)
-        run(["git", "clone", "--branch", branch, "--depth", "1", url, str(dest)], check=True)
+        git("git", "clone", "--branch", branch, "--depth", "1", url, str(dest))
 
 
 def run_sync(config: Dict[str, Any]) -> Dict[str, Any]:
-    state_path = Path(config["state_path"])
-    state = load_state(state_path)
-
-    client = GitLabClient(config["gitlab_url"], config["gitlab_project"], token=config.get("gitlab_token"))
-    merged = client.fetch_merged_mrs(since_iid=state.get("last_mr_iid") or None)
-    for mr in merged:
-        logger.info("merged since last run: !%s %s (%s)", mr.iid, mr.title, mr.web_url)
-
+    """One reconciliation pass. Nothing is remembered between passes -- the
+    config repo at HEAD is the whole input."""
     config_repo_path = Path(config["config_repo_path"])
     _checkout_config_repo(config["config_repo_url"], config["config_repo_branch"], config_repo_path)
 
@@ -246,26 +204,23 @@ def run_sync(config: Dict[str, Any]) -> Dict[str, Any]:
 
     git_report = mirror_git_repos(git_entries, config["git_repos_root"])
     tarball_report = sync_tarballs(tarball_entries, config["artifacts_root"], download=download_to_file)
-    regenerate_authorized_keys(key_entries, config["authorized_keys_path"])
 
-    if merged:
-        state["last_mr_iid"] = max(state.get("last_mr_iid") or 0, max(mr.iid for mr in merged))
-    state["last_synced_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    save_state(state_path, state)
+    # The SFTP upload endpoint is currently not deployed (see the note on
+    # ssh-upload in ssh-upload/Dockerfile). Without AUTHORIZED_KEYS_PATH set
+    # there's nothing consuming these keys, so skip writing them.
+    keys_enabled = bool(config.get("authorized_keys_path"))
+    if keys_enabled:
+        regenerate_authorized_keys(key_entries, config["authorized_keys_path"])
 
     return {
-        "merged_mrs": [mr.iid for mr in merged],
         "git": git_report,
         "tarballs": tarball_report,
-        "keys_synced": len(key_entries),
+        "keys_synced": len(key_entries) if keys_enabled else 0,
     }
 
 
 def config_from_env() -> Dict[str, Any]:
     return {
-        "gitlab_url": os.environ.get("GITLAB_URL", "https://gitlab.com"),
-        "gitlab_project": os.environ["GITLAB_PROJECT"],
-        "gitlab_token": os.environ.get("GITLAB_TOKEN"),
         "config_repo_url": os.environ["CONFIG_REPO_URL"],
         "config_repo_branch": os.environ.get("CONFIG_REPO_BRANCH", "main"),
         "config_repo_path": os.environ.get("CONFIG_REPO_PATH", "/var/mirror/config-repo"),
@@ -274,15 +229,67 @@ def config_from_env() -> Dict[str, Any]:
         "keys_manifest": os.environ.get("KEYS_MANIFEST", "authorized_keys.yaml"),
         "git_repos_root": os.environ.get("GIT_REPOS_ROOT", "/var/git/repos"),
         "artifacts_root": os.environ.get("ARTIFACTS_ROOT", "/var/mirror/files"),
-        "authorized_keys_path": os.environ.get("AUTHORIZED_KEYS_PATH", "/var/mirror/ssh/uploader"),
-        "state_path": os.environ.get("STATE_PATH", "/var/mirror/state/sync-state.json"),
+        # Unset -> authorized_keys regeneration is skipped entirely; set it
+        # to /var/mirror/ssh/uploader when the ssh-upload endpoint is redeployed.
+        "authorized_keys_path": os.environ.get("AUTHORIZED_KEYS_PATH"),
+        "interval_seconds": int(os.environ.get("SYNC_INTERVAL_SECONDS", DEFAULT_INTERVAL_SECONDS)),
     }
 
 
+def describe_changes(result: Dict[str, Any]) -> str:
+    """A one-line summary of what a pass actually changed, or "" if it was a
+    no-op. Steady state is a no-op, and we don't log those."""
+    git, tarballs = result["git"], result["tarballs"]
+    parts = []
+    if git.cloned:
+        parts.append(f"cloned {', '.join(git.cloned)}")
+    if tarballs.downloaded:
+        parts.append(f"downloaded {', '.join(tarballs.downloaded)}")
+    if git.failed:
+        parts.append(f"FAILED git {', '.join(git.failed)}")
+    if tarballs.failed:
+        parts.append(f"FAILED tarballs {', '.join(tarballs.failed)}")
+    return "; ".join(parts)
+
+
+def sync_forever(config: Dict[str, Any], sleep=time.sleep, run_once=run_sync,
+                 iterations: int = 0) -> None:
+    """Reconcile every `interval_seconds`, forever.
+
+    Nothing here may raise: this process dying means the mirror silently
+    stops updating, and a CrashLoopBackOff would then throttle restarts
+    just when things are already broken. Every failure is logged and
+    retried on the next pass instead.
+
+    `iterations` caps the number of passes (0 = unlimited); tests use it.
+    """
+    interval = config["interval_seconds"]
+    count = 0
+    while True:
+        try:
+            changes = describe_changes(run_once(config))
+            if changes:
+                logger.info("%s", changes)
+        except Exception:
+            # Includes a config repo that won't clone, which is the normal
+            # "misconfigured on day one" case -- keep retrying so it starts
+            # working on its own once the URL/credentials are fixed.
+            logger.exception("sync pass failed; retrying in %ss", interval)
+
+        count += 1
+        if iterations and count >= iterations:
+            return
+        sleep(interval)
+
+
 def main() -> None:
-    logging.basicConfig(level=os.environ.get("LOG_LEVEL", "INFO"))
-    result = run_sync(config_from_env())
-    logger.info("sync complete: %s", result)
+    logging.basicConfig(level=os.environ.get("LOG_LEVEL", "INFO"),
+                        format="%(asctime)s %(levelname)s %(message)s")
+    config = config_from_env()
+    # The one routine line we do emit, so an operator can tell the loop is
+    # alive and at what cadence. After this, silence means "nothing changed".
+    logger.info("mirroring %s every %ss", config["config_repo_url"], config["interval_seconds"])
+    sync_forever(config)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,13 @@
+apiVersion: v2
+name: air-gapped-mirror
+description: Git, apt, and pip mirror for internet-isolated worker nodes
+type: application
+# version: the chart's own version -- bump when templates change.
+version: 0.1.0
+# appVersion: the version of the mirror images this chart expects.
+appVersion: "0.1.0"
+keywords:
+  - mirror
+  - air-gapped
+  - devpi
+  - apt-cacher-ng

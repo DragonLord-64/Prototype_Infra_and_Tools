@@ -1,0 +1,102 @@
+# Default values for the air-gapped-mirror chart.
+# Override any of these with `-f my-values.yaml` or `--set key=value`.
+
+# Where the four custom images live. Leave `registry` empty to use bare
+# image names (useful with a local build, e.g. `minikube image load`).
+image:
+  registry: ""
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# The stock upstream image used for the file-serving sidecar.
+nginx:
+  image: nginx:1.27-alpine
+
+replicaCount: 1
+
+# Shared gid so the sync job and the long-running containers can all read
+# and write each other's files on the shared volumes regardless of uid.
+podSecurityContext:
+  fsGroup: 2000
+
+service:
+  type: ClusterIP
+  ports:
+    git: 9418
+    http: 80
+    pypi: 3141
+    apt: 3142
+
+storage:
+  # Empty string = use the cluster's default StorageClass.
+  className: ""
+  # ReadWriteOnce is correct here and needs no special provisioner: the
+  # sync loop is a sidecar, so exactly one pod mounts these volumes. (This
+  # is why it isn't a CronJob -- a separate sync pod could land on another
+  # node and would then require ReadWriteMany.)
+  accessMode: ReadWriteOnce
+  sizes:
+    gitRepos: 50Gi
+    mirrorFiles: 200Gi
+    devpiData: 50Gi
+    aptCacherNgData: 50Gi
+
+resources:
+  gitDaemon:
+    requests: { cpu: 50m, memory: 64Mi }
+    limits: { memory: 256Mi }
+  nginx:
+    requests: { cpu: 50m, memory: 64Mi }
+    limits: { memory: 256Mi }
+  devpi:
+    requests: { cpu: 100m, memory: 128Mi }
+    # devpi-server starts a 50-thread waitress pool; the stack-size burst
+    # during startup OOMs a 512Mi limit under a real cgroup enforcer even
+    # though steady-state usage is ~50Mi.
+    limits: { memory: 1024Mi }
+  aptCacherNg:
+    requests: { cpu: 100m, memory: 128Mi }
+    limits: { memory: 512Mi }
+  syncJob:
+    requests: { cpu: 100m, memory: 128Mi }
+    limits: { memory: 512Mi }
+
+# The sync sidecar: re-reads the config repo every `intervalSeconds` and
+# makes the volumes match it. No GitLab API, no webhooks, no state.
+#
+# Disabled by default so `helm install` works with no configuration at
+# all: the four mirror services come up and are immediately usable (devpi
+# and apt-cacher-ng need no config; nginx and git-daemon serve whatever is
+# on the volumes). Enable this once you have a config repo to point it at.
+syncJob:
+  enabled: false
+
+  # Seconds between reconciliation passes. Each pass is one `git fetch` of
+  # the config repo plus one per mirrored repo, so this multiplies against
+  # your repo count: 10s across 20 repos is ~180k upstream fetches a day,
+  # which public forges like GitHub will rate-limit. Lower it freely for a
+  # handful of internal repos; raise it if you mirror a lot of public ones.
+  intervalSeconds: 60
+  configRepoBranch: main
+
+  # Where the manifests live. Either point at a Secret you created
+  # yourself (recommended -- keeps credentials out of Helm values and out
+  # of git):
+  #
+  #   kubectl -n <ns> create secret generic mirror-sync-secrets \
+  #     --from-literal=CONFIG_REPO_URL=https://oauth2:<token>@gitlab.com/your-org/mirror-config.git
+  #
+  # ...then set `existingSecret: mirror-sync-secrets`.
+  existingSecret: ""
+  # ...or let the chart create the Secret from this value. Only do this if
+  # you are passing it via --set / a values file you do not commit -- for a
+  # private repo the URL contains a token.
+  configRepoUrl: ""
+
+# NOTE: the design's SSH/SFTP upload endpoint (../ssh-upload) is not part
+# of this chart. It needs /var/mirror/files pinned to root:root 755 for
+# sshd's ChrootDirectory check, which conflicts with the non-root sync job
+# writing to that same volume. See the note in ../ssh-upload/Dockerfile.
+
+nameOverride: ""
+fullnameOverride: ""

@@ -1,7 +1,12 @@
 # ---- Sync job image: polls GitLab, mirrors git repos/tarballs/keys ----
 FROM python:3.11-alpine
 
-RUN apk add --no-cache git openssh-client
+RUN apk add --no-cache git openssh-client \
+ # The repos under /var/git/repos may be owned by a different uid across
+ # restarts/redeploys -- git >=2.35.2's dubious-ownership check would
+ # otherwise refuse to touch them (same fix as git-daemon's Dockerfile,
+ # same reason). --system, not --global: syncjob has no home directory.
+ && git config --system --add safe.directory '*'
 
 WORKDIR /app
 
@@ -11,7 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY mirror_sync ./mirror_sync
 
 # Non-root: the sync job only needs write access to the shared volumes,
-# which are mounted with permissions for this uid in the CronJob spec.
+# which the CronJob's fsGroup makes group-writable for this uid.
 RUN adduser -D -u 10001 syncjob
 USER syncjob
 
