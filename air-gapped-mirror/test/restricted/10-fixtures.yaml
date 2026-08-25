@@ -1,0 +1,64 @@
+# Restricted-network variant of ../manifests/10-fixtures.yaml: identical
+# except the seed step takes git from the already-built git-daemon image
+# instead of `apk add`, which this sandbox's egress policy blocks.
+#
+# Test-only fixture standing in for a public upstream repo, so the sync
+# loop's actual git-mirroring logic can be exercised end to end inside
+# minikube with no external dependencies.
+#
+# fixture-git -- a git-daemon serving one seeded repo ("hello.git"),
+#                standing in for a public upstream the sync job mirrors.
+#
+# The repo list itself is no longer a fixture: it comes from the chart's
+# ConfigMap, seeded by values-test.yaml.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fixture-git
+  namespace: air-gapped-mirror
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: fixture-git } }
+  template:
+    metadata: { labels: { app: fixture-git } }
+    spec:
+      initContainers:
+        - name: seed
+          image: air-gapped-mirror/git-daemon:test
+          imagePullPolicy: Never
+          # The image runs as the unprivileged `git` user; seeding needs to
+          # write to the emptyDir, which arrives owned by root.
+          securityContext: { runAsUser: 0 }
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+              # git comes with the image -- no package install, which this
+              # sandbox blocks (see restricted/README.md)
+              git init -q -b main /tmp/work
+              cd /tmp/work
+              git config user.email test@example.com
+              git config user.name fixture
+              echo "hello from fixture upstream repo" > README.md
+              git add README.md
+              git commit -q -m "seed commit"
+              git clone -q --bare /tmp/work /repos/hello.git
+              chmod -R a+rX /repos/hello.git
+          volumeMounts: [{ name: repos, mountPath: /repos }]
+      containers:
+        - name: git-daemon
+          image: air-gapped-mirror/git-daemon:test
+          imagePullPolicy: Never
+          ports: [{ containerPort: 9418, name: git }]
+          volumeMounts: [{ name: repos, mountPath: /var/git/repos }]
+      volumes:
+        - { name: repos, emptyDir: {} }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fixture-git
+  namespace: air-gapped-mirror
+spec:
+  selector: { app: fixture-git }
+  ports: [{ name: git, port: 9418, targetPort: 9418 }]
