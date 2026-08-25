@@ -12,12 +12,18 @@ RUN if [ -s /tmp/extra-ca.crt ]; then \
       cp /tmp/extra-ca.crt /usr/local/share/ca-certificates/extra-ca.crt && \
       { command -v update-ca-certificates >/dev/null && update-ca-certificates || true; } && \
       cat /tmp/extra-ca.crt >> /etc/ssl/certs/ca-certificates.crt; \
-    fi; \
-    rm -f /tmp/extra-ca.crt
+    fi
 ENV PIP_CERT=/etc/ssl/certs/ca-certificates.crt \
     GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt
 
 RUN pip install --no-cache-dir devpi-server \
+ # httpx -- devpi's client for talking to PyPI -- pins certifi's own bundle
+ # and ignores the system store, so the CA has to land there too. certifi
+ # only exists once devpi-server is installed, hence not in the step above.
+ && if [ -s /tmp/extra-ca.crt ]; then \
+      cat /tmp/extra-ca.crt >> "$(python -c 'import certifi;print(certifi.where())')"; \
+    fi \
+ && rm -f /tmp/extra-ca.crt \
  && adduser -D -H -s /sbin/nologin devpi
 
 COPY entrypoint.sh /entrypoint.sh

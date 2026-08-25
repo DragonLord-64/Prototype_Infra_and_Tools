@@ -68,7 +68,7 @@ CLIENT_IMAGE=air-gapped-mirror/test-client:test ../verify.sh
 CLIENT_IMAGE=air-gapped-mirror/test-client:test ../verify-real-repo.sh
 ```
 
-`../verify.sh`'s devpi and apt-cacher-ng checks report SKIP here: they proxy to
-`pypi.org` and `deb.debian.org`, and this host's policy does not let the
-cluster reach them. That is the documented best-effort behaviour of those two
-checks, not a mirror failure. The git checks are unaffected.
+`../verify.sh`'s apt-cacher-ng check reports SKIP here: it proxies to
+`deb.debian.org`, which this host's egress policy blocks outright. That is the
+documented best-effort behaviour of that check, not a mirror failure. The git
+checks and the devpi check both pass.
