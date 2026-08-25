@@ -15,6 +15,16 @@ are the point of those two components.
 ./down.sh     # delete the whole profile              (~15s)
 ```
 
+Two optional extras:
+
+- [`verify-real-repo.sh`](verify-real-repo.sh) runs the git checks against a
+  real public upstream on GitHub instead of the in-cluster fixture. It needs
+  the chart installed with [`values-real-repo.yaml`](values-real-repo.yaml)
+  layered on top of `values-test.yaml`.
+- [`restricted/`](restricted) is what to use when the host's egress policy or
+  container sandbox is too tight for `up.sh` — blocked distro mirrors, a
+  TLS-terminating proxy, no lowering of `oom_score_adj`.
+
 `up.sh` is idempotent — re-run it after changing code to rebuild and
 redeploy into the existing cluster. `down.sh` deletes the minikube
 profile outright (container, disk, and every image loaded into it), so
@@ -29,6 +39,23 @@ nothing is left consuming resources between test runs.
 | 3 | `devpi` | Real `pip install six` through the proxy, cached from PyPI |
 | 4 | `apt-cacher-ng` | Real Debian `InRelease` fetch through the proxy |
 | 5 | Deployment | All 4 containers report Ready |
+
+`CLIENT_IMAGE=<image> ./verify.sh` swaps the throwaway client pod's image for
+one that already has git/curl/pip, for clusters that cannot reach Alpine's
+package mirror.
+
+## What `verify-real-repo.sh` checks
+
+Same git path, but against `https://github.com/DragonLord-64/Prototype_Infra_and_Tools.git`
+-- a real remote with real branches, tags and pack negotiation:
+
+| # | Check |
+| --- | --- |
+| 1 | The sync sidecar mirrors the real upstream, untriggered |
+| 2 | A client clones it back out over `git://` |
+| 3 | The cloned tree really is that repository (files the fixture does not have) |
+| 4 | Every upstream branch/tag ref is in the mirror at the same SHA, compared live against GitHub |
+| 5 | A commit pushed upstream after the initial clone is picked up by a later pass |
 
 Checks 3 and 4 need outbound internet from the cluster; without it they
 report SKIP, not FAIL.

@@ -1,0 +1,23 @@
+# Layered on top of values-test.yaml:
+#
+#   helm upgrade --install mirror ../chart -n air-gapped-mirror \
+#     -f values-test.yaml -f values-real-repo.yaml
+#
+# values-test.yaml points the sync loop only at the in-cluster fixture, which
+# proves the reconcile logic but says nothing about real upstreams. This file
+# adds a genuine public GitHub repo -- this very repository -- so the mirror is
+# exercised against real refs, real tags, real pack negotiation and a real
+# remote over https, not a hand-seeded one-commit fixture.
+#
+# `repos` is a list, so this file has to restate the fixture entry: Helm
+# replaces lists wholesale rather than merging them.
+syncJob:
+  enabled: true
+  intervalSeconds: 5
+  repos:
+    - name: hello
+      url: git://fixture-git/hello.git
+      dest: test/hello
+    - name: prototype-infra-and-tools
+      url: https://github.com/DragonLord-64/Prototype_Infra_and_Tools.git
+      dest: github.com/DragonLord-64/Prototype_Infra_and_Tools

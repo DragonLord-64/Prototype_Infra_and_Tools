@@ -10,6 +10,10 @@
 set -uo pipefail
 cd "$(dirname "$0")"
 NAMESPACE="air-gapped-mirror"
+# Image for the throwaway client pod. Override it with one that already has
+# git/curl/pip when the cluster cannot reach Alpine's package mirror:
+#   CLIENT_IMAGE=air-gapped-mirror/test-client:test ./verify.sh
+CLIENT_IMAGE="${CLIENT_IMAGE:-alpine:3.20}"
 PASS=0
 FAIL=0
 SKIP=0
@@ -22,13 +26,15 @@ kx() { kubectl -n "$NAMESPACE" exec test-client -- sh -c "$1"; }
 
 echo "==> ensuring test-client pod"
 if ! kubectl -n "$NAMESPACE" get pod test-client >/dev/null 2>&1; then
-  kubectl -n "$NAMESPACE" run test-client --image=alpine:3.20 --restart=Never --command -- sleep 3600
+  kubectl -n "$NAMESPACE" run test-client --image="$CLIENT_IMAGE" \
+    --image-pull-policy=IfNotPresent --restart=Never --command -- sleep 3600
 fi
 kubectl -n "$NAMESPACE" wait --for=condition=Ready pod/test-client --timeout=60s >/dev/null
 
-if ! kx "test -f /tmp/.provisioned"; then
+# Skipped entirely when CLIENT_IMAGE already ships the tools.
+if ! kx "command -v git >/dev/null && command -v curl >/dev/null && command -v pip >/dev/null" >/dev/null 2>&1; then
   echo "==> installing test tools (git, curl, py3-pip) in test-client"
-  kx "apk add --no-cache git curl py3-pip >/tmp/apk.log 2>&1 && touch /tmp/.provisioned"
+  kx "apk add --no-cache git curl py3-pip >/tmp/apk.log 2>&1"
 fi
 
 echo
