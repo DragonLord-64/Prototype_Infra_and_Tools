@@ -1121,6 +1121,18 @@ def find_repo(start: Path) -> Path | None:
     return None
 
 
+def describe_ref(repo: Path) -> str | None:
+    """The ref a checkout is actually on, so the output says what it read."""
+    for command in (
+        ["git", "-C", str(repo), "describe", "--tags", "--exact-match"],
+        ["git", "-C", str(repo), "rev-parse", "--abbrev-ref", "HEAD"],
+    ):
+        result = subprocess.run(command, capture_output=True, text=True)
+        if result.returncode == 0 and result.stdout.strip():
+            return result.stdout.strip()
+    return None
+
+
 def clone(git_url: str, ref: str, destination: Path) -> Path:
     subprocess.run(
         ["git", "clone", "--depth", "1", "--branch", ref, git_url, str(destination)],
@@ -1339,7 +1351,12 @@ def main(argv: list[str] | None = None) -> int:
     with tempfile.TemporaryDirectory() as workdir:
         repo = args.repo or find_repo(Path(__file__).resolve().parent) or find_repo(Path.cwd())
         if repo:
-            origin = f"`{repo}`"
+            checked_out = describe_ref(repo)
+            origin = f"`{checked_out}`" if checked_out else f"`{repo}`"
+            print(
+                f"reading {repo}" + (f" (on {checked_out})" if checked_out else ""),
+                file=sys.stderr,
+            )
         else:
             repo = clone(args.git_url, args.ref, Path(workdir) / "exporter")
             origin = f"`{args.ref}`"
