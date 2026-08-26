@@ -47,7 +47,7 @@ Everything is derived from the exporter repository — nothing is hard-coded.
 | --- | --- |
 | `etc/prometheus_config/threshold_rules.yml` | records, metrics, thresholds, `record_tag` |
 | `etc/prometheus_config/aggregation_rules.yml` | records, selectors, structure |
-| `src/fhs_prometheus_exporter/*_collector.py` | the `source`/`data_type` label on each metric |
+| `src/fhs_prometheus_exporter/*_collector.py` | the `source`/`data_type` label on each metric, and its documented meaning |
 | `src/fhs_prometheus_exporter/common.py` | `MetricUnit`/`MetricDataType`, to rebuild series names (`volt_bat` + `volts`) |
 
 Collectors are picked up by glob, so one added later is included without
@@ -67,6 +67,17 @@ touching the script.
    an operator and threshold (`below 20 or above 85`), and the outer operator
    becomes the quantifier (`> bool 1` → "more than one"). Anything that matches
    no known shape is listed under "Not described" rather than dropped silently.
+
+Each metric's `documentation=` string from its collector fills the *measures*
+column, and glosses a child metric named in an aggregation condition — so
+`instance:fan_temperature_celcius:critical` reads as the fan speed controller
+temperature it actually watches. A child whose value is a count is glossed as
+one, rather than being mistaken for a 0/1 flag.
+
+On startup the script reports to stderr how many rules, metrics and collectors
+it read. If that says 0 metrics, the collector modules did not parse and every
+health state will read "never becomes 1"; the table names the labels that went
+unmatched.
 
 Child metrics are listed one level deep: `psu_failed` lists `psu1_failed` and
 `psu2_failed`, not the eight PSU checks underneath each.

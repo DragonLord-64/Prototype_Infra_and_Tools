@@ -399,6 +399,7 @@ class MetricLabels:
     source: str
     data_type: str | None = None
     source_is_prefix: bool = False  # e.g. FPGA0/FPGA1 share one collector
+    documentation: str | None = None
 
     def source_matches(self, value: str) -> bool:
         return value.startswith(self.source) if self.source_is_prefix else value == self.source
@@ -437,9 +438,9 @@ def _resolve_enum(node, enums: dict[str, dict[str, str]]) -> str | None:
     return _string_of(node)
 
 
-def _metric_names(tree: ast.AST, enums: dict[str, dict[str, str]]) -> dict[str, str]:
-    """Map local variable -> exported series name (base name plus unit suffix)."""
-    names: dict[str, str] = {}
+def _metric_names(tree: ast.AST, enums: dict[str, dict[str, str]]) -> dict[str, tuple[str, str | None]]:
+    """Map local variable -> (exported series name, documentation string)."""
+    names: dict[str, tuple[str, str | None]] = {}
     for node in ast.walk(tree):
         if not (isinstance(node, ast.Assign) and len(node.targets) == 1):
             continue
@@ -461,7 +462,7 @@ def _metric_names(tree: ast.AST, enums: dict[str, dict[str, str]]) -> dict[str, 
         if func_name == "InfoMetricFamily":
             # prometheus_client exports info metrics with an _info suffix.
             base = f"{base}_info"
-        names[target.id] = base
+        names[target.id] = (base, _string_of(keywords.get("documentation")))
     return names
 
 
@@ -513,11 +514,12 @@ def scan_collectors(source_dir: Path) -> dict[str, MetricLabels]:
         def record(data_type_node, metric_node, source: str, is_prefix: bool) -> None:
             if not isinstance(metric_node, ast.Name):
                 return
-            series = metrics.get(metric_node.id)
-            if series is None:
+            entry = metrics.get(metric_node.id)
+            if entry is None:
                 return
+            series, documentation = entry
             data_type = _resolve_enum(data_type_node, module_enums)
-            labels[series] = MetricLabels(source, data_type, is_prefix)
+            labels[series] = MetricLabels(source, data_type, is_prefix, documentation)
 
         for node in ast.walk(tree):
             # Form 1: metrics_to_add = {SourceName.X.value: [(field, data_type, metric)]}
@@ -686,6 +688,15 @@ class RuleSet:
                 devices.extend(d for d in _device_matchers(referenced.node) if d not in devices)
         rule.devices = tuple(devices)
 
+    def documentation(self, rule: Rule) -> str | None:
+        """The documented meaning of a rule's input, when its inputs agree."""
+        docs = {
+            self.metric_labels[metric].documentation
+            for metric in self.leaf_metrics(rule)
+            if metric in self.metric_labels and self.metric_labels[metric].documentation
+        }
+        return docs.pop() if len(docs) == 1 else None
+
     def resolve_selector(self, selector: Selector) -> list[str]:
         """Records whose output series match a label-only selector."""
         return [
@@ -767,7 +778,12 @@ QUANTIFIERS = {
 }
 
 
-NO_CHILDREN = "never becomes 1 — no threshold rule carries these labels"
+NO_CHILDREN = "never becomes 1"
+
+
+def _no_children(selector: Selector) -> str:
+    labels = ", ".join(f"{m.label}{m.op}'{m.value}'" for m in selector.matchers)
+    return f"{NO_CHILDREN} — no threshold rule carries {labels}"
 
 
 class Unrecognised(Exception):
@@ -913,6 +929,17 @@ class AggregationDescriber:
     def __init__(self, ruleset: RuleSet):
         self.ruleset = ruleset
 
+    def _gloss(self, record: str) -> str:
+        """Name what a child metric watches, so a record name alone is enough."""
+        rule = self.ruleset.by_record.get(record)
+        if rule is None or rule.kind != "threshold":
+            return ""
+        documentation = self.ruleset.documentation(rule)
+        if documentation:
+            return f" ({documentation.lower()})"
+        counted = _count_summary(rule)
+        return f" ({counted})" if counted else ""
+
     def describe(self, rule: Rule) -> tuple[str, list[str]]:
         children: list[str] = []
         clause = self._clause(rule.node, children)
@@ -929,9 +956,9 @@ class AggregationDescriber:
                 self._add(children, matches)
                 is_count = node.func == "sum"
                 if len(matches) == 1:
-                    return matches[0], is_count
+                    return matches[0] + self._gloss(matches[0]), is_count
                 if not matches:
-                    return NO_CHILDREN, False
+                    return _no_children(inner), False
                 phrase = (
                     "the number of tripped child metrics"
                     if is_count
@@ -940,7 +967,7 @@ class AggregationDescriber:
                 return phrase, is_count
         if isinstance(node, Selector) and node.name:
             self._add(children, [node.name])
-            return node.name, False
+            return node.name + self._gloss(node.name), False
         return None
 
     def _add(self, children: list[str], names: list[str]) -> None:
@@ -1000,8 +1027,8 @@ class AggregationDescriber:
             return f"{quantifier} of: {inner}"
 
         text, is_count = phrase
-        if text == NO_CHILDREN:
-            return NO_CHILDREN
+        if text.startswith(NO_CHILDREN):
+            return text
         if is_count:
             return f"{text} {COUNT_WORDS[node.op]} {rhs}"
         if (node.op, rhs) == (">", "0"):
@@ -1028,8 +1055,19 @@ def _join_or(clauses: list[str]) -> str:
     return " or ".join(clauses)
 
 
+def _count_summary(rule: Rule) -> str:
+    """Describe a rule whose value is a count rather than a 0/1 flag."""
+    atoms = _atoms(rule.node)
+    if _outer_comparison(rule.node) is not None or _top_combiner(rule.node) != "+":
+        return ""
+    if len(atoms) < 2:
+        return ""
+    clause, _ = _threshold_clause(atoms)
+    return f"a count of the {len(atoms)} inputs {clause}"
+
+
 def _standalone(phrase: str) -> str:
-    return phrase if phrase == NO_CHILDREN else f"{phrase} is 1"
+    return phrase if phrase.startswith(NO_CHILDREN) else f"{phrase} is 1"
 
 
 def _uniform_sum(node) -> tuple[str, str, tuple[str, ...]] | None:
@@ -1063,7 +1101,14 @@ DEFAULT_REF = "0.0.5-rc3"
 RULES_DIR = "etc/prometheus_config"
 SOURCE_DIR = "src/fhs_prometheus_exporter"
 
-THRESHOLD_HEADERS = ["record", "source", "record_tag", "input metrics", "set to 1 when"]
+THRESHOLD_HEADERS = [
+    "record",
+    "source",
+    "record_tag",
+    "input metrics",
+    "measures",
+    "set to 1 when",
+]
 AGGREGATION_HEADERS = ["record", "child metrics", "set to 1 when"]
 DERIVED_HEADERS = ["record", "input metrics", "calculation"]
 
@@ -1091,7 +1136,17 @@ def build_ruleset(repo: Path) -> RuleSet:
     rules_dir = repo / RULES_DIR
     rules = load_rules(rules_dir / "threshold_rules.yml", "threshold")
     rules += load_rules(rules_dir / "aggregation_rules.yml", "aggregation")
-    return RuleSet(rules, scan_collectors(repo / SOURCE_DIR))
+    source_dir = repo / SOURCE_DIR
+    metric_labels = scan_collectors(source_dir)
+    # Without these labels every label-based selector matches nothing and the
+    # health states all read "never becomes 1", so say what was found.
+    collectors = sorted(path.name for path in source_dir.glob(COLLECTOR_GLOB))
+    print(
+        f"read {len(rules)} rules; labelled {len(metric_labels)} metrics from "
+        f"{len(collectors)} collectors ({', '.join(collectors) or 'none found'})",
+        file=sys.stderr,
+    )
+    return RuleSet(rules, metric_labels)
 
 
 # ------------------------------------------------------------------ rows
@@ -1111,6 +1166,7 @@ def threshold_rows(ruleset: RuleSet, problems: list[str]) -> list[list[str]]:
                 ", ".join(rule.sources) or "unknown",
                 rule.record_tag or "",
                 ", ".join(rule.refs),
+                ruleset.documentation(rule) or "",
                 condition,
             ]
         )
