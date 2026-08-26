@@ -1,67 +1,75 @@
 # FHS Prometheus rule tables
 
-`generate_rule_tables.py` turns the FHS exporter's Prometheus rules into two
-tables that can be read without knowing PromQL:
+`generate_rule_tables.py` turns the FHS exporter's Prometheus rules into tables
+that can be read without knowing PromQL:
 
 1. **Threshold rules** — every check, the metrics it reads, and the condition
    that sets it to `1`.
 2. **Aggregation rules** — every component health state, its **child metrics**,
    and what makes it fail.
-
-A third table lists the intermediate calculations (utilisation percentages,
-core counts) the threshold rules compare against.
+3. **Derived metrics** — the intermediate calculations the checks compare against.
 
 [`rules.md`](rules.md) is the generated output for tag `0.0.5-rc3`.
+
+## Where it belongs
+
+The script is written to live in the exporter repository — drop it in as
+`tools/generate_rule_tables.py` and run it with no arguments:
+
+```sh
+python3 tools/generate_rule_tables.py -o docs/src/rules.md
+```
+
+It finds the repository by walking up from its own location (then from the
+working directory), so it works from anywhere inside a checkout. It is a single
+file with no imports beyond the standard library and PyYAML. The copy here is
+the reference copy.
 
 ## Usage
 
 ```sh
-# clone the exporter at a tag and write markdown
-./generate_rule_tables.py --ref 0.0.5-rc3 -o rules.md
-
-# use a checkout you already have
-./generate_rule_tables.py --repo ../ska-mid-cbf-fhs-prometheus-exporter
-
-# spreadsheet-friendly output
-./generate_rule_tables.py --ref 0.0.5-rc3 --format csv -o ./csv
+python3 generate_rule_tables.py                       # markdown to stdout
+python3 generate_rule_tables.py -o rules.md           # markdown to a file
+python3 generate_rule_tables.py --format csv -o ./csv # one CSV per table
+python3 generate_rule_tables.py --repo ../ska-mid-cbf-fhs-prometheus-exporter
+python3 generate_rule_tables.py --ref 0.0.5-rc3       # clone, if not in a checkout
 ```
 
 `--strict` exits non-zero if any expression could not be described, which makes
-it usable as a CI check when the rules change. Requires Python 3.11+, PyYAML
-and `git`.
+it usable as a CI check when the rules change. Requires Python 3.11+ and PyYAML;
+`git` only for the clone path.
 
-## Where the data comes from
+## How it works
 
-Everything is derived from the exporter repository — nothing is hard-coded here.
+Everything is derived from the exporter repository — nothing is hard-coded.
 
-| File | Used for |
+| Input | Used for |
 | --- | --- |
 | `etc/prometheus_config/threshold_rules.yml` | records, metrics, thresholds, `record_tag` |
 | `etc/prometheus_config/aggregation_rules.yml` | records, selectors, structure |
-| `src/fhs_prometheus_exporter/ipmitool_collector.py` | `source`/`data_type` for IPMI metrics |
-| `src/fhs_prometheus_exporter/fpga_collector.py` | `source` = `FPGA0`/`FPGA1` |
-| `src/fhs_prometheus_exporter/nvidia_nic_collector.py` | `source` = `NIC` |
-| `src/fhs_prometheus_exporter/bist_collector.py` | `source` = `BIST` |
+| `src/fhs_prometheus_exporter/*_collector.py` | the `source`/`data_type` label on each metric |
 | `src/fhs_prometheus_exporter/common.py` | `MetricUnit`/`MetricDataType`, to rebuild series names (`volt_bat` + `volts`) |
 
-The aggregation rules pick their inputs by label, e.g.
-`{source='CPU', record_tag='component_critical'}`. `record_tag` is set in the
-rule file, but `source` and `data_type` are attached by the collectors, so the
-collector modules are parsed (via `ast`, not imported) to recover them. That is
-why the child metrics are resolved rather than guessed.
+Collectors are picked up by glob, so one added later is included without
+touching the script.
+
+1. **Parse** — both rule files are read with PyYAML and every `expr` is parsed
+   into an AST by a small PromQL parser covering the subset the rules use.
+2. **Label** — the aggregation rules select inputs by label, e.g.
+   `{source='CPU', record_tag='component_critical'}`. `record_tag` comes from
+   the rule file, but `source`/`data_type` are attached by the collectors, so
+   each collector module is parsed with `ast` (never imported) to recover the
+   `SourceName` enum, the exported series names, and the metric tables.
+3. **Resolve** — each rule's inputs are followed through other records, so a
+   rule inherits the labels of the metrics it ultimately reads. A selector then
+   matches a rule only if every matcher matches, `device` included.
+4. **Describe** — comparisons are pulled out of the AST, merged where they share
+   an operator and threshold (`below 20 or above 85`), and the outer operator
+   becomes the quantifier (`> bool 1` → "more than one"). Anything that matches
+   no known shape is listed under "Not described" rather than dropped silently.
 
 Child metrics are listed one level deep: `psu_failed` lists `psu1_failed` and
 `psu2_failed`, not the eight PSU checks underneath each.
-
-## Layout
-
-| File | Role |
-| --- | --- |
-| `generate_rule_tables.py` | CLI, table rendering |
-| `promql.py` | parser for the PromQL subset the rule files use |
-| `collectors.py` | reads `source`/`data_type` labels out of the collector modules |
-| `rules.py` | rule model, label resolution, selector matching |
-| `describe.py` | plain-English wording |
 
 ## Things the tables surface
 
