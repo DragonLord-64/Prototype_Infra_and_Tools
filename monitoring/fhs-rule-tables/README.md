@@ -21,9 +21,10 @@ python3 tools/generate_rule_tables.py -o docs/src/rules.md
 ```
 
 It finds the repository by walking up from its own location (then from the
-working directory), so it works from anywhere inside a checkout. It is a single
-file with no imports beyond the standard library and PyYAML. The copy here is
-the reference copy.
+working directory), so it works from anywhere inside a checkout — and reports
+the ref it read, so the tables always say which rules they describe. It is a
+single file with no imports beyond the standard library and PyYAML. The copy
+here is the reference copy.
 
 ## Usage
 
@@ -32,12 +33,11 @@ python3 generate_rule_tables.py                       # markdown to stdout
 python3 generate_rule_tables.py -o rules.md           # markdown to a file
 python3 generate_rule_tables.py --format csv -o ./csv # one CSV per table
 python3 generate_rule_tables.py --repo ../ska-mid-cbf-fhs-prometheus-exporter
-python3 generate_rule_tables.py --ref 0.0.5-rc3       # clone, if not in a checkout
 ```
 
 `--strict` exits non-zero if any expression could not be described, which makes
-it usable as a CI check when the rules change. Requires Python 3.11+ and PyYAML;
-`git` only for the clone path.
+it usable as a CI check when the rules change. It reads only a checkout you
+already have — it never fetches anything. Requires Python 3.11+ and PyYAML.
 
 ## How it works
 
@@ -74,8 +74,8 @@ column, and glosses a child metric named in an aggregation condition — so
 temperature it actually watches. A child whose value is a count is glossed as
 one, rather than being mistaken for a 0/1 flag.
 
-On startup the script reports to stderr how many rules, metrics and collectors
-it read. If that says 0 metrics, the collector modules did not parse and every
+On startup the script reports to stderr which checkout and ref it is reading,
+and how many rules, metrics and collectors it found. If that says 0 metrics, the collector modules did not parse and every
 health state will read "never becomes 1"; the table names the labels that went
 unmatched.
 

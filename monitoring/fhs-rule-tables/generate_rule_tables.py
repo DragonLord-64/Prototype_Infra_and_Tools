@@ -16,8 +16,7 @@ Run it with no arguments from anywhere inside a checkout of the exporter:
 
     python3 tools/generate_rule_tables.py -o docs/src/rules.md
 
-Outside a checkout it clones the repository at ``--ref`` instead. Needs
-Python 3.11+, PyYAML, and (for the clone path) git.
+Point it at another checkout with ``--repo``. Needs Python 3.11+ and PyYAML.
 """
 
 from __future__ import annotations
@@ -28,7 +27,6 @@ import csv
 import re
 import subprocess
 import sys
-import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -1093,11 +1091,6 @@ def _parenthesise(clause: str) -> str:
 # Tables and command line
 ##############################################################################
 
-DEFAULT_GIT_URL = (
-    "https://gitlab.com/ska-telescope/ska-mid-cbf/host-software/"
-    "ska-mid-cbf-fhs-prometheus-exporter.git"
-)
-DEFAULT_REF = "0.0.5-rc3"
 RULES_DIR = "etc/prometheus_config"
 SOURCE_DIR = "src/fhs_prometheus_exporter"
 
@@ -1131,17 +1124,6 @@ def describe_ref(repo: Path) -> str | None:
         if result.returncode == 0 and result.stdout.strip():
             return result.stdout.strip()
     return None
-
-
-def clone(git_url: str, ref: str, destination: Path) -> Path:
-    subprocess.run(
-        ["git", "clone", "--depth", "1", "--branch", ref, git_url, str(destination)],
-        check=True,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.PIPE,
-        text=True,
-    )
-    return destination
 
 
 def build_ruleset(repo: Path) -> RuleSet:
@@ -1323,16 +1305,11 @@ def write_csv(directory: Path, ruleset: RuleSet, problems: list[str], include_de
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    source = parser.add_mutually_exclusive_group()
-    source.add_argument(
+    parser.add_argument(
         "--repo",
         type=Path,
         help="path to an exporter checkout (default: found by walking up from this script, then the working directory)",
     )
-    source.add_argument(
-        "--git-url", default=DEFAULT_GIT_URL, help="clone this repository instead (default: %(default)s)"
-    )
-    parser.add_argument("--ref", default=DEFAULT_REF, help="tag/branch to clone (default: %(default)s)")
     parser.add_argument("--format", choices=("markdown", "csv"), default="markdown")
     parser.add_argument(
         "-o", "--output", type=Path, help="output file (markdown) or directory (csv); default stdout"
@@ -1348,31 +1325,31 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     problems: list[str] = []
 
-    with tempfile.TemporaryDirectory() as workdir:
-        repo = args.repo or find_repo(Path(__file__).resolve().parent) or find_repo(Path.cwd())
-        if repo:
-            checked_out = describe_ref(repo)
-            origin = f"`{checked_out}`" if checked_out else f"`{repo}`"
-            print(
-                f"reading {repo}" + (f" (on {checked_out})" if checked_out else ""),
-                file=sys.stderr,
-            )
-        else:
-            repo = clone(args.git_url, args.ref, Path(workdir) / "exporter")
-            origin = f"`{args.ref}`"
-        ruleset = build_ruleset(repo)
+    repo = args.repo or find_repo(Path(__file__).resolve().parent) or find_repo(Path.cwd())
+    if repo is None:
+        print(
+            f"error: no exporter checkout found — expected {RULES_DIR}/threshold_rules.yml "
+            "above this script or the working directory; pass --repo",
+            file=sys.stderr,
+        )
+        return 2
 
-        if args.format == "csv":
-            destination = args.output or Path.cwd()
-            write_csv(destination, ruleset, problems, not args.no_derived)
-            print(f"Wrote CSV tables to {destination}", file=sys.stderr)
+    checked_out = describe_ref(repo)
+    origin = f"`{checked_out}`" if checked_out else f"`{repo}`"
+    print(f"reading {repo}" + (f" (on {checked_out})" if checked_out else ""), file=sys.stderr)
+    ruleset = build_ruleset(repo)
+
+    if args.format == "csv":
+        destination = args.output or Path.cwd()
+        write_csv(destination, ruleset, problems, not args.no_derived)
+        print(f"Wrote CSV tables to {destination}", file=sys.stderr)
+    else:
+        document = render_markdown(ruleset, args, problems, origin)
+        if args.output:
+            args.output.write_text(document)
+            print(f"Wrote {args.output}", file=sys.stderr)
         else:
-            document = render_markdown(ruleset, args, problems, origin)
-            if args.output:
-                args.output.write_text(document)
-                print(f"Wrote {args.output}", file=sys.stderr)
-            else:
-                sys.stdout.write(document)
+            sys.stdout.write(document)
 
     for problem in problems:
         print(f"warning: could not describe {problem}", file=sys.stderr)
