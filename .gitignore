@@ -13,3 +13,6 @@ monitoring/k8s/grafana-admin-secret.yaml
 netbox-import/.venv/
 netbox-import/**/__pycache__/
 netbox-import/.pytest_cache/
+
+# monitoring
+monitoring/fhs-rule-tables/__pycache__/
