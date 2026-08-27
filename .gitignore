@@ -8,6 +8,7 @@ air-gapped-mirror/test/keys/
 
 # monitoring
 monitoring/k8s/grafana-admin-secret.yaml
+monitoring/fhs-rule-tables/__pycache__/
 
 # netbox-import
 netbox-import/.venv/
