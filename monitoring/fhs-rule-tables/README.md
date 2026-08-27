@@ -13,8 +13,8 @@ that can be read without knowing PromQL:
 
 ## Where it belongs
 
-The script is written to live in the exporter repository — drop it in as
-`tools/generate_rule_tables.py` and run it with no arguments:
+The script is written to live in the exporter repository — copy the whole
+folder in as `tools/` and run the one entry point with no arguments:
 
 ```sh
 python3 tools/generate_rule_tables.py -o docs/src/rules.md
@@ -22,9 +22,27 @@ python3 tools/generate_rule_tables.py -o docs/src/rules.md
 
 It finds the repository by walking up from its own location (then from the
 working directory), so it works from anywhere inside a checkout — and reports
-the ref it read, so the tables always say which rules they describe. It is a
-single file with no imports beyond the standard library and PyYAML. The copy
-here is the reference copy.
+the ref it read, so the tables always say which rules they describe. The
+modules import each other by name, so keep them side by side. Nothing is
+imported beyond the standard library and PyYAML. The copy here is the
+reference copy.
+
+## Layout
+
+Five modules and the entry point, in the order the data flows:
+
+| File | Does |
+| --- | --- |
+| `promql.py` | parses an expression into a small AST; walking and unparsing helpers |
+| `collectors.py` | reads the collector modules for the labels on each metric |
+| `rules.py` | reads the rule files, models a rule, resolves a selector to rules |
+| `describe.py` | turns rules into English and builds the table rows |
+| `render.py` | writes those rows out as Markdown or CSV |
+| `generate_rule_tables.py` | the command line, and nothing else |
+
+Each depends only on the ones above it, so a change to the wording lives
+entirely in `describe.py` and a change to the output format entirely in
+`render.py`.
 
 ## Usage
 
