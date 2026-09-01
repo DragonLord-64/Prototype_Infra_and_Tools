@@ -3,6 +3,22 @@
 Grafana for the demo-monitor lab, provisioned entirely from files in this
 folder — no manual clicking required.
 
+## Current implementation
+
+Grafana (`grafana/grafana-oss`) runs as one of four containers on the shared
+`demo-monitor-net` bridge network — alongside Prometheus, the server, and the
+switch exporter — via the unified stack at `../docker/docker-compose.yml`
+(this folder also ships its own standalone `docker-compose.yml` for
+running Grafana alone). On boot it auto-provisions a Prometheus datasource
+(`http://prometheus:9090`) and one starter dashboard, "Demo Monitor"
+(`dashboards/demo-monitor.json`): server panels (up, load average, memory)
+sourced from node_exporter, and switch panels (per-interface link status,
+RX/TX byte rates) sourced from the custom exporter. Port 3000 is published
+to the host with anonymous viewer access enabled, so the demo is viewable
+without logging in. Live now on this VM at `http://<vm-ip>:3000`. The
+switch-panel queries still use provisional metric names pending
+confirmation from the switch exporter (see Pending below).
+
 ## Run
 
 Requires the `demo-monitor-net` network and `prometheus` container from
