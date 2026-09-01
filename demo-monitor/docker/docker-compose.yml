@@ -1,0 +1,214 @@
+# Integrated compose for the demo-monitor lab: brings up Prometheus,
+# server, switch, and Grafana together on one network. Each service also
+# has its own standalone docker-compose.yml for solo dev/test (server/,
+# switch/, grafana/) -- this file is the "run the whole demo" entrypoint,
+# and owns creating demo-monitor-net (theirs join it as external).
+#
+# Grafana is owned by demo-monitor/grafana/docker-compose.yml (landed by
+# grafana-agent) -- included here rather than redefined, so one command
+# still brings up the whole stack without two conflicting `grafana`
+# container definitions.
+
+include:
+  - ../grafana/docker-compose.yml
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - demo-monitor-net
+    restart: unless-stopped
+
+  # Six named server units (VCC/FSP fleet), replacing the single generic
+  # 'server' service. Each is the same image, distinguished only by
+  # container_name (DNS/scrape target, colons aren't legal there) and
+  # SERVER_ID (the literal unit name, embedded as a metric label by
+  # exporter.py). prometheus_job label is set for future docker_sd_configs
+  # discovery even though static targets work fine for a fixed set like this.
+  vccu-1-fhs-1:
+    build: ../server
+    container_name: vccu-1-fhs-1
+    volumes:
+      - ../server/config:/config:ro
+    environment:
+      SERVER_ID: "VCCU_1:FHS_1"
+      NODE_EXPORTER_PORT: "9100"
+      EXPORTER_PORT: "9101"
+      EXPORTER_CONFIG: "/config/exporter_config.json"
+    labels:
+      - "prometheus_job=server"
+    expose:
+      - "9100"
+      - "9101"
+    networks:
+      - demo-monitor-net
+    restart: unless-stopped
+
+  vccu-2-fhs-2:
+    build: ../server
+    container_name: vccu-2-fhs-2
+    volumes:
+      - ../server/config:/config:ro
+    environment:
+      SERVER_ID: "VCCU_2:FHS_2"
+      NODE_EXPORTER_PORT: "9100"
+      EXPORTER_PORT: "9101"
+      EXPORTER_CONFIG: "/config/exporter_config.json"
+    labels:
+      - "prometheus_job=server"
+    expose:
+      - "9100"
+      - "9101"
+    networks:
+      - demo-monitor-net
+    restart: unless-stopped
+
+  fspu-5-fhs-1:
+    build: ../server
+    container_name: fspu-5-fhs-1
+    volumes:
+      - ../server/config:/config:ro
+    environment:
+      SERVER_ID: "FSPU_5:FHS_1"
+      NODE_EXPORTER_PORT: "9100"
+      EXPORTER_PORT: "9101"
+      EXPORTER_CONFIG: "/config/exporter_config.json"
+    labels:
+      - "prometheus_job=server"
+    expose:
+      - "9100"
+      - "9101"
+    networks:
+      - demo-monitor-net
+    restart: unless-stopped
+
+  fspu-5-fhs-2:
+    build: ../server
+    container_name: fspu-5-fhs-2
+    volumes:
+      - ../server/config:/config:ro
+    environment:
+      SERVER_ID: "FSPU_5:FHS_2"
+      NODE_EXPORTER_PORT: "9100"
+      EXPORTER_PORT: "9101"
+      EXPORTER_CONFIG: "/config/exporter_config.json"
+    labels:
+      - "prometheus_job=server"
+    expose:
+      - "9100"
+      - "9101"
+    networks:
+      - demo-monitor-net
+    restart: unless-stopped
+
+  fspu-5-fhs-3:
+    build: ../server
+    container_name: fspu-5-fhs-3
+    volumes:
+      - ../server/config:/config:ro
+    environment:
+      SERVER_ID: "FSPU_5:FHS_3"
+      NODE_EXPORTER_PORT: "9100"
+      EXPORTER_PORT: "9101"
+      EXPORTER_CONFIG: "/config/exporter_config.json"
+    labels:
+      - "prometheus_job=server"
+    expose:
+      - "9100"
+      - "9101"
+    networks:
+      - demo-monitor-net
+    restart: unless-stopped
+
+  fspu-5-fhs-4:
+    build: ../server
+    container_name: fspu-5-fhs-4
+    volumes:
+      - ../server/config:/config:ro
+    environment:
+      SERVER_ID: "FSPU_5:FHS_4"
+      NODE_EXPORTER_PORT: "9100"
+      EXPORTER_PORT: "9101"
+      EXPORTER_CONFIG: "/config/exporter_config.json"
+    labels:
+      - "prometheus_job=server"
+    expose:
+      - "9100"
+      - "9101"
+    networks:
+      - demo-monitor-net
+    restart: unless-stopped
+
+  switch-vccu1:
+    build: ../switch
+    container_name: switch-vccu1
+    environment:
+      SWITCH_ID: "VCCU_1:SWITCH"
+      SWITCH_PORT: "9101"
+    labels:
+      - "prometheus_job=switch"
+    volumes:
+      - ../switch/config:/config:ro
+    networks:
+      - demo-monitor-net
+    restart: unless-stopped
+
+  switch-vccu2:
+    build: ../switch
+    container_name: switch-vccu2
+    environment:
+      SWITCH_ID: "VCCU_2:SWITCH"
+      SWITCH_PORT: "9101"
+    labels:
+      - "prometheus_job=switch"
+    volumes:
+      - ../switch/config:/config:ro
+    networks:
+      - demo-monitor-net
+    restart: unless-stopped
+
+  switch-fspu5:
+    build: ../switch
+    container_name: switch-fspu5
+    environment:
+      SWITCH_ID: "FSPU_5:SWITCH"
+      SWITCH_PORT: "9101"
+    labels:
+      - "prometheus_job=switch"
+    volumes:
+      - ../switch/config:/config:ro
+    networks:
+      - demo-monitor-net
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    volumes:
+      - ../grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    networks:
+      - demo-monitor-net
+    restart: unless-stopped
+
+networks:
+  demo-monitor-net:
+    name: demo-monitor-net
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:

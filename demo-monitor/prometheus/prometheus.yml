@@ -1,0 +1,57 @@
+# Prometheus config for the demo-monitor lab. Mounted read-only into the
+# prometheus container by ../docker/docker-compose.yml.
+#
+# Targets assume the server/switch containers join the shared
+# `demo-monitor-net` Docker network and are reachable by their compose
+# service name. Ports confirmed with server-container/switch-container
+# agents over DotWorld comms (topic "scrape-endpoints" / "switch-container
+# conventions"): node_exporter default :9100, switch exporter :9101,
+# neither published to the host -- scraped over the compose network only.
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: server-node-exporter
+    static_configs:
+      - targets: ["vccu-1-fhs-1:9100"]
+        labels: {server_id: "VCCU_1:FHS_1"}
+      - targets: ["vccu-2-fhs-2:9100"]
+        labels: {server_id: "VCCU_2:FHS_2"}
+      - targets: ["fspu-5-fhs-1:9100"]
+        labels: {server_id: "FSPU_5:FHS_1"}
+      - targets: ["fspu-5-fhs-2:9100"]
+        labels: {server_id: "FSPU_5:FHS_2"}
+      - targets: ["fspu-5-fhs-3:9100"]
+        labels: {server_id: "FSPU_5:FHS_3"}
+      - targets: ["fspu-5-fhs-4:9100"]
+        labels: {server_id: "FSPU_5:FHS_4"}
+
+  - job_name: server-exporter
+    static_configs:
+      - targets: ["vccu-1-fhs-1:9101"]
+        labels: {server_id: "VCCU_1:FHS_1"}
+      - targets: ["vccu-2-fhs-2:9101"]
+        labels: {server_id: "VCCU_2:FHS_2"}
+      - targets: ["fspu-5-fhs-1:9101"]
+        labels: {server_id: "FSPU_5:FHS_1"}
+      - targets: ["fspu-5-fhs-2:9101"]
+        labels: {server_id: "FSPU_5:FHS_2"}
+      - targets: ["fspu-5-fhs-3:9101"]
+        labels: {server_id: "FSPU_5:FHS_3"}
+      - targets: ["fspu-5-fhs-4:9101"]
+        labels: {server_id: "FSPU_5:FHS_4"}
+
+  - job_name: switch-exporter
+    static_configs:
+      - targets: ["switch-vccu1:9101"]
+        labels: {switch_id: "VCCU_1:SWITCH"}
+      - targets: ["switch-vccu2:9101"]
+        labels: {switch_id: "VCCU_2:SWITCH"}
+      - targets: ["switch-fspu5:9101"]
+        labels: {switch_id: "FSPU_5:SWITCH"}
