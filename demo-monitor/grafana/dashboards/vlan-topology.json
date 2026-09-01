@@ -8,7 +8,23 @@
   "version": 1,
   "refresh": "5s",
   "time": { "from": "now-15m", "to": "now" },
-  "description": "Fixed hand-drawn-style topology of the 3 physical units (VCCU_1: 1 FHS + 1 switch; VCCU_2: 1 FHS + 1 switch; FSPU_5: 4 FHS + 1 switch -- same topology as units.json), built with Grafana's core Canvas panel. This is approach #3 of the VLAN-visualization brainstorm: a community flowcharting plugin (agenty-flowcharting-panel) was tried first and is a dead end on this Grafana version (v13.0.2 hard-disables Angular plugins, and that plugin is Angular-based -- confirmed via container logs: 'Refusing to initialize plugin because it's using Angular, which has been disabled'). Canvas is core, no plugin needed. Each box's fill color is bound to its up metric via the panel's field-name color dimension (background.color.field matching each query's legendFormat) with panel-wide thresholds (red <1, green >=1) -- real data binding, not a static mockup. Complements demo-monitor-vlan-health (hundreds-of-VLANs triage table) and demo-monitor-vlan-path (per-VLAN broadcast-domain node graph): this one is fixed-topology/whole-fleet-at-a-glance rather than VLAN-scoped.",
+  "description": "Fixed hand-drawn-style topology of the 3 physical units (VCCU_1: 1 FHS + 1 switch; VCCU_2: 1 FHS + 1 switch; FSPU_5: 4 FHS + 1 switch -- same topology as units.json), built with Grafana's core Canvas panel. This is approach #3 of the VLAN-visualization brainstorm: a community flowcharting plugin (agenty-flowcharting-panel) was tried first and is a dead end on this Grafana version (v13.0.2 hard-disables Angular plugins, and that plugin is Angular-based -- confirmed via container logs: 'Refusing to initialize plugin because it's using Angular, which has been disabled'). Canvas is core, no plugin needed. Each box's fill color is bound to its up metric via the panel's field-name color dimension (background.color.field matching each query's legendFormat) with panel-wide thresholds (red <1, green >=1) -- real data binding, not a static mockup. The $vlan variable drives switch->server connector lines: each connector is green if that server has any FPGA link that's a member of the selected VLAN (count(switch_interface_vlan_member{...,vlan=\"$vlan\"})>=1), red if not -- reusing the same red/green convention as the box health coloring, so red here means 'not on this VLAN', not 'down'. Coarser than demo-monitor-vlan-path's node graph (per-server, not per-link) but shown directly on the fixed topology. Complements demo-monitor-vlan-health (hundreds-of-VLANs triage table) and demo-monitor-vlan-path (per-VLAN broadcast-domain node graph): this one is fixed-topology/whole-fleet-at-a-glance.",
+  "templating": {
+    "list": [
+      {
+        "name": "vlan",
+        "label": "VLAN",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": { "query": "label_values(switch_vlan_packets_total, vlan)", "refId": "vlan" },
+        "multi": false,
+        "includeAll": false,
+        "refresh": 2,
+        "sort": 1,
+        "current": {}
+      }
+    ]
+  },
   "panels": [
     {
       "id": 1,
@@ -35,7 +51,13 @@
         { "expr": "up{job=\"server-node-exporter\", server_id=\"FSPU_5:FHS_1\"}", "legendFormat": "fspu5_fhs1", "refId": "F", "instant": true },
         { "expr": "up{job=\"server-node-exporter\", server_id=\"FSPU_5:FHS_2\"}", "legendFormat": "fspu5_fhs2", "refId": "G", "instant": true },
         { "expr": "up{job=\"server-node-exporter\", server_id=\"FSPU_5:FHS_3\"}", "legendFormat": "fspu5_fhs3", "refId": "H", "instant": true },
-        { "expr": "up{job=\"server-node-exporter\", server_id=\"FSPU_5:FHS_4\"}", "legendFormat": "fspu5_fhs4", "refId": "I", "instant": true }
+        { "expr": "up{job=\"server-node-exporter\", server_id=\"FSPU_5:FHS_4\"}", "legendFormat": "fspu5_fhs4", "refId": "I", "instant": true },
+        { "expr": "count(switch_interface_vlan_member{switch_id=\"VCCU_1:SWITCH\", vlan=\"$vlan\", interface=~\"^fpga[0-9]+-link[0-9]+$\"}) or vector(0)", "legendFormat": "vccu1_link", "refId": "J", "instant": true },
+        { "expr": "count(switch_interface_vlan_member{switch_id=\"VCCU_2:SWITCH\", vlan=\"$vlan\", interface=~\"^fpga[0-9]+-link[0-9]+$\"}) or vector(0)", "legendFormat": "vccu2_link", "refId": "K", "instant": true },
+        { "expr": "count(switch_interface_vlan_member{switch_id=\"FSPU_5:SWITCH\", vlan=\"$vlan\", interface=~\"^fspu-5-fhs-1-fpga[0-9]+-link[0-9]+$\"}) or vector(0)", "legendFormat": "fspu5_link1", "refId": "L", "instant": true },
+        { "expr": "count(switch_interface_vlan_member{switch_id=\"FSPU_5:SWITCH\", vlan=\"$vlan\", interface=~\"^fspu-5-fhs-2-fpga[0-9]+-link[0-9]+$\"}) or vector(0)", "legendFormat": "fspu5_link2", "refId": "M", "instant": true },
+        { "expr": "count(switch_interface_vlan_member{switch_id=\"FSPU_5:SWITCH\", vlan=\"$vlan\", interface=~\"^fspu-5-fhs-3-fpga[0-9]+-link[0-9]+$\"}) or vector(0)", "legendFormat": "fspu5_link3", "refId": "N", "instant": true },
+        { "expr": "count(switch_interface_vlan_member{switch_id=\"FSPU_5:SWITCH\", vlan=\"$vlan\", interface=~\"^fspu-5-fhs-4-fpga[0-9]+-link[0-9]+$\"}) or vector(0)", "legendFormat": "fspu5_link4", "refId": "O", "instant": true }
       ],
       "fieldConfig": {
         "defaults": {
@@ -70,7 +92,17 @@
                 "color": { "fixed": "#FFFFFF" },
                 "text": { "mode": "fixed", "fixed": "VCCU_1\nSWITCH" }
               },
-              "background": { "color": { "field": "vccu1_switch" } }
+              "background": { "color": { "field": "vccu1_switch" } },
+              "connections": [
+                {
+                  "source": { "x": 0, "y": -1 },
+                  "target": { "x": 0, "y": 1 },
+                  "targetName": "vccu1-fhs1",
+                  "path": "straight",
+                  "color": { "field": "vccu1_link" },
+                  "size": { "fixed": 3, "min": 1, "max": 3 }
+                }
+              ]
             },
             {
               "name": "vccu2-switch",
@@ -82,7 +114,17 @@
                 "color": { "fixed": "#FFFFFF" },
                 "text": { "mode": "fixed", "fixed": "VCCU_2\nSWITCH" }
               },
-              "background": { "color": { "field": "vccu2_switch" } }
+              "background": { "color": { "field": "vccu2_switch" } },
+              "connections": [
+                {
+                  "source": { "x": 0, "y": -1 },
+                  "target": { "x": 0, "y": 1 },
+                  "targetName": "vccu2-fhs2",
+                  "path": "straight",
+                  "color": { "field": "vccu2_link" },
+                  "size": { "fixed": 3, "min": 1, "max": 3 }
+                }
+              ]
             },
             {
               "name": "fspu5-switch",
@@ -94,7 +136,41 @@
                 "color": { "fixed": "#FFFFFF" },
                 "text": { "mode": "fixed", "fixed": "FSPU_5\nSWITCH" }
               },
-              "background": { "color": { "field": "fspu5_switch" } }
+              "background": { "color": { "field": "fspu5_switch" } },
+              "connections": [
+                {
+                  "source": { "x": -0.76, "y": -1 },
+                  "target": { "x": 0, "y": 1 },
+                  "targetName": "fspu5-fhs1",
+                  "path": "straight",
+                  "color": { "field": "fspu5_link1" },
+                  "size": { "fixed": 3, "min": 1, "max": 3 }
+                },
+                {
+                  "source": { "x": -0.26, "y": -1 },
+                  "target": { "x": 0, "y": 1 },
+                  "targetName": "fspu5-fhs2",
+                  "path": "straight",
+                  "color": { "field": "fspu5_link2" },
+                  "size": { "fixed": 3, "min": 1, "max": 3 }
+                },
+                {
+                  "source": { "x": 0.24, "y": -1 },
+                  "target": { "x": 0, "y": 1 },
+                  "targetName": "fspu5-fhs3",
+                  "path": "straight",
+                  "color": { "field": "fspu5_link3" },
+                  "size": { "fixed": 3, "min": 1, "max": 3 }
+                },
+                {
+                  "source": { "x": 0.74, "y": -1 },
+                  "target": { "x": 0, "y": 1 },
+                  "targetName": "fspu5-fhs4",
+                  "path": "straight",
+                  "color": { "field": "fspu5_link4" },
+                  "size": { "fixed": 3, "min": 1, "max": 3 }
+                }
+              ]
             },
             {
               "name": "vccu1-fhs1",
