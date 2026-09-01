@@ -131,6 +131,95 @@
           "refId": "A"
         }
       ]
+    },
+    {
+      "id": 20,
+      "type": "row",
+      "title": "Switch VLANs",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 21,
+      "type": "table",
+      "title": "VLANs per switch",
+      "description": "Count of distinct VLANs configured on each switch (switch_vlan_packets_total is one series per VLAN, agnostic of any interface).",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 7, "w": 8, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "count by (switch) (switch_vlan_packets_total{job=\"switch-exporter\"})",
+          "legendFormat": "{{switch}}",
+          "refId": "A",
+          "instant": true,
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "type": "table",
+      "title": "VLANs trunked per interface",
+      "description": "Each interface carries a random 6-60 of the switch's VLANs (switch_interface_vlan_member).",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 7, "w": 16, "x": 8, "y": 16 },
+      "targets": [
+        {
+          "expr": "count by (switch, interface) (switch_interface_vlan_member{job=\"switch-exporter\"})",
+          "legendFormat": "{{switch}} {{interface}}",
+          "refId": "A",
+          "instant": true,
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "type": "timeseries",
+      "title": "Top VLAN traffic (packets/sec)",
+      "description": "Busiest VLANs by switch-wide counter rate -- too many VLANs to plot all of them, so this shows the top 10.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 23 },
+      "targets": [
+        {
+          "expr": "topk(10, rate(switch_vlan_packets_total{job=\"switch-exporter\"}[1m]))",
+          "legendFormat": "{{switch}} vlan {{vlan}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "type": "table",
+      "title": "Interfaces carrying VLAN $vlan",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 30 },
+      "targets": [
+        {
+          "expr": "switch_interface_vlan_member{job=\"switch-exporter\", vlan=\"$vlan\"}",
+          "legendFormat": "{{switch}} {{interface}}",
+          "refId": "A",
+          "instant": true,
+          "format": "table"
+        }
+      ]
     }
-  ]
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "vlan",
+        "label": "VLAN",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": { "query": "label_values(switch_vlan_packets_total{job=\"switch-exporter\"}, vlan)", "refId": "VLANVariableQuery" },
+        "refresh": 2,
+        "sort": 1,
+        "includeAll": false,
+        "multi": false,
+        "current": {}
+      }
+    ]
+  }
 }

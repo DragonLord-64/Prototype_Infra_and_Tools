@@ -58,6 +58,15 @@ Verified locally: correct series count, counters freeze on link-down and
 resume on link-up, idle RSS ~12MB per container -- cheap enough to run
 many at once.
 
+On top of that, the switch also simulates VLANs: 300 by default, each with
+its own switch-wide counter (`switch_vlan_packets_total`, agnostic of any
+one interface) that random-walks every tick regardless of link state. Each
+interface is randomly assigned a trunk of 6-60 of those VLANs at startup,
+recorded as `switch_interface_vlan_member{interface,vlan}` (present only
+for actual membership, to avoid a full interface x VLAN matrix). VLAN
+count, id range, per-interface assignment range, and counter ranges are
+all config-file knobs alongside the interface ones.
+
 ## Prometheus (prometheus-agent)
 
 Prometheus runs as its own container, not installed on the host VM. It is

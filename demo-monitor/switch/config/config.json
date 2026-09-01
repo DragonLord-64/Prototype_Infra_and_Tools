@@ -5,5 +5,13 @@
   "counter_start_max": 1000,
   "counter_step_min": 1,
   "counter_step_max": 20,
-  "tick_seconds": 0.5
+  "tick_seconds": 0.5,
+  "vlan_count": 300,
+  "vlan_id_start": 100,
+  "vlan_min_per_interface": 6,
+  "vlan_max_per_interface": 60,
+  "vlan_counter_start_min": 0,
+  "vlan_counter_start_max": 1000,
+  "vlan_counter_step_min": 1,
+  "vlan_counter_step_max": 20
 }
