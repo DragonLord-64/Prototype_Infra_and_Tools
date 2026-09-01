@@ -1,0 +1,16 @@
+services:
+  switch:
+    build: .
+    container_name: switch
+    environment:
+      SWITCH_ID: switch
+      SWITCH_PORT: "9101"
+    volumes:
+      - ./config:/config:ro
+    networks:
+      - demo-monitor-net
+    restart: unless-stopped
+
+networks:
+  demo-monitor-net:
+    external: true
