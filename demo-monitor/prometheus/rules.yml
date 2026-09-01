@@ -1,0 +1,82 @@
+# Alerting rules for demo-monitor. Referenced from prometheus.yml via
+# rule_files. Basic threshold rules only for now -- no aggregation rules
+# yet (recording rules / rollups across units are a deliberate follow-up,
+# not done here).
+#
+# Thresholds are sized off live values observed on 2026-08-31 across the
+# 6-unit server fleet (server_param_a ~40-95, start 50, max_delta 2/tick;
+# server_param_b ~79-141, start 100, max_delta 5/tick; server_param_c
+# ~0.5-14, start 0, max_delta 1/tick -- see server/config/exporter_config.json).
+# Picked loosely so most targets sit comfortably inside the bounds right
+# now (demonstrating a healthy fleet) while still being tight enough that
+# the underlying random walk could plausibly cross them over a longer run.
+
+groups:
+  - name: demo-monitor-server-params
+    rules:
+      - alert: ServerParamAOutOfRange
+        expr: server_param_a > 120 or server_param_a < 10
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "server_param_a out of range on {{ $labels.server_id }}"
+          description: "server_param_a is {{ $value }} on {{ $labels.server_id }} ({{ $labels.instance }}), outside the [10, 120] band."
+
+      - alert: ServerParamBOutOfRange
+        expr: server_param_b > 170 or server_param_b < 40
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "server_param_b out of range on {{ $labels.server_id }}"
+          description: "server_param_b is {{ $value }} on {{ $labels.server_id }} ({{ $labels.instance }}), outside the [40, 170] band."
+
+      - alert: ServerParamCOutOfRange
+        expr: server_param_c > 20 or server_param_c < -10
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "server_param_c out of range on {{ $labels.server_id }}"
+          description: "server_param_c is {{ $value }} on {{ $labels.server_id }} ({{ $labels.instance }}), outside the [-10, 20] band."
+
+  - name: demo-monitor-switch
+    rules:
+      - alert: SwitchInterfaceLinkDown
+        expr: switch_interface_link_up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Link down on {{ $labels.switch_id }} {{ $labels.interface }}"
+          description: "switch_interface_link_up is 0 for interface {{ $labels.interface }} on {{ $labels.switch_id }} ({{ $labels.instance }})."
+
+  - name: demo-monitor-exporters
+    rules:
+      - alert: ServerNodeExporterDown
+        expr: up{job="server-node-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "node_exporter down on {{ $labels.server_id }}"
+          description: "server-node-exporter target {{ $labels.instance }} ({{ $labels.server_id }}) has been unreachable for over a minute."
+
+      - alert: ServerExporterDown
+        expr: up{job="server-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Custom server exporter down on {{ $labels.server_id }}"
+          description: "server-exporter target {{ $labels.instance }} ({{ $labels.server_id }}) has been unreachable for over a minute."
+
+      - alert: SwitchExporterDown
+        expr: up{job="switch-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Switch exporter down on {{ $labels.switch_id }}"
+          description: "switch-exporter target {{ $labels.instance }} ({{ $labels.switch_id }}) has been unreachable for over a minute."

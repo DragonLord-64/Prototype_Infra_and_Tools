@@ -1,0 +1,17 @@
+{
+  "prefix_with_hostname": true,
+  "links": [
+    {"interface": "fpga0-link0", "vlan": 100},
+    {"interface": "fpga0-link1", "vlan": 101},
+    {"interface": "fpga0-link2", "vlan": 102},
+    {"interface": "fpga0-link3", "vlan": 103},
+    {"interface": "fpga0-link4", "vlan": 104},
+    {"interface": "fpga0-link5", "vlan": 105},
+    {"interface": "fpga1-link0", "vlan": 106},
+    {"interface": "fpga1-link1", "vlan": 107},
+    {"interface": "fpga1-link2", "vlan": 108},
+    {"interface": "fpga1-link3", "vlan": 109},
+    {"interface": "fpga1-link4", "vlan": 110},
+    {"interface": "fpga1-link5", "vlan": 111}
+  ]
+}

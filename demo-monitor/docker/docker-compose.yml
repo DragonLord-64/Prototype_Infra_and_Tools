@@ -18,6 +18,7 @@ services:
     container_name: prometheus
     volumes:
       - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../prometheus/rules.yml:/etc/prometheus/rules.yml:ro
       - prometheus-data:/prometheus
     ports:
       - "9090:9090"
@@ -41,6 +42,9 @@ services:
       NODE_EXPORTER_PORT: "9100"
       EXPORTER_PORT: "9101"
       EXPORTER_CONFIG: "/config/exporter_config.json"
+      FPGA_LINKS_CONFIG: "/config/fpga_links_vccu.json"
+      SWITCH_HOST: "switch-vccu1"
+      SWITCH_PORT: "9101"
     labels:
       - "prometheus_job=server"
     expose:
@@ -60,6 +64,9 @@ services:
       NODE_EXPORTER_PORT: "9100"
       EXPORTER_PORT: "9101"
       EXPORTER_CONFIG: "/config/exporter_config.json"
+      FPGA_LINKS_CONFIG: "/config/fpga_links_vccu.json"
+      SWITCH_HOST: "switch-vccu2"
+      SWITCH_PORT: "9101"
     labels:
       - "prometheus_job=server"
     expose:
@@ -79,6 +86,9 @@ services:
       NODE_EXPORTER_PORT: "9100"
       EXPORTER_PORT: "9101"
       EXPORTER_CONFIG: "/config/exporter_config.json"
+      FPGA_LINKS_CONFIG: "/config/fpga_links_fspu.json"
+      SWITCH_HOST: "switch-fspu5"
+      SWITCH_PORT: "9101"
     labels:
       - "prometheus_job=server"
     expose:
@@ -98,6 +108,9 @@ services:
       NODE_EXPORTER_PORT: "9100"
       EXPORTER_PORT: "9101"
       EXPORTER_CONFIG: "/config/exporter_config.json"
+      FPGA_LINKS_CONFIG: "/config/fpga_links_fspu.json"
+      SWITCH_HOST: "switch-fspu5"
+      SWITCH_PORT: "9101"
     labels:
       - "prometheus_job=server"
     expose:
@@ -117,6 +130,9 @@ services:
       NODE_EXPORTER_PORT: "9100"
       EXPORTER_PORT: "9101"
       EXPORTER_CONFIG: "/config/exporter_config.json"
+      FPGA_LINKS_CONFIG: "/config/fpga_links_fspu.json"
+      SWITCH_HOST: "switch-fspu5"
+      SWITCH_PORT: "9101"
     labels:
       - "prometheus_job=server"
     expose:
@@ -136,6 +152,9 @@ services:
       NODE_EXPORTER_PORT: "9100"
       EXPORTER_PORT: "9101"
       EXPORTER_CONFIG: "/config/exporter_config.json"
+      FPGA_LINKS_CONFIG: "/config/fpga_links_fspu.json"
+      SWITCH_HOST: "switch-fspu5"
+      SWITCH_PORT: "9101"
     labels:
       - "prometheus_job=server"
     expose:
