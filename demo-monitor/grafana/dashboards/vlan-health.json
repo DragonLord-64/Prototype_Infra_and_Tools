@@ -1,0 +1,229 @@
+{
+  "id": null,
+  "uid": "demo-monitor-vlan-health",
+  "title": "VLAN Health Overview",
+  "tags": ["demo-monitor", "vlan"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "description": "Triage view across every (switch, VLAN) pair -- up to 3 switches x 300 VLANs each. A VLAN here is a broadcast domain: 'Health' is 1 only if every interface trunking that VLAN on that switch has link_up=1, computed via a vector match against switch_interface_vlan_member (no new metrics needed). Sorted down-first so failures surface immediately. Click a row's Switch/VLAN cell to jump to the VLAN Path dashboard (uid demo-monitor-vlan-path) for that exact pair -- that dashboard may not exist yet depending on build order, in which case the link 404s harmlessly.",
+  "templating": {
+    "list": [
+      {
+        "name": "switch",
+        "label": "Switch",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": { "query": "label_values(switch_id)", "refId": "switch" },
+        "multi": true,
+        "includeAll": true,
+        "refresh": 2,
+        "sort": 1,
+        "current": {}
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "",
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
+      "options": {
+        "mode": "markdown",
+        "content": "One row per (Switch, VLAN). **Health** = UP only if every interface trunking that VLAN on that switch has link_up=1 -- a VLAN is a broadcast domain, so one down member is enough to mark the whole VLAN unhealthy on that switch. **Members** = number of interfaces trunking the VLAN. **Packets/sec** = switch-wide VLAN activity. Sorted DOWN-first."
+      }
+    },
+    {
+      "id": 2,
+      "type": "table",
+      "title": "VLAN health by switch",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 20, "w": 24, "x": 0, "y": 3 },
+      "options": {
+        "sortBy": [{ "displayName": "Health", "desc": false }],
+        "footer": { "show": true, "reducer": ["count"] }
+      },
+      "targets": [
+        {
+          "expr": "min by (switch_id, vlan) (switch_interface_link_up{switch_id=~\"$switch\"} * on(switch, interface) group_right() switch_interface_vlan_member{switch_id=~\"$switch\"})",
+          "legendFormat": "health",
+          "refId": "A",
+          "instant": true,
+          "format": "table"
+        },
+        {
+          "expr": "count by (switch_id, vlan) (switch_interface_vlan_member{switch_id=~\"$switch\"})",
+          "legendFormat": "members",
+          "refId": "B",
+          "instant": true,
+          "format": "table"
+        },
+        {
+          "expr": "sum by (switch_id, vlan) (rate(switch_vlan_packets_total{switch_id=~\"$switch\"}[1m]))",
+          "legendFormat": "pps",
+          "refId": "C",
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        { "id": "merge", "options": {} },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": { "Time": true, "__name__": true },
+            "renameByName": {
+              "switch_id": "Switch",
+              "vlan": "VLAN",
+              "Value #A": "Health",
+              "Value #B": "Members",
+              "Value #C": "Packets/sec"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "mappings": [] },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Health" },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  { "type": "value", "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } } }
+                ]
+              },
+              { "id": "custom.cellOptions", "value": { "type": "color-background" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Packets/sec" },
+            "properties": [{ "id": "unit", "value": "pps" }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "VLAN" },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open VLAN path",
+                    "url": "/d/demo-monitor-vlan-path/vlan-path?var-switch=${__data.fields.Switch}&var-vlan=${__data.fields.VLAN}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Switch" },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open VLAN path",
+                    "url": "/d/demo-monitor-vlan-path/vlan-path?var-switch=${__data.fields.Switch}&var-vlan=${__data.fields.VLAN}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "type": "row",
+      "title": "Cross-switch VLAN rate consistency",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 23 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 11,
+      "type": "text",
+      "title": "",
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 24 },
+      "options": {
+        "mode": "markdown",
+        "content": "Visualizes the `SwitchVlanRateMismatch` alerting rule (prometheus/rules.yml, group `demo-monitor-vlan-parity`): for each VLAN, compares that switch's packet rate against the average rate for the same VLAN number across all switches, flagging >30% deviation sustained 5m. **Known caveat (per prometheus-agent, not yet resolved in the rule):** FSPU_5's switch fans in 4 servers broadcasting on the same VLAN range vs. 1 server for VCCU_1/VCCU_2, so a raw cross-switch average is structurally skewed for FSPU_5 -- expect this rule to under/over-fire there by design, not fault. Nothing needs to be firing right now; this panel exists to show what the check would look like once tuned."
+      }
+    },
+    {
+      "id": 12,
+      "type": "stat",
+      "title": "Alerts firing",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 4, "x": 0, "y": 27 },
+      "targets": [
+        { "expr": "count(ALERTS{alertname=\"SwitchVlanRateMismatch\", alertstate=\"firing\"}) or vector(0)", "legendFormat": "firing", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 13,
+      "type": "stat",
+      "title": "Alerts pending",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 4, "x": 4, "y": 27 },
+      "targets": [
+        { "expr": "count(ALERTS{alertname=\"SwitchVlanRateMismatch\", alertstate=\"pending\"}) or vector(0)", "legendFormat": "pending", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "orange", "value": 1 }] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 14,
+      "type": "table",
+      "title": "Per-VLAN rate deviation from cross-switch average",
+      "description": "Same formula as the SwitchVlanRateMismatch rule expr, shown continuously (not just when it crosses 30%) so you can see how close each VLAN is to firing.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 10, "w": 16, "x": 8, "y": 27 },
+      "options": {
+        "sortBy": [{ "displayName": "Deviation", "desc": true }]
+      },
+      "targets": [
+        {
+          "expr": "abs(rate(switch_vlan_packets_total{switch_id=~\"$switch\"}[10m]) - on(vlan) group_left() avg by (vlan) (rate(switch_vlan_packets_total{switch_id=~\"$switch\"}[10m]))) / on(vlan) group_left() avg by (vlan) (rate(switch_vlan_packets_total{switch_id=~\"$switch\"}[10m]))",
+          "legendFormat": "{{switch_id}}",
+          "refId": "A",
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": { "Time": true, "__name__": true, "switch": true, "job": true, "instance": true },
+            "renameByName": { "switch_id": "Switch", "vlan": "VLAN", "Value": "Deviation" }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "custom": { "cellOptions": { "type": "color-background" } },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.3 }] }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Switch" }, "properties": [{ "id": "custom.cellOptions", "value": { "type": "auto" } }] },
+          { "matcher": { "id": "byName", "options": "VLAN" }, "properties": [{ "id": "custom.cellOptions", "value": { "type": "auto" } }] }
+        ]
+      }
+    }
+  ]
+}

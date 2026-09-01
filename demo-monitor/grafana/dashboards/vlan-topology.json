@@ -1,0 +1,176 @@
+{
+  "id": null,
+  "uid": "demo-monitor-vlan-topology",
+  "title": "VLAN Topology (diagram)",
+  "tags": ["demo-monitor", "vlan"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "description": "Fixed hand-drawn-style topology of the 3 physical units (VCCU_1: 1 FHS + 1 switch; VCCU_2: 1 FHS + 1 switch; FSPU_5: 4 FHS + 1 switch -- same topology as units.json), built with Grafana's core Canvas panel. This is approach #3 of the VLAN-visualization brainstorm: a community flowcharting plugin (agenty-flowcharting-panel) was tried first and is a dead end on this Grafana version (v13.0.2 hard-disables Angular plugins, and that plugin is Angular-based -- confirmed via container logs: 'Refusing to initialize plugin because it's using Angular, which has been disabled'). Canvas is core, no plugin needed. Each box's fill color is bound to its up metric via the panel's field-name color dimension (background.color.field matching each query's legendFormat) with panel-wide thresholds (red <1, green >=1) -- real data binding, not a static mockup. Complements demo-monitor-vlan-health (hundreds-of-VLANs triage table) and demo-monitor-vlan-path (per-VLAN broadcast-domain node graph): this one is fixed-topology/whole-fleet-at-a-glance rather than VLAN-scoped.",
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "",
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
+      "options": {
+        "mode": "markdown",
+        "content": "Green = up, red = down. Top row = switches, bottom row = FHS servers. VCCU_1 / VCCU_2 each have 1 switch + 1 server; FSPU_5 has 1 shared switch + 4 servers."
+      }
+    },
+    {
+      "id": 2,
+      "type": "canvas",
+      "title": "Unit topology",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 2 },
+      "targets": [
+        { "expr": "up{job=\"switch-exporter\", switch_id=\"VCCU_1:SWITCH\"}", "legendFormat": "vccu1_switch", "refId": "A", "instant": true },
+        { "expr": "up{job=\"switch-exporter\", switch_id=\"VCCU_2:SWITCH\"}", "legendFormat": "vccu2_switch", "refId": "B", "instant": true },
+        { "expr": "up{job=\"switch-exporter\", switch_id=\"FSPU_5:SWITCH\"}", "legendFormat": "fspu5_switch", "refId": "C", "instant": true },
+        { "expr": "up{job=\"server-node-exporter\", server_id=\"VCCU_1:FHS_1\"}", "legendFormat": "vccu1_fhs1", "refId": "D", "instant": true },
+        { "expr": "up{job=\"server-node-exporter\", server_id=\"VCCU_2:FHS_2\"}", "legendFormat": "vccu2_fhs2", "refId": "E", "instant": true },
+        { "expr": "up{job=\"server-node-exporter\", server_id=\"FSPU_5:FHS_1\"}", "legendFormat": "fspu5_fhs1", "refId": "F", "instant": true },
+        { "expr": "up{job=\"server-node-exporter\", server_id=\"FSPU_5:FHS_2\"}", "legendFormat": "fspu5_fhs2", "refId": "G", "instant": true },
+        { "expr": "up{job=\"server-node-exporter\", server_id=\"FSPU_5:FHS_3\"}", "legendFormat": "fspu5_fhs3", "refId": "H", "instant": true },
+        { "expr": "up{job=\"server-node-exporter\", server_id=\"FSPU_5:FHS_4\"}", "legendFormat": "fspu5_fhs4", "refId": "I", "instant": true }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "inlineEditing": false,
+        "showAdvancedTypes": true,
+        "panZoom": true,
+        "zoomToContent": true,
+        "tooltip": { "mode": "single" },
+        "root": {
+          "name": "root",
+          "type": "frame",
+          "elements": [
+            {
+              "name": "vccu1-switch",
+              "type": "rectangle",
+              "placement": { "top": 20, "left": 20, "width": 160, "height": 60 },
+              "config": {
+                "align": "center",
+                "valign": "middle",
+                "color": { "fixed": "#FFFFFF" },
+                "text": { "mode": "fixed", "fixed": "VCCU_1\nSWITCH" }
+              },
+              "background": { "color": { "field": "vccu1_switch" } }
+            },
+            {
+              "name": "vccu2-switch",
+              "type": "rectangle",
+              "placement": { "top": 20, "left": 220, "width": 160, "height": 60 },
+              "config": {
+                "align": "center",
+                "valign": "middle",
+                "color": { "fixed": "#FFFFFF" },
+                "text": { "mode": "fixed", "fixed": "VCCU_2\nSWITCH" }
+              },
+              "background": { "color": { "field": "vccu2_switch" } }
+            },
+            {
+              "name": "fspu5-switch",
+              "type": "rectangle",
+              "placement": { "top": 20, "left": 460, "width": 340, "height": 60 },
+              "config": {
+                "align": "center",
+                "valign": "middle",
+                "color": { "fixed": "#FFFFFF" },
+                "text": { "mode": "fixed", "fixed": "FSPU_5\nSWITCH" }
+              },
+              "background": { "color": { "field": "fspu5_switch" } }
+            },
+            {
+              "name": "vccu1-fhs1",
+              "type": "rectangle",
+              "placement": { "top": 130, "left": 20, "width": 160, "height": 60 },
+              "config": {
+                "align": "center",
+                "valign": "middle",
+                "color": { "fixed": "#FFFFFF" },
+                "text": { "mode": "fixed", "fixed": "VCCU_1\nFHS_1" }
+              },
+              "background": { "color": { "field": "vccu1_fhs1" } }
+            },
+            {
+              "name": "vccu2-fhs2",
+              "type": "rectangle",
+              "placement": { "top": 130, "left": 220, "width": 160, "height": 60 },
+              "config": {
+                "align": "center",
+                "valign": "middle",
+                "color": { "fixed": "#FFFFFF" },
+                "text": { "mode": "fixed", "fixed": "VCCU_2\nFHS_2" }
+              },
+              "background": { "color": { "field": "vccu2_fhs2" } }
+            },
+            {
+              "name": "fspu5-fhs1",
+              "type": "rectangle",
+              "placement": { "top": 130, "left": 460, "width": 80, "height": 60 },
+              "config": {
+                "align": "center",
+                "valign": "middle",
+                "color": { "fixed": "#FFFFFF" },
+                "text": { "mode": "fixed", "fixed": "FSPU_5\nFHS_1" }
+              },
+              "background": { "color": { "field": "fspu5_fhs1" } }
+            },
+            {
+              "name": "fspu5-fhs2",
+              "type": "rectangle",
+              "placement": { "top": 130, "left": 545, "width": 80, "height": 60 },
+              "config": {
+                "align": "center",
+                "valign": "middle",
+                "color": { "fixed": "#FFFFFF" },
+                "text": { "mode": "fixed", "fixed": "FSPU_5\nFHS_2" }
+              },
+              "background": { "color": { "field": "fspu5_fhs2" } }
+            },
+            {
+              "name": "fspu5-fhs3",
+              "type": "rectangle",
+              "placement": { "top": 130, "left": 630, "width": 80, "height": 60 },
+              "config": {
+                "align": "center",
+                "valign": "middle",
+                "color": { "fixed": "#FFFFFF" },
+                "text": { "mode": "fixed", "fixed": "FSPU_5\nFHS_3" }
+              },
+              "background": { "color": { "field": "fspu5_fhs3" } }
+            },
+            {
+              "name": "fspu5-fhs4",
+              "type": "rectangle",
+              "placement": { "top": 130, "left": 715, "width": 80, "height": 60 },
+              "config": {
+                "align": "center",
+                "valign": "middle",
+                "color": { "fixed": "#FFFFFF" },
+                "text": { "mode": "fixed", "fixed": "FSPU_5\nFHS_4" }
+              },
+              "background": { "color": { "field": "fspu5_fhs4" } }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

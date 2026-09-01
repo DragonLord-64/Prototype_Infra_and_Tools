@@ -1,0 +1,181 @@
+{
+  "id": null,
+  "uid": "demo-monitor-vlan-path",
+  "title": "VLAN Path",
+  "tags": ["demo-monitor", "vlan"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "description": "Draws one VLAN's broadcast domain on one switch as a graph: every packet sent on a VLAN goes out every interface trunked on that VLAN (see fpga-vlan-forwarding-plan.md) -- this is not a single wire, it's a fan-out. Nodes: the switch, each interface that is a member of $vlan, and the peer FHS server for any FPGA-linked interface (server_fpga_link_*_packets_total is live, commit 49bba40). Peer identity is derived two ways, per the landed naming (not the abandoned FPGA_LINK_DESIGN.md's '<SERVER_ID>.fpga<N>.p<port>.<subif>' scheme): VCCU switches use bare 'fpga<N>-linkN' interface names with no server prefix (1:1 switch:server, so identity is joined on the shared unit prefix -- e.g. VCCU_1:SWITCH <-> VCCU_1:FHS_1 -- instead of parsed from the interface string); FSPU switches prefix each interface with the sanitized peer container name ('fspu-5-fhs-3-fpga0-link0'), which is regex-parsed straight into 'FSPU_5:FHS_3' since that switch aggregates 4 servers and a unit-only join would be ambiguous. Both peer_server derivations are verified live against server_id's actual format. Node/edge color follows the same red=DOWN/green=UP convention as the other demo-monitor dashboards. For a fleet-wide, all-VLANs-at-once triage view, see the 'VLAN Health' dashboard -- this one is deliberately single-VLAN, single-switch, since a graph of hundreds of VLANs at once is unreadable.",
+  "templating": {
+    "list": [
+      {
+        "name": "switch",
+        "label": "Switch",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": { "query": "label_values(switch_id)", "refId": "switch" },
+        "multi": false,
+        "includeAll": false,
+        "refresh": 2,
+        "sort": 1,
+        "current": {}
+      },
+      {
+        "name": "vlan",
+        "label": "VLAN",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": { "query": "label_values(switch_interface_vlan_member{switch_id=\"$switch\"}, vlan)", "refId": "vlan" },
+        "multi": false,
+        "includeAll": false,
+        "refresh": 2,
+        "sort": 3,
+        "current": {}
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "",
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
+      "options": {
+        "mode": "markdown",
+        "content": "Pick a **Switch** and **VLAN** above. The graph below is that VLAN's broadcast domain on that switch: the switch node, every member interface, and (once FPGA link metrics land) the FHS server on the other end of any FPGA-linked interface. Green = up, red = down."
+      }
+    },
+    {
+      "id": 2,
+      "type": "nodeGraph",
+      "title": "$vlan on $switch -- broadcast domain",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 18, "w": 24, "x": 0, "y": 3 },
+      "targets": [
+        {
+          "refId": "A",
+          "instant": true,
+          "format": "table",
+          "expr": "switch_interface_vlan_member{switch_id=\"$switch\", vlan=\"$vlan\"} * on(switch_id, interface) group_left() switch_interface_link_up{switch_id=\"$switch\"}"
+        },
+        {
+          "refId": "B",
+          "instant": true,
+          "format": "table",
+          "expr": "up{switch_id=\"$switch\", job=\"switch-exporter\"}"
+        },
+        {
+          "refId": "C",
+          "instant": true,
+          "format": "table",
+          "expr": "label_replace(switch_interface_vlan_member{switch_id=\"$switch\", vlan=\"$vlan\", interface=~\"^fspu-[0-9]+-fhs-[0-9]+-fpga[0-9]+-link[0-9]+$\"}, \"peer_server\", \"FSPU_$1:FHS_$2\", \"interface\", \"^fspu-([0-9]+)-fhs-([0-9]+)-fpga[0-9]+-link[0-9]+$\")"
+        },
+        {
+          "refId": "F",
+          "instant": true,
+          "format": "table",
+          "expr": "label_replace(label_replace(switch_interface_vlan_member{switch_id=\"$switch\", vlan=\"$vlan\", interface=~\"^fpga[0-9]+-link[0-9]+$\"}, \"unit\", \"$1\", \"switch_id\", \"^([^:]+):.*\") * on(unit) group_left(server_id) label_replace(up{job=\"server-node-exporter\", server_id=~\"^VCCU_.*\"}, \"unit\", \"$1\", \"server_id\", \"^([^:]+):.*\"), \"peer_server\", \"$1\", \"server_id\", \"(.*)\")"
+        },
+        {
+          "refId": "D",
+          "instant": true,
+          "format": "table",
+          "expr": "label_replace(switch_interface_vlan_member{switch_id=\"$switch\", vlan=\"$vlan\"} * on(switch_id, interface) group_left() switch_interface_link_up{switch_id=\"$switch\"}, \"id\", \"$1\", \"interface\", \"(.*)\")"
+        },
+        {
+          "refId": "E",
+          "instant": true,
+          "format": "table",
+          "expr": "label_replace(label_replace(switch_interface_vlan_member{switch_id=\"$switch\", vlan=\"$vlan\", interface=~\"^fspu-[0-9]+-fhs-[0-9]+-fpga[0-9]+-link[0-9]+$\"}, \"peer_server\", \"FSPU_$1:FHS_$2\", \"interface\", \"^fspu-([0-9]+)-fhs-([0-9]+)-fpga[0-9]+-link[0-9]+$\"), \"id\", \"$1\", \"interface\", \"(.*)\")"
+        },
+        {
+          "refId": "G",
+          "instant": true,
+          "format": "table",
+          "expr": "label_replace(label_replace(label_replace(switch_interface_vlan_member{switch_id=\"$switch\", vlan=\"$vlan\", interface=~\"^fpga[0-9]+-link[0-9]+$\"}, \"unit\", \"$1\", \"switch_id\", \"^([^:]+):.*\") * on(unit) group_left(server_id) label_replace(up{job=\"server-node-exporter\", server_id=~\"^VCCU_.*\"}, \"unit\", \"$1\", \"server_id\", \"^([^:]+):.*\"), \"peer_server\", \"$1\", \"server_id\", \"(.*)\"), \"id\", \"$1\", \"interface\", \"(.*)\")"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "filter": { "id": "byRefId", "options": "A" },
+          "options": {
+            "excludeByName": { "Time": true, "__name__": true, "instance": true, "job": true, "switch": true, "switch_id": true },
+            "renameByName": { "interface": "id", "Value": "mainStat" }
+          }
+        },
+        {
+          "id": "organize",
+          "filter": { "id": "byRefId", "options": "B" },
+          "options": {
+            "excludeByName": { "Time": true, "__name__": true, "instance": true, "job": true, "switch": true },
+            "renameByName": { "switch_id": "id", "Value": "mainStat" }
+          }
+        },
+        {
+          "id": "organize",
+          "filter": { "id": "byRefId", "options": "C" },
+          "options": {
+            "excludeByName": { "Time": true, "__name__": true, "instance": true, "job": true, "switch": true, "switch_id": true, "interface": true, "vlan": true, "Value": true },
+            "renameByName": { "peer_server": "id" }
+          }
+        },
+        {
+          "id": "organize",
+          "filter": { "id": "byRefId", "options": "F" },
+          "options": {
+            "excludeByName": { "Time": true, "__name__": true, "instance": true, "job": true, "switch": true, "switch_id": true, "interface": true, "vlan": true, "Value": true, "unit": true, "server_id": true },
+            "renameByName": { "peer_server": "id" }
+          }
+        },
+        {
+          "id": "organize",
+          "filter": { "id": "byRefId", "options": "D" },
+          "options": {
+            "excludeByName": { "Time": true, "__name__": true, "instance": true, "job": true, "switch": true, "vlan": true },
+            "renameByName": { "switch_id": "source", "interface": "target", "Value": "mainStat" }
+          }
+        },
+        {
+          "id": "organize",
+          "filter": { "id": "byRefId", "options": "E" },
+          "options": {
+            "excludeByName": { "Time": true, "__name__": true, "instance": true, "job": true, "switch": true, "switch_id": true, "vlan": true, "Value": true },
+            "renameByName": { "interface": "source", "peer_server": "target" }
+          }
+        },
+        {
+          "id": "organize",
+          "filter": { "id": "byRefId", "options": "G" },
+          "options": {
+            "excludeByName": { "Time": true, "__name__": true, "instance": true, "job": true, "switch": true, "switch_id": true, "vlan": true, "Value": true, "unit": true, "server_id": true },
+            "renameByName": { "interface": "source", "peer_server": "target" }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "mainStat" },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  { "type": "value", "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } } }
+                ]
+              },
+              {
+                "id": "thresholds",
+                "value": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
