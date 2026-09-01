@@ -1,0 +1,9 @@
+{
+  "port": 9101,
+  "update_interval_seconds": 2,
+  "parameters": [
+    {"name": "server_param_a", "start_value": 50, "max_delta": 2},
+    {"name": "server_param_b", "start_value": 100, "max_delta": 5},
+    {"name": "server_param_c", "start_value": 0, "max_delta": 1}
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "id": null,
+  "uid": "node-exporter",
+  "title": "Node Exporter",
+  "tags": ["demo-monitor", "node-exporter"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "instance",
+        "label": "Server",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": { "query": "label_values(up{job=\"server-node-exporter\"}, instance)", "refId": "instance" },
+        "multi": false,
+        "includeAll": false,
+        "refresh": 2,
+        "sort": 1,
+        "current": {}
+      }
+    ]
+  },
+  "links": [
+    {
+      "title": "Servers Overview",
+      "type": "link",
+      "url": "/d/servers-overview/servers-overview",
+      "tooltip": "Fleet view across all server replicas",
+      "icon": "external link",
+      "targetBlank": false
+    }
+  ],
+  "panels": [
+    {
+      "id": 1,
+      "type": "row",
+      "title": "$instance — node_exporter",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Up",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 4, "x": 0, "y": 1 },
+      "targets": [
+        { "expr": "up{job=\"server-node-exporter\", instance=\"$instance\"}", "legendFormat": "{{instance}}", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } } }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Uptime",
+      "description": "time() - node_boot_time_seconds",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 4, "x": 4, "y": 1 },
+      "fieldConfig": { "defaults": { "unit": "dtdurations" }, "overrides": [] },
+      "targets": [
+        { "expr": "time() - node_boot_time_seconds{job=\"server-node-exporter\", instance=\"$instance\"}", "legendFormat": "{{instance}}", "refId": "A" }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "CPU usage %",
+      "description": "Custom threshold config: green below 70%, orange 70-90%, red above 90%.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 16, "x": 8, "y": 1 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "custom": { "gradientMode": "scheme", "fillOpacity": 15 },
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 70 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "100 - (avg(rate(node_cpu_seconds_total{job=\"server-node-exporter\", instance=\"$instance\", mode=\"idle\"}[1m])) * 100)",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Load average",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 6 },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 1 },
+              { "color": "red", "value": 2 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        { "expr": "node_load1{job=\"server-node-exporter\", instance=\"$instance\"}", "legendFormat": "1m", "refId": "A" },
+        { "expr": "node_load5{job=\"server-node-exporter\", instance=\"$instance\"}", "legendFormat": "5m", "refId": "B" },
+        { "expr": "node_load15{job=\"server-node-exporter\", instance=\"$instance\"}", "legendFormat": "15m", "refId": "C" }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Memory available",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 6 },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "targets": [
+        { "expr": "node_memory_MemAvailable_bytes{job=\"server-node-exporter\", instance=\"$instance\"}", "legendFormat": "available", "refId": "A" },
+        { "expr": "node_memory_MemTotal_bytes{job=\"server-node-exporter\", instance=\"$instance\"}", "legendFormat": "total", "refId": "B" }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Filesystem usage % (/config)",
+      "description": "Container-visible mount only — the container's own root (overlay) filesystem is excluded by node_exporter's default collector, so /config is the one real disk-backed mount we can chart here.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 6 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 80 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "100 - (node_filesystem_avail_bytes{job=\"server-node-exporter\", instance=\"$instance\", mountpoint=\"/config\"} / node_filesystem_size_bytes{job=\"server-node-exporter\", instance=\"$instance\", mountpoint=\"/config\"} * 100)",
+          "legendFormat": "{{mountpoint}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Network I/O (eth0)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 12 },
+      "fieldConfig": { "defaults": { "unit": "Bps" }, "overrides": [] },
+      "targets": [
+        { "expr": "rate(node_network_receive_bytes_total{job=\"server-node-exporter\", instance=\"$instance\", device=\"eth0\"}[1m])", "legendFormat": "rx", "refId": "A" },
+        { "expr": "rate(node_network_transmit_bytes_total{job=\"server-node-exporter\", instance=\"$instance\", device=\"eth0\"}[1m])", "legendFormat": "tx", "refId": "B" }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "row",
+      "title": "Custom exporter (server_param_a/b/c)",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Simulated parameters",
+      "description": "Simulated telemetry from the server's custom exporter (job=server-exporter, port 9101). Start values/max deltas configured in server/config/exporter_config.json. Note: this job is NOT filtered by $instance -- the exporter self-labels its own \"instance\" (container hostname / SERVER_ID) inside the metric body, which Prometheus renames to exported_instance since honor_labels isn't set on this scrape job, so its instance label space (server:9101) doesn't line up with the node_exporter job's (server:9100). Fine for a single replica; revisit if this scales to multiple server containers.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 19 },
+      "targets": [
+        { "expr": "server_param_a{job=\"server-exporter\"}", "legendFormat": "server_param_a ({{exported_instance}})", "refId": "A" },
+        { "expr": "server_param_b{job=\"server-exporter\"}", "legendFormat": "server_param_b ({{exported_instance}})", "refId": "B" },
+        { "expr": "server_param_c{job=\"server-exporter\"}", "legendFormat": "server_param_c ({{exported_instance}})", "refId": "C" }
+      ]
+    }
+  ]
+}

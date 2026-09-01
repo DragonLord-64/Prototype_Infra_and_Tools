@@ -1,0 +1,23 @@
+# Standalone compose file for developing/testing the server container on its
+# own. The integrated multi-service stack lives in demo-monitor/docker/.
+networks:
+  demo-monitor-net:
+    external: true
+
+services:
+  server:
+    build: .
+    container_name: server
+    volumes:
+      - ./config:/config:ro
+    environment:
+      NODE_EXPORTER_PORT: "9100"
+      EXPORTER_PORT: "9101"
+      EXPORTER_CONFIG: "/config/exporter_config.json"
+      # SERVER_ID: override to label metrics explicitly; defaults to the
+      # container's hostname, which is unique per replica when scaled.
+    expose:
+      - "9100"
+      - "9101"
+    networks:
+      - demo-monitor-net

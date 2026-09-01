@@ -64,11 +64,13 @@ Prometheus runs as its own container, not installed on the host VM. It is
 defined in `demo-monitor/docker/docker-compose.yml` alongside the server,
 switch, and Grafana containers, all joined on a shared `demo-monitor-net`
 Docker network. Scrape config lives in `demo-monitor/prometheus/prometheus.yml`,
-mounted read-only into the container. Prometheus polls four targets every
-15s: itself, the server's node_exporter (`server:9100`), the server's custom exporter
-(`server:9101`), and the switch's custom exporter (`switch:9101`) -- none
-exposed to the host, reachable only over the compose network. The web UI is
-at `localhost:9090`. Run `docker compose up -d --build` from
+mounted read-only into the container. The fleet is 6 named server units
+(`VCCU_1:FHS_1`, `VCCU_2:FHS_2`, `FSPU_5:FHS_1..4`) and 3 named switches
+(`VCCU_1:SWITCH`, `VCCU_2:SWITCH`, `FSPU_5:SWITCH`), each a distinct
+static scrape target carrying a `server_id`/`switch_id` label with its unit
+name -- none exposed to the host, reachable only over the compose network.
+Prometheus polls itself plus all 15 exporter targets every 15s. The web UI
+is at `localhost:9090`. Run `docker compose up -d --build` from
 `demo-monitor/docker/` to bring up the whole stack.
 
 ## Status
