@@ -1,0 +1,9 @@
+{
+  "interface_count": 32,
+  "interface_prefix": "eth",
+  "counter_start_min": 0,
+  "counter_start_max": 1000,
+  "counter_step_min": 1,
+  "counter_step_max": 20,
+  "tick_seconds": 0.5
+}
