@@ -1,0 +1,13 @@
+# Auto-provisioned Prometheus datasource. Points at the `prometheus`
+# container (service name from ../../docker/docker-compose.yml) over the
+# shared demo-monitor-net network.
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    uid: prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
