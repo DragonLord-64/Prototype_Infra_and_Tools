@@ -1,0 +1,161 @@
+{
+  "id": null,
+  "uid": "demo-monitor-units",
+  "title": "Units (VCC / FSP)",
+  "tags": ["demo-monitor", "units"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "description": "One row per physical unit. VCCU_n = VCC unit (1 FHS server + 1 switch). FSPU_n = FSP unit (4 FHS servers + 1 switch). Units are discovered from the switch_id label (format \"UNIT_NAME:ROLE\", e.g. VCCU_1:SWITCH) since every unit has exactly one switch. Server panels filter on a matching server_id label in the same format (e.g. VCCU_1:FHS_1, FSPU_5:FHS_1..FHS_4) -- until that label is added to prometheus.yml's server static_configs (proposed over DotWorld comms, topic units-dashboard), the FHS server panels will read \"No data\" rather than error.",
+  "templating": {
+    "list": [
+      {
+        "name": "unit",
+        "label": "Unit",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": { "query": "label_values(switch_id)", "refId": "unit" },
+        "regex": "/^([^:]+):/",
+        "multi": true,
+        "includeAll": true,
+        "refresh": 2,
+        "sort": 1,
+        "current": {}
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "",
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
+      "options": {
+        "mode": "markdown",
+        "content": "**VCCU_n** = VCC unit (1 FHS server + 1 switch)  |  **FSPU_n** = FSP unit (4 FHS servers + 1 switch). Pick units with the **Unit** variable above; each selected unit renders as its own row below."
+      }
+    },
+    {
+      "id": 2,
+      "type": "row",
+      "title": "$unit",
+      "repeat": "unit",
+      "repeatDirection": "v",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 3 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Switch up",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 4, "x": 0, "y": 4 },
+      "targets": [
+        { "expr": "up{switch_id=~\"$unit:.*\"}", "legendFormat": "{{switch_id}}", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } } }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "FHS servers up / total",
+      "description": "Reads \"No data\" until FHS server static_configs carry a server_id label matching this unit -- see dashboard description.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 4, "x": 4, "y": 4 },
+      "targets": [
+        { "expr": "count(up{job=\"server-node-exporter\", server_id=~\"$unit:.*\"} == 1)", "legendFormat": "up", "refId": "A" },
+        { "expr": "count(up{job=\"server-node-exporter\", server_id=~\"$unit:.*\"})", "legendFormat": "total", "refId": "B" }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "table",
+      "title": "Switch interfaces (link status)",
+      "description": "1 = link up, 0 = link down (injectable failure).",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 4 },
+      "targets": [
+        {
+          "expr": "switch_interface_link_up{switch_id=~\"$unit:.*\"}",
+          "legendFormat": "{{interface}}",
+          "refId": "A",
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true, "job": true, "switch": true }, "renameByName": { "switch_id": "Switch", "interface": "Interface", "Value": "Link" } } }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } } }
+          ]
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 6,
+      "type": "table",
+      "title": "FHS servers in this unit",
+      "description": "Reads empty until FHS server static_configs carry a server_id label matching this unit -- see dashboard description.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 4 },
+      "targets": [
+        {
+          "expr": "up{job=\"server-node-exporter\", server_id=~\"$unit:.*\"}",
+          "legendFormat": "{{server_id}}",
+          "refId": "A",
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true, "job": true }, "renameByName": { "server_id": "Server", "instance": "Instance", "Value": "Up" } } }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } } }
+          ]
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Switch RX/TX bytes/sec",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 10 },
+      "fieldConfig": { "defaults": { "unit": "Bps" }, "overrides": [] },
+      "targets": [
+        { "expr": "rate(switch_interface_rx_bytes_total{switch_id=~\"$unit:.*\"}[1m])", "legendFormat": "rx {{interface}}", "refId": "A" },
+        { "expr": "rate(switch_interface_tx_bytes_total{switch_id=~\"$unit:.*\"}[1m])", "legendFormat": "tx {{interface}}", "refId": "B" }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "FHS servers: load average (1m)",
+      "description": "Reads \"No data\" until FHS server static_configs carry a server_id label matching this unit -- see dashboard description.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 10 },
+      "targets": [
+        { "expr": "node_load1{server_id=~\"$unit:.*\"}", "legendFormat": "{{server_id}}", "refId": "A" }
+      ]
+    }
+  ]
+}

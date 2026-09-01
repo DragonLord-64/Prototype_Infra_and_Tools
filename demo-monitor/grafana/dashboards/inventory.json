@@ -1,0 +1,133 @@
+{
+  "id": null,
+  "uid": "demo-monitor-inventory",
+  "title": "Inventory",
+  "tags": ["demo-monitor", "inventory"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "description": "Flat fleet listing: every switch and every server, one row each, up/down at a glance. No grouping by unit -- see the 'Units (VCC / FSP)' dashboard for that view. The Unit:Role column comes from switch_id (switches, already live) / server_id (servers, pending -- see DotWorld comms topic units-dashboard) and stays blank until that label lands.",
+  "panels": [
+    {
+      "id": 1,
+      "type": "row",
+      "title": "Summary",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Switches up / total",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 1 },
+      "targets": [
+        { "expr": "count(up{job=\"switch-exporter\"} == 1)", "legendFormat": "up", "refId": "A" },
+        { "expr": "count(up{job=\"switch-exporter\"})", "legendFormat": "total", "refId": "B" }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Servers up / total",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 1 },
+      "targets": [
+        { "expr": "count(up{job=\"server-node-exporter\"} == 1)", "legendFormat": "up", "refId": "A" },
+        { "expr": "count(up{job=\"server-node-exporter\"})", "legendFormat": "total", "refId": "B" }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "row",
+      "title": "Switches",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 6 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 11,
+      "type": "table",
+      "title": "All switches",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 7 },
+      "targets": [
+        {
+          "expr": "up{job=\"switch-exporter\"}",
+          "legendFormat": "{{switch_id}}",
+          "refId": "A",
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true, "job": true, "switch": true }, "renameByName": { "instance": "Instance", "switch_id": "Unit:Role", "Value": "Status" } } }
+      ],
+      "fieldConfig": {
+        "defaults": { "mappings": [] },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Status" },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  { "type": "value", "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } } }
+                ]
+              },
+              { "id": "custom.cellOptions", "value": { "type": "color-background" } }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "type": "row",
+      "title": "Servers",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 21,
+      "type": "table",
+      "title": "All servers",
+      "description": "One row per node_exporter target (one per physical FHS server). The 9101 custom-exporter port isn't included here to avoid double-counting the same server -- see the server_param_a/b/c panel on the Demo Monitor dashboard for that telemetry.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "up{job=\"server-node-exporter\"}",
+          "legendFormat": "{{instance}}",
+          "refId": "A",
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true, "job": true }, "renameByName": { "instance": "Instance", "server_id": "Unit:Role", "Value": "Status" } } }
+      ],
+      "fieldConfig": {
+        "defaults": { "mappings": [] },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Status" },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  { "type": "value", "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } } }
+                ]
+              },
+              { "id": "custom.cellOptions", "value": { "type": "color-background" } }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
