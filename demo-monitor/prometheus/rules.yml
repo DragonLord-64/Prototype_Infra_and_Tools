@@ -90,15 +90,20 @@ groups:
   # one switch as a baseline) so it works regardless of which switch is
   # actually the outlier.
   #
-  # CAVEAT, per fpga-vlan-forwarding-plan.md: once the switch-side FPGA
-  # broadcast endpoint (POST /interfaces/<name>/tx) lands, vlans 100-111
-  # carry real FPGA link traffic on top of the base random walk, and
-  # FSPU_5's switch fans in 4 servers on that same vlan range vs 1:1 for
-  # VCCU_1/VCCU_2 -- expect FSPU_5 to legitimately run hotter there once
-  # that's live, which would trip this rule by design, not by fault. Not
-  # live yet (confirmed with switch-container/server-container over
-  # comms), so not handled here -- revisit (exclude vlan=~"10[0-9]|11[01]"
-  # for FSPU_5, or compare it against 4x instead of 1x) once it is.
+  # CHECKED 2026-09-01, now that switch-container's broadcast-forward
+  # (commit e344c10) and server-container's FPGA tick (commit 49bba40) are
+  # both live per fpga-vlan-forwarding-plan.md, with real non-zero
+  # cross-container traffic confirmed (grafana-agent seq 40). Re-verified
+  # the FSPU_5 4:1 fan-in caveat below against live data instead of theory:
+  # the effect is real but small -- switch_vlan_packets_total's base
+  # random walk (1-20/tick, tick_seconds 0.5, i.e. up to ~40/s) dwarfs the
+  # real FPGA delta (each server posts ~1 packet/link/tick on its own
+  # update_interval, so FSPU_5's 4x fan-in only adds a few/s on top).
+  # Vlans 100-111 (the FPGA range) currently sit at up to ~8.3% deviation
+  # (FSPU_5, vlan 110) vs ~10% baseline noise on non-FPGA vlans -- both
+  # comfortably under the 30% margin, so no rule change needed. Revisit
+  # only if the base counter step range or tick interval shrinks enough
+  # to let the fan-in ratio dominate the signal instead of being noise.
   - name: demo-monitor-vlan-parity
     rules:
       - alert: SwitchVlanRateMismatch
