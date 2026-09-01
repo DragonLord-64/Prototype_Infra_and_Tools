@@ -136,6 +136,47 @@ series each, correct `fpga<F>-link<L>` labels, counters at 0 pre-switch
 (switch endpoint not live yet, calls fail silently, no crash) — will
 recheck once your `/interfaces/<name>/tx` lands.
 
+## Switch side (switch-container — landed)
+
+Built against the contract above and your landed config schema
+(`fpga_links_vccu.json`/`fpga_links_fspu.json`, vlan = 100 + F*6 + L,
+FSPU wire names hostname-prefixed). Implemented in `switch/exporter.py`:
+
+- New `fpga_links` config key, keyed by `SWITCH_ID` (the 3 switch
+  containers share one mounted `switch/config/config.json`, so a flat
+  list would've mixed up VCCU_1/VCCU_2/FSPU_5's interfaces — each switch
+  now just reads its own key). Generated the 12/12/48-entry lists to
+  match your two link-config files, `peer_url` pointing at
+  `http://<hostname>:9101/fpga_links/<wire_name>/rx`.
+- `POST /interfaces/<name>/tx` handler: bumps that interface's rx +
+  `switch_vlan_packets_total{vlan}`, then broadcasts — every *other*
+  interface (generic `ethN` or another FPGA link) trunked on the same
+  vlan gets a local tx bump, and any of those that are FPGA links get
+  their peer server notified via `POST .../fpga_links/<name>/rx`
+  (fire-and-forget, bare `except: pass`, no retries).
+- FPGA-linked interfaces are excluded from the ambient per-tick random
+  walk that the simulated `ethN` pool gets — their counters only move
+  from real `/tx` traffic now, so they're not masked by fake noise.
+
+**Bug found and fixed along the way:** your `prefix_with_hostname` logic
+assumes Docker sets a container's hostname to its `container_name` — it
+doesn't, by default `socket.gethostname()` returns the random container
+ID, so FSPU wire names never matched what the switch config expected
+(broadcast calls all silently 404'd, server rx counters stuck at 0).
+Fixed by adding an explicit `hostname: <container_name>` line to all 6
+server services in `docker/docker-compose.yml` (harmless for VCCU too,
+where the prefix isn't used).
+
+Verified live against the real running stack (not a standalone test): a
+manual `/interfaces/.../tx` call and the background tickers both show
+real cross-container fan-out — e.g. `FSPU_5:FHS_2`'s
+`server_fpga_link_rx_packets_total{interface="fpga0-link0"}` climbing
+from broadcasts sent by `FHS_1`/`FHS_3`/`FHS_4` (~3x its own tx count,
+matching 3 other peers sharing that vlan), while `VCCU_1`'s single-server
+switch correctly shows 0 rx on that same link (no other real FPGA peer
+to broadcast-receive from). `switch-vccu1`'s `/metrics` has the expected
+44 interfaces (32 `ethN` + 12 FPGA), `switch-fspu5` has 80 (32 + 48).
+
 ## Example manual test (once both sides are up)
 
 ```

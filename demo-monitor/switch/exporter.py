@@ -7,6 +7,15 @@ simulated VLANs each with their own switch-wide counter
 (switch_vlan_packets_total) and a random subset (6-60) assigned to each
 interface (switch_interface_vlan_member), on /metrics. Link status is
 injectable at runtime via POST /interfaces/<name>/link.
+
+Also models a fixed set of real FPGA-linked interfaces (config key
+fpga_links, keyed by this switch's SWITCH_ID -- see
+../fpga-vlan-forwarding-plan.md and ../FPGA_LINK_DESIGN.md). A connected
+server POSTs /interfaces/<name>/tx {"vlan": N} for each simulated packet;
+the switch bumps that interface + the VLAN counter, then broadcasts to
+every other interface (generic or FPGA) trunked on that VLAN, calling the
+peer server's /fpga_links/<name>/rx for any FPGA-linked recipient so its
+RX counter moves too.
 """
 
 import json
@@ -15,6 +24,7 @@ import random
 import socket
 import threading
 import time
+import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
@@ -38,6 +48,7 @@ DEFAULT_CONFIG = {
     "vlan_counter_start_max": 1000,
     "vlan_counter_step_min": 1,
     "vlan_counter_step_max": 20,
+    "fpga_links": {},  # {switch_id: [{interface, vlan, peer_url}, ...]}
 }
 
 
@@ -52,14 +63,18 @@ def load_config():
 
 
 class Interface:
-    __slots__ = ("name", "rx", "tx", "link_up", "vlans")
+    __slots__ = ("name", "rx", "tx", "link_up", "vlans", "simulated")
 
-    def __init__(self, name, rx, tx, vlans):
+    def __init__(self, name, rx, tx, vlans, simulated=True):
         self.name = name
         self.rx = rx
         self.tx = tx
         self.link_up = True
         self.vlans = vlans  # sorted list of VLAN ids trunked on this interface
+        # simulated=True gets the ambient per-tick random walk (the eth*
+        # pool); real FPGA links only move from actual /tx traffic, so the
+        # counters mean something in the demo instead of being noise.
+        self.simulated = simulated
 
 
 class SwitchState:
@@ -86,12 +101,24 @@ class SwitchState:
             iface_vlans = sorted(random.sample(vlan_ids, k))
             self.interfaces[name] = Interface(name, rx, tx, iface_vlans)
 
+        # Real FPGA-connected interfaces for this switch (by SWITCH_ID), each
+        # on a single fixed VLAN, with a peer URL to notify on broadcast.
+        self.fpga_peers = {}
+        for link in cfg["fpga_links"].get(SWITCH_ID, []):
+            name = link["interface"]
+            vlan = link["vlan"]
+            self.vlans.setdefault(
+                vlan, random.randint(cfg["vlan_counter_start_min"], cfg["vlan_counter_start_max"])
+            )
+            self.interfaces[name] = Interface(name, 0, 0, [vlan], simulated=False)
+            self.fpga_peers[name] = link["peer_url"]
+
     def tick(self):
         lo, hi = self.cfg["counter_step_min"], self.cfg["counter_step_max"]
         vlan_lo, vlan_hi = self.cfg["vlan_counter_step_min"], self.cfg["vlan_counter_step_max"]
         with self.lock:
             for iface in self.interfaces.values():
-                if iface.link_up:
+                if iface.link_up and iface.simulated:
                     iface.rx += random.randint(lo, hi)
                     iface.tx += random.randint(lo, hi)
             for vlan_id in self.vlans:
@@ -104,6 +131,30 @@ class SwitchState:
                 return False
             iface.link_up = up
             return True
+
+    def handle_fpga_tx(self, name, vlan):
+        """A connected server sent one simulated packet on interface `name`,
+        tagged `vlan`. Bump that interface + the VLAN counter, then
+        broadcast: every other interface trunked on `vlan` gets a tx bump,
+        and any of those that are themselves FPGA-linked get their peer
+        server notified (fire-and-forget) so its RX counter moves too.
+        """
+        peers_to_notify = []
+        with self.lock:
+            iface = self.interfaces.get(name)
+            if iface is None or vlan is None:
+                return
+            iface.rx += 1
+            self.vlans[vlan] = self.vlans.get(vlan, 0) + 1
+            for other in self.interfaces.values():
+                if other is iface or vlan not in other.vlans:
+                    continue
+                other.tx += 1
+                peer_url = self.fpga_peers.get(other.name)
+                if peer_url:
+                    peers_to_notify.append(peer_url)
+        for peer_url in peers_to_notify:
+            notify_peer(peer_url, vlan)
 
     def render_metrics(self):
         lines = [
@@ -141,6 +192,18 @@ class SwitchState:
                         f'switch_interface_vlan_member{{switch="{SWITCH_ID}",interface="{iface.name}",vlan="{vlan_id}"}} 1'
                     )
         return "\n".join(lines) + "\n"
+
+
+def notify_peer(url, vlan):
+    """Fire-and-forget POST telling a connected server it received a
+    broadcast packet on this VLAN. Best-effort: the peer may not be up yet,
+    or its endpoint may not exist -- just skip, no retries."""
+    body = json.dumps({"vlan": vlan}).encode()
+    request = urllib.request.Request(url, data=body, method="POST", headers={"Content-Type": "application/json"})
+    try:
+        urllib.request.urlopen(request, timeout=2)
+    except Exception:
+        pass
 
 
 def ticker(state, interval):
@@ -193,6 +256,17 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_response(404)
                 self.end_headers()
                 self.wfile.write(f"unknown interface {name}\n".encode())
+        elif len(parts) == 3 and parts[0] == "interfaces" and parts[2] == "tx":
+            name = parts[1]
+            length = int(self.headers.get("Content-Length", 0))
+            raw = self.rfile.read(length) if length else b"{}"
+            try:
+                payload = json.loads(raw or b"{}")
+            except json.JSONDecodeError:
+                payload = {}
+            self.state.handle_fpga_tx(name, payload.get("vlan"))
+            self.send_response(200)
+            self.end_headers()
         else:
             self.send_response(404)
             self.end_headers()

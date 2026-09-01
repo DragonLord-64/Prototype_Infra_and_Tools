@@ -13,5 +13,373 @@
   "vlan_counter_start_min": 0,
   "vlan_counter_start_max": 1000,
   "vlan_counter_step_min": 1,
-  "vlan_counter_step_max": 20
+  "vlan_counter_step_max": 20,
+  "fpga_links": {
+    "VCCU_1:SWITCH": [
+      {
+        "interface": "fpga0-link0",
+        "vlan": 100,
+        "peer_url": "http://vccu-1-fhs-1:9101/fpga_links/fpga0-link0/rx"
+      },
+      {
+        "interface": "fpga0-link1",
+        "vlan": 101,
+        "peer_url": "http://vccu-1-fhs-1:9101/fpga_links/fpga0-link1/rx"
+      },
+      {
+        "interface": "fpga0-link2",
+        "vlan": 102,
+        "peer_url": "http://vccu-1-fhs-1:9101/fpga_links/fpga0-link2/rx"
+      },
+      {
+        "interface": "fpga0-link3",
+        "vlan": 103,
+        "peer_url": "http://vccu-1-fhs-1:9101/fpga_links/fpga0-link3/rx"
+      },
+      {
+        "interface": "fpga0-link4",
+        "vlan": 104,
+        "peer_url": "http://vccu-1-fhs-1:9101/fpga_links/fpga0-link4/rx"
+      },
+      {
+        "interface": "fpga0-link5",
+        "vlan": 105,
+        "peer_url": "http://vccu-1-fhs-1:9101/fpga_links/fpga0-link5/rx"
+      },
+      {
+        "interface": "fpga1-link0",
+        "vlan": 106,
+        "peer_url": "http://vccu-1-fhs-1:9101/fpga_links/fpga1-link0/rx"
+      },
+      {
+        "interface": "fpga1-link1",
+        "vlan": 107,
+        "peer_url": "http://vccu-1-fhs-1:9101/fpga_links/fpga1-link1/rx"
+      },
+      {
+        "interface": "fpga1-link2",
+        "vlan": 108,
+        "peer_url": "http://vccu-1-fhs-1:9101/fpga_links/fpga1-link2/rx"
+      },
+      {
+        "interface": "fpga1-link3",
+        "vlan": 109,
+        "peer_url": "http://vccu-1-fhs-1:9101/fpga_links/fpga1-link3/rx"
+      },
+      {
+        "interface": "fpga1-link4",
+        "vlan": 110,
+        "peer_url": "http://vccu-1-fhs-1:9101/fpga_links/fpga1-link4/rx"
+      },
+      {
+        "interface": "fpga1-link5",
+        "vlan": 111,
+        "peer_url": "http://vccu-1-fhs-1:9101/fpga_links/fpga1-link5/rx"
+      }
+    ],
+    "VCCU_2:SWITCH": [
+      {
+        "interface": "fpga0-link0",
+        "vlan": 100,
+        "peer_url": "http://vccu-2-fhs-2:9101/fpga_links/fpga0-link0/rx"
+      },
+      {
+        "interface": "fpga0-link1",
+        "vlan": 101,
+        "peer_url": "http://vccu-2-fhs-2:9101/fpga_links/fpga0-link1/rx"
+      },
+      {
+        "interface": "fpga0-link2",
+        "vlan": 102,
+        "peer_url": "http://vccu-2-fhs-2:9101/fpga_links/fpga0-link2/rx"
+      },
+      {
+        "interface": "fpga0-link3",
+        "vlan": 103,
+        "peer_url": "http://vccu-2-fhs-2:9101/fpga_links/fpga0-link3/rx"
+      },
+      {
+        "interface": "fpga0-link4",
+        "vlan": 104,
+        "peer_url": "http://vccu-2-fhs-2:9101/fpga_links/fpga0-link4/rx"
+      },
+      {
+        "interface": "fpga0-link5",
+        "vlan": 105,
+        "peer_url": "http://vccu-2-fhs-2:9101/fpga_links/fpga0-link5/rx"
+      },
+      {
+        "interface": "fpga1-link0",
+        "vlan": 106,
+        "peer_url": "http://vccu-2-fhs-2:9101/fpga_links/fpga1-link0/rx"
+      },
+      {
+        "interface": "fpga1-link1",
+        "vlan": 107,
+        "peer_url": "http://vccu-2-fhs-2:9101/fpga_links/fpga1-link1/rx"
+      },
+      {
+        "interface": "fpga1-link2",
+        "vlan": 108,
+        "peer_url": "http://vccu-2-fhs-2:9101/fpga_links/fpga1-link2/rx"
+      },
+      {
+        "interface": "fpga1-link3",
+        "vlan": 109,
+        "peer_url": "http://vccu-2-fhs-2:9101/fpga_links/fpga1-link3/rx"
+      },
+      {
+        "interface": "fpga1-link4",
+        "vlan": 110,
+        "peer_url": "http://vccu-2-fhs-2:9101/fpga_links/fpga1-link4/rx"
+      },
+      {
+        "interface": "fpga1-link5",
+        "vlan": 111,
+        "peer_url": "http://vccu-2-fhs-2:9101/fpga_links/fpga1-link5/rx"
+      }
+    ],
+    "FSPU_5:SWITCH": [
+      {
+        "interface": "fspu-5-fhs-1-fpga0-link0",
+        "vlan": 100,
+        "peer_url": "http://fspu-5-fhs-1:9101/fpga_links/fspu-5-fhs-1-fpga0-link0/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-1-fpga0-link1",
+        "vlan": 101,
+        "peer_url": "http://fspu-5-fhs-1:9101/fpga_links/fspu-5-fhs-1-fpga0-link1/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-1-fpga0-link2",
+        "vlan": 102,
+        "peer_url": "http://fspu-5-fhs-1:9101/fpga_links/fspu-5-fhs-1-fpga0-link2/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-1-fpga0-link3",
+        "vlan": 103,
+        "peer_url": "http://fspu-5-fhs-1:9101/fpga_links/fspu-5-fhs-1-fpga0-link3/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-1-fpga0-link4",
+        "vlan": 104,
+        "peer_url": "http://fspu-5-fhs-1:9101/fpga_links/fspu-5-fhs-1-fpga0-link4/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-1-fpga0-link5",
+        "vlan": 105,
+        "peer_url": "http://fspu-5-fhs-1:9101/fpga_links/fspu-5-fhs-1-fpga0-link5/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-1-fpga1-link0",
+        "vlan": 106,
+        "peer_url": "http://fspu-5-fhs-1:9101/fpga_links/fspu-5-fhs-1-fpga1-link0/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-1-fpga1-link1",
+        "vlan": 107,
+        "peer_url": "http://fspu-5-fhs-1:9101/fpga_links/fspu-5-fhs-1-fpga1-link1/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-1-fpga1-link2",
+        "vlan": 108,
+        "peer_url": "http://fspu-5-fhs-1:9101/fpga_links/fspu-5-fhs-1-fpga1-link2/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-1-fpga1-link3",
+        "vlan": 109,
+        "peer_url": "http://fspu-5-fhs-1:9101/fpga_links/fspu-5-fhs-1-fpga1-link3/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-1-fpga1-link4",
+        "vlan": 110,
+        "peer_url": "http://fspu-5-fhs-1:9101/fpga_links/fspu-5-fhs-1-fpga1-link4/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-1-fpga1-link5",
+        "vlan": 111,
+        "peer_url": "http://fspu-5-fhs-1:9101/fpga_links/fspu-5-fhs-1-fpga1-link5/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-2-fpga0-link0",
+        "vlan": 100,
+        "peer_url": "http://fspu-5-fhs-2:9101/fpga_links/fspu-5-fhs-2-fpga0-link0/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-2-fpga0-link1",
+        "vlan": 101,
+        "peer_url": "http://fspu-5-fhs-2:9101/fpga_links/fspu-5-fhs-2-fpga0-link1/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-2-fpga0-link2",
+        "vlan": 102,
+        "peer_url": "http://fspu-5-fhs-2:9101/fpga_links/fspu-5-fhs-2-fpga0-link2/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-2-fpga0-link3",
+        "vlan": 103,
+        "peer_url": "http://fspu-5-fhs-2:9101/fpga_links/fspu-5-fhs-2-fpga0-link3/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-2-fpga0-link4",
+        "vlan": 104,
+        "peer_url": "http://fspu-5-fhs-2:9101/fpga_links/fspu-5-fhs-2-fpga0-link4/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-2-fpga0-link5",
+        "vlan": 105,
+        "peer_url": "http://fspu-5-fhs-2:9101/fpga_links/fspu-5-fhs-2-fpga0-link5/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-2-fpga1-link0",
+        "vlan": 106,
+        "peer_url": "http://fspu-5-fhs-2:9101/fpga_links/fspu-5-fhs-2-fpga1-link0/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-2-fpga1-link1",
+        "vlan": 107,
+        "peer_url": "http://fspu-5-fhs-2:9101/fpga_links/fspu-5-fhs-2-fpga1-link1/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-2-fpga1-link2",
+        "vlan": 108,
+        "peer_url": "http://fspu-5-fhs-2:9101/fpga_links/fspu-5-fhs-2-fpga1-link2/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-2-fpga1-link3",
+        "vlan": 109,
+        "peer_url": "http://fspu-5-fhs-2:9101/fpga_links/fspu-5-fhs-2-fpga1-link3/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-2-fpga1-link4",
+        "vlan": 110,
+        "peer_url": "http://fspu-5-fhs-2:9101/fpga_links/fspu-5-fhs-2-fpga1-link4/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-2-fpga1-link5",
+        "vlan": 111,
+        "peer_url": "http://fspu-5-fhs-2:9101/fpga_links/fspu-5-fhs-2-fpga1-link5/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-3-fpga0-link0",
+        "vlan": 100,
+        "peer_url": "http://fspu-5-fhs-3:9101/fpga_links/fspu-5-fhs-3-fpga0-link0/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-3-fpga0-link1",
+        "vlan": 101,
+        "peer_url": "http://fspu-5-fhs-3:9101/fpga_links/fspu-5-fhs-3-fpga0-link1/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-3-fpga0-link2",
+        "vlan": 102,
+        "peer_url": "http://fspu-5-fhs-3:9101/fpga_links/fspu-5-fhs-3-fpga0-link2/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-3-fpga0-link3",
+        "vlan": 103,
+        "peer_url": "http://fspu-5-fhs-3:9101/fpga_links/fspu-5-fhs-3-fpga0-link3/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-3-fpga0-link4",
+        "vlan": 104,
+        "peer_url": "http://fspu-5-fhs-3:9101/fpga_links/fspu-5-fhs-3-fpga0-link4/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-3-fpga0-link5",
+        "vlan": 105,
+        "peer_url": "http://fspu-5-fhs-3:9101/fpga_links/fspu-5-fhs-3-fpga0-link5/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-3-fpga1-link0",
+        "vlan": 106,
+        "peer_url": "http://fspu-5-fhs-3:9101/fpga_links/fspu-5-fhs-3-fpga1-link0/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-3-fpga1-link1",
+        "vlan": 107,
+        "peer_url": "http://fspu-5-fhs-3:9101/fpga_links/fspu-5-fhs-3-fpga1-link1/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-3-fpga1-link2",
+        "vlan": 108,
+        "peer_url": "http://fspu-5-fhs-3:9101/fpga_links/fspu-5-fhs-3-fpga1-link2/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-3-fpga1-link3",
+        "vlan": 109,
+        "peer_url": "http://fspu-5-fhs-3:9101/fpga_links/fspu-5-fhs-3-fpga1-link3/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-3-fpga1-link4",
+        "vlan": 110,
+        "peer_url": "http://fspu-5-fhs-3:9101/fpga_links/fspu-5-fhs-3-fpga1-link4/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-3-fpga1-link5",
+        "vlan": 111,
+        "peer_url": "http://fspu-5-fhs-3:9101/fpga_links/fspu-5-fhs-3-fpga1-link5/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-4-fpga0-link0",
+        "vlan": 100,
+        "peer_url": "http://fspu-5-fhs-4:9101/fpga_links/fspu-5-fhs-4-fpga0-link0/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-4-fpga0-link1",
+        "vlan": 101,
+        "peer_url": "http://fspu-5-fhs-4:9101/fpga_links/fspu-5-fhs-4-fpga0-link1/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-4-fpga0-link2",
+        "vlan": 102,
+        "peer_url": "http://fspu-5-fhs-4:9101/fpga_links/fspu-5-fhs-4-fpga0-link2/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-4-fpga0-link3",
+        "vlan": 103,
+        "peer_url": "http://fspu-5-fhs-4:9101/fpga_links/fspu-5-fhs-4-fpga0-link3/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-4-fpga0-link4",
+        "vlan": 104,
+        "peer_url": "http://fspu-5-fhs-4:9101/fpga_links/fspu-5-fhs-4-fpga0-link4/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-4-fpga0-link5",
+        "vlan": 105,
+        "peer_url": "http://fspu-5-fhs-4:9101/fpga_links/fspu-5-fhs-4-fpga0-link5/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-4-fpga1-link0",
+        "vlan": 106,
+        "peer_url": "http://fspu-5-fhs-4:9101/fpga_links/fspu-5-fhs-4-fpga1-link0/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-4-fpga1-link1",
+        "vlan": 107,
+        "peer_url": "http://fspu-5-fhs-4:9101/fpga_links/fspu-5-fhs-4-fpga1-link1/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-4-fpga1-link2",
+        "vlan": 108,
+        "peer_url": "http://fspu-5-fhs-4:9101/fpga_links/fspu-5-fhs-4-fpga1-link2/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-4-fpga1-link3",
+        "vlan": 109,
+        "peer_url": "http://fspu-5-fhs-4:9101/fpga_links/fspu-5-fhs-4-fpga1-link3/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-4-fpga1-link4",
+        "vlan": 110,
+        "peer_url": "http://fspu-5-fhs-4:9101/fpga_links/fspu-5-fhs-4-fpga1-link4/rx"
+      },
+      {
+        "interface": "fspu-5-fhs-4-fpga1-link5",
+        "vlan": 111,
+        "peer_url": "http://fspu-5-fhs-4:9101/fpga_links/fspu-5-fhs-4-fpga1-link5/rx"
+      }
+    ]
+  }
 }
