@@ -80,3 +80,38 @@ groups:
         annotations:
           summary: "Switch exporter down on {{ $labels.switch_id }}"
           description: "switch-exporter target {{ $labels.instance }} ({{ $labels.switch_id }}) has been unreachable for over a minute."
+
+  # Cross-switch VLAN packet-rate parity. Every switch runs the same
+  # per-vlan random-walk simulation (300 vlans, same step range), so under
+  # normal conditions a given vlan's rate should track closely across all
+  # 3 switches -- confirmed live on 2026-08-31 (vlan 100's 10m rate was
+  # ~13.7-14.1/s on all of VCCU_1/VCCU_2/FSPU_5). Comparing each switch's
+  # rate to the cross-switch average for that vlan (rather than picking
+  # one switch as a baseline) so it works regardless of which switch is
+  # actually the outlier.
+  #
+  # CAVEAT, per fpga-vlan-forwarding-plan.md: once the switch-side FPGA
+  # broadcast endpoint (POST /interfaces/<name>/tx) lands, vlans 100-111
+  # carry real FPGA link traffic on top of the base random walk, and
+  # FSPU_5's switch fans in 4 servers on that same vlan range vs 1:1 for
+  # VCCU_1/VCCU_2 -- expect FSPU_5 to legitimately run hotter there once
+  # that's live, which would trip this rule by design, not by fault. Not
+  # live yet (confirmed with switch-container/server-container over
+  # comms), so not handled here -- revisit (exclude vlan=~"10[0-9]|11[01]"
+  # for FSPU_5, or compare it against 4x instead of 1x) once it is.
+  - name: demo-monitor-vlan-parity
+    rules:
+      - alert: SwitchVlanRateMismatch
+        expr: |
+          abs(
+            rate(switch_vlan_packets_total[10m])
+            - on(vlan) group_left() avg by (vlan) (rate(switch_vlan_packets_total[10m]))
+          )
+          / on(vlan) group_left() avg by (vlan) (rate(switch_vlan_packets_total[10m]))
+          > 0.3
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "VLAN {{ $labels.vlan }} packet rate mismatch on {{ $labels.switch_id }}"
+          description: "{{ $labels.switch_id }}'s rate for vlan {{ $labels.vlan }} is {{ $value | humanizePercentage }} away from the cross-switch average for that vlan, sustained over 5m."
