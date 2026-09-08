@@ -1,0 +1,108 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"mappings": [{"options": {"0": {"color": "red", "text": "DOWN"}, "1": {"color": "green", "text": "UP"}}, "type": "value"}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []},
+      "gridPos": {"h": 4, "w": 4, "x": 0, "y": 0},
+      "id": 1,
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto", "wideLayout": true},
+      "targets": [{"expr": "min(up{job=~\"$job\"})", "refId": "A"}],
+      "title": "Node Exporter Status",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "gridPos": {"h": 4, "w": 5, "x": 4, "y": 0}, "id": 2,
+      "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto", "wideLayout": true},
+      "targets": [{"expr": "time() - node_boot_time_seconds{job=~\"$job\", instance=~\"$instance\"}", "legendFormat": "{{instance}}", "refId": "A"}],
+      "title": "Uptime", "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"max": 100, "min": 0, "unit": "percent", "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 75}, {"color": "red", "value": 90}]}}, "overrides": []},
+      "gridPos": {"h": 4, "w": 5, "x": 9, "y": 0}, "id": 3,
+      "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto", "wideLayout": true},
+      "targets": [{"expr": "100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{job=~\"$job\", instance=~\"$instance\", mode=\"idle\"}[$__rate_interval])))", "legendFormat": "{{instance}}", "refId": "A"}],
+      "title": "CPU Used", "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"max": 100, "min": 0, "unit": "percent", "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 75}, {"color": "red", "value": 90}]}}, "overrides": []},
+      "gridPos": {"h": 4, "w": 5, "x": 14, "y": 0}, "id": 4,
+      "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto", "wideLayout": true},
+      "targets": [{"expr": "100 * (1 - node_memory_MemAvailable_bytes{job=~\"$job\", instance=~\"$instance\"} / node_memory_MemTotal_bytes{job=~\"$job\", instance=~\"$instance\"})", "legendFormat": "{{instance}}", "refId": "A"}],
+      "title": "Memory Used", "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "gridPos": {"h": 4, "w": 5, "x": 19, "y": 0}, "id": 5,
+      "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto", "wideLayout": true},
+      "targets": [{"expr": "node_load1{job=~\"$job\", instance=~\"$instance\"}", "legendFormat": "{{instance}}", "refId": "A"}],
+      "title": "Load (1 min)", "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "percent"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 4}, "id": 6,
+      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{job=~\"$job\", instance=~\"$instance\", mode=\"idle\"}[$__rate_interval])))", "legendFormat": "{{instance}}", "refId": "A"}],
+      "title": "CPU Usage", "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "percent"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 4}, "id": 7,
+      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "100 * (1 - node_memory_MemAvailable_bytes{job=~\"$job\", instance=~\"$instance\"} / node_memory_MemTotal_bytes{job=~\"$job\", instance=~\"$instance\"})", "legendFormat": "{{instance}}", "refId": "A"}],
+      "title": "Memory Usage", "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "percent"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 4}, "id": 8,
+      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "100 * (1 - node_filesystem_avail_bytes{job=~\"$job\", instance=~\"$instance\", fstype!~\"tmpfs|overlay|squashfs|ramfs\"} / node_filesystem_size_bytes{job=~\"$job\", instance=~\"$instance\", fstype!~\"tmpfs|overlay|squashfs|ramfs\"})", "legendFormat": "{{instance}} {{mountpoint}}", "refId": "A"}],
+      "title": "Filesystem Usage", "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "fieldConfig": {"defaults": {"unit": "Bps"}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12}, "id": 9,
+      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "sum by (instance) (rate(node_network_receive_bytes_total{job=~\"$job\", instance=~\"$instance\", device!~\"lo|veth.*|docker.*\"}[$__rate_interval]))", "legendFormat": "RX {{instance}}", "refId": "A"}, {"expr": "sum by (instance) (rate(node_network_transmit_bytes_total{job=~\"$job\", instance=~\"$instance\", device!~\"lo|veth.*|docker.*\"}[$__rate_interval]))", "legendFormat": "TX {{instance}}", "refId": "B"}],
+      "title": "Network Throughput", "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "description": "Current node-exporter problems. Empty means no matching active problems.",
+      "fieldConfig": {"defaults": {"custom": {"align": "auto", "cellOptions": {"type": "auto"}, "inspect": false}, "mappings": [], "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]}}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12}, "id": 10,
+      "options": {"cellHeight": "sm", "footer": {"countRows": false, "fields": "", "reducer": ["sum"], "show": false}, "showHeader": true},
+      "targets": [
+        {"expr": "up{job=~\"$job\", instance=~\"$instance\"} == 0", "format": "table", "instant": true, "legendFormat": "Node exporter unreachable", "refId": "A"},
+        {"expr": "node_filesystem_device_error{job=~\"$job\", instance=~\"$instance\"} == 1", "format": "table", "instant": true, "legendFormat": "Filesystem device error", "refId": "B"},
+        {"expr": "node_textfile_scrape_error{job=~\"$job\", instance=~\"$instance\"} == 1", "format": "table", "instant": true, "legendFormat": "Textfile collector error", "refId": "C"}
+      ],
+      "title": "Active Problems", "transformations": [{"id": "merge", "options": {}}], "type": "table"
+    }
+  ],
+  "refresh": "15s",
+  "schemaVersion": 41,
+  "tags": ["node-exporter", "infrastructure", "health"],
+  "templating": {"list": [
+    {"current": {}, "datasource": {"type": "prometheus", "uid": "prometheus"}, "definition": "label_values(node_uname_info, job)", "includeAll": true, "label": "Job", "multi": true, "name": "job", "options": [], "query": {"query": "label_values(node_uname_info, job)", "refId": "PrometheusVariableQueryEditor-Job"}, "refresh": 1, "regex": "", "sort": 1, "type": "query"},
+    {"current": {}, "datasource": {"type": "prometheus", "uid": "prometheus"}, "definition": "label_values(node_uname_info{job=~\"$job\"}, instance)", "includeAll": true, "label": "Instance", "multi": true, "name": "instance", "options": [], "query": {"query": "label_values(node_uname_info{job=~\"$job\"}, instance)", "refId": "PrometheusVariableQueryEditor-Instance"}, "refresh": 1, "regex": "", "sort": 1, "type": "query"}
+  ]},
+  "time": {"from": "now-1h", "to": "now"},
+  "timezone": "browser",
+  "title": "Node Exporter Overview",
+  "uid": "node-exporter-overview",
+  "version": 1
+}
