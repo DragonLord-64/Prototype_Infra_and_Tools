@@ -19,5 +19,5 @@ docker run --detach \
   --mount "type=bind,source=$repo_root,target=/work,readonly" \
   air-gapped-filebeat-test:local
 
-docker network connect monitoring air-gapped-playbook-test
-
+# Grafana provisions this stable address as its Prometheus data source.
+docker network connect --ip "${TEST_SERVER_IP:-192.168.49.3}" monitoring air-gapped-playbook-test
