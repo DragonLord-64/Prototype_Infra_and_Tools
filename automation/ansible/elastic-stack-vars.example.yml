@@ -1,0 +1,13 @@
+---
+# Keep Elasticsearch and Kibana reachable only on a trusted cluster network.
+# To make either service local-only, replace 0.0.0.0 with 127.0.0.1.
+elasticsearch_bind_address: 0.0.0.0
+kibana_bind_address: 0.0.0.0
+
+# Low-volume prototype sizing. Elasticsearch needs roughly 2 GiB total memory
+# for a 1 GiB Java heap. Increase these together if ingestion becomes unstable.
+elasticsearch_heap: 1g
+elasticsearch_memory: 2g
+kibana_memory: 1g
+
+elastic_stack_data_dir: /var/lib/elastic-stack

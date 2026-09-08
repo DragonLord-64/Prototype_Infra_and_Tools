@@ -1,0 +1,133 @@
+---
+- name: Install a minimal single-node Elastic Stack
+  hosts: "{{ elastic_stack_target | default('elastic_stack') }}"
+  become: true
+  gather_facts: true
+
+  vars:
+    elastic_version: "9.3.3"
+    elastic_stack_data_dir: /var/lib/elastic-stack
+    elasticsearch_heap: 1g
+    elasticsearch_memory: 2g
+    kibana_memory: 1g
+    elasticsearch_bind_address: 0.0.0.0
+    kibana_bind_address: 0.0.0.0
+    elasticsearch_port: 9200
+    kibana_port: 5601
+
+  pre_tasks:
+    - name: Refuse unsupported operating systems
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.os_family in ['Debian', 'RedHat']
+        fail_msg: This prototype supports Debian/Ubuntu and Red Hat family hosts.
+
+    - name: Check that Docker is installed
+      ansible.builtin.command: docker version
+      register: docker_version
+      changed_when: false
+
+    - name: Check that the Docker daemon is available
+      community.docker.docker_host_info:
+
+    - name: Set the Elasticsearch virtual memory requirement
+      ansible.builtin.copy:
+        dest: /etc/sysctl.d/90-elasticsearch.conf
+        content: "vm.max_map_count=262144\n"
+        owner: root
+        group: root
+        mode: "0644"
+      register: elasticsearch_sysctl
+
+    - name: Apply the Elasticsearch virtual memory requirement
+      ansible.builtin.command: sysctl --system
+      when: elasticsearch_sysctl.changed
+      changed_when: true
+
+    - name: Create persistent data directories
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        owner: "{{ item.owner }}"
+        group: "{{ item.group }}"
+        mode: "0750"
+      loop:
+        - path: "{{ elastic_stack_data_dir }}"
+          owner: root
+          group: root
+        - path: "{{ elastic_stack_data_dir }}/elasticsearch"
+          owner: "1000"
+          group: "0"
+
+    - name: Create the Elastic container network
+      community.docker.docker_network:
+        name: elastic
+        state: present
+
+  tasks:
+    - name: Run single-node Elasticsearch
+      community.docker.docker_container:
+        name: elasticsearch
+        image: "docker.elastic.co/elasticsearch/elasticsearch:{{ elastic_version }}"
+        state: started
+        recreate: false
+        restart_policy: always
+        networks:
+          - name: elastic
+        published_ports:
+          - "{{ elasticsearch_bind_address }}:{{ elasticsearch_port }}:9200"
+        volumes:
+          - "{{ elastic_stack_data_dir }}/elasticsearch:/usr/share/elasticsearch/data"
+        env:
+          discovery.type: single-node
+          xpack.security.enabled: "false"
+          xpack.security.enrollment.enabled: "false"
+          ES_JAVA_OPTS: "-Xms{{ elasticsearch_heap }} -Xmx{{ elasticsearch_heap }}"
+        memory: "{{ elasticsearch_memory }}"
+        ulimits:
+          - nofile=65535:65535
+        labels:
+          org.ska.app.group: logging
+
+    - name: Wait for Elasticsearch
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:{{ elasticsearch_port }}/_cluster/health?wait_for_status=yellow&timeout=60s"
+        status_code: 200
+      register: elasticsearch_health
+      retries: 12
+      delay: 5
+      until: elasticsearch_health.status == 200
+
+    - name: Run Kibana
+      community.docker.docker_container:
+        name: kibana
+        image: "docker.elastic.co/kibana/kibana:{{ elastic_version }}"
+        state: started
+        recreate: false
+        restart_policy: always
+        networks:
+          - name: elastic
+        published_ports:
+          - "{{ kibana_bind_address }}:{{ kibana_port }}:5601"
+        env:
+          ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+          SERVER_HOST: 0.0.0.0
+          TELEMETRY_ENABLED: "false"
+        memory: "{{ kibana_memory }}"
+        labels:
+          org.ska.app.group: logging
+
+    - name: Wait for Kibana
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:{{ kibana_port }}/api/status"
+        status_code: 200
+      register: kibana_status
+      retries: 24
+      delay: 5
+      until: kibana_status.status == 200
+
+    - name: Show service addresses
+      ansible.builtin.debug:
+        msg:
+          - "Elasticsearch: http://{{ ansible_host | default(inventory_hostname) }}:{{ elasticsearch_port }}"
+          - "Kibana: http://{{ ansible_host | default(inventory_hostname) }}:{{ kibana_port }}"

@@ -1,0 +1,30 @@
+---
+- name: Install Filebeat on monitored servers
+  hosts: "{{ filebeat_target | default('filebeat_servers') }}"
+  become: true
+  gather_facts: true
+
+  pre_tasks:
+    - name: Validate required Elasticsearch settings
+      ansible.builtin.assert:
+        that:
+          - logging_filebeat_elasticsearch_address is defined
+          - logging_filebeat_elasticsearch_address | length > 0
+          - logging_filebeat_elasticsearch_protocol in ['http', 'https']
+          - logging_filebeat_elasticsearch_auth_method in ['basic', 'api-key', 'none']
+          - >-
+            logging_filebeat_elasticsearch_auth_method == 'none' or
+            (logging_filebeat_elasticsearch_password is defined and
+             logging_filebeat_elasticsearch_password | length > 0)
+          - elasticsearch_http_authentication is defined
+          - elasticsearch_http_authentication in ['required', 'optional', 'none']
+          - >-
+            logging_filebeat_elasticsearch_protocol == 'http' or
+            elasticsearch_http_authentication == 'required' or
+            (logging_filebeat_ca_fingerprint is defined and
+             logging_filebeat_ca_fingerprint | length > 0)
+        fail_msg: >-
+          Define a valid Elasticsearch address, protocol, and authentication
+          method. HTTPS without client certificates also needs a CA fingerprint.
+  roles:
+    - role: filebeat

@@ -1,20 +1,17 @@
 # Infrastructure prototypes and tools
 
-This repository collects the infrastructure services and supporting utilities
-currently being developed for the lab.
+This repository contains the small-cluster platform, deployable services,
+host automation, and operator tools used by the lab.
 
 ## Layout
 
-- [`air-gapped-mirror/`](air-gapped-mirror/) contains the mirror service, Helm
-  chart, images, and integration tests.
-- [`monitoring/`](monitoring/) contains the monitoring stack, Ansible roles,
-  and the local monitoring demo.
-- [`tools/`](tools/) contains standalone utilities, including the NetBox
-  inventory importer, local Minikube setup, and package-cache proxies.
+| Path | Purpose |
+| --- | --- |
+| [`platform/`](platform/) | Create and manage the local Kubernetes platform |
+| [`deployments/`](deployments/) | Kubernetes, Helm, and Compose workloads |
+| [`automation/`](automation/) | Ansible playbooks, roles, inventories, and variables |
+| [`tools/`](tools/) | NetBox data utilities and other standalone tools |
 
-## Local Kubernetes
-
-Run `./tools/minikube/setup.sh` to install Minikube and create the current
-single-node `monitoring` cluster. See
-[`tools/minikube/README.md`](tools/minikube/README.md) for prerequisites and
-configuration options.
+Start with [`platform/minikube/`](platform/minikube/) to create the mini
+cluster, then choose a workload under [`deployments/`](deployments/). NetBox
+CSV tooling lives under [`tools/netbox/`](tools/netbox/).

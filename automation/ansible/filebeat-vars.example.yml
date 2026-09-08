@@ -1,0 +1,15 @@
+---
+# Minimal prototype settings for install-minimal-elastic-stack.yml.
+logging_filebeat_oci_engine: docker
+logging_filebeat_version: "9.3.3"
+logging_filebeat_elasticsearch_address: 192.0.2.20
+logging_filebeat_elasticsearch_protocol: http
+logging_filebeat_elasticsearch_auth_method: none
+elasticsearch_http_authentication: none
+
+logging_filebeat_index_pattern_prefix: prototype-infrastructure
+# Enable this only after installing the SKA ingest pipeline in Elasticsearch.
+logging_filebeat_pipeline_enabled: false
+ska_datacentre: mid
+ska_environment: development
+ska_service: prototype-infrastructure
