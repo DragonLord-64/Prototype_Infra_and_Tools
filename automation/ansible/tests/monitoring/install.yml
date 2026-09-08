@@ -1,0 +1,94 @@
+---
+- name: Install machine-local Prometheus and node exporter in the test server
+  hosts: filebeat_servers
+  become: true
+
+  vars:
+    prometheus_listen_address: "0.0.0.0:9090"
+    node_exporter_listen_address: "0.0.0.0:9100"
+    prometheus_scrape_interval: 15s
+    prometheus_node_exporter_target: "127.0.0.1:9100"
+
+  tasks:
+    - name: Mark OpenRC initialized in the Docker test server
+      ansible.builtin.file:
+        path: /run/openrc/softlevel
+        state: touch
+        owner: root
+        group: root
+        mode: "0644"
+        modification_time: preserve
+        access_time: preserve
+
+    - name: Install Prometheus and node exporter packages
+      ansible.builtin.package:
+        name:
+          - prometheus
+          - prometheus-node-exporter
+          - prometheus-node-exporter-openrc
+        state: present
+
+    - name: Configure Prometheus to monitor this server
+      ansible.builtin.copy:
+        dest: /etc/prometheus/prometheus.yml
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          global:
+            scrape_interval: {{ prometheus_scrape_interval }}
+
+          scrape_configs:
+            - job_name: prometheus
+              static_configs:
+                - targets:
+                    - 127.0.0.1:9090
+
+            - job_name: node_exporter
+              static_configs:
+                - targets:
+                    - {{ prometheus_node_exporter_target }}
+      notify: Restart Prometheus
+
+    - name: Configure Prometheus listen address
+      ansible.builtin.lineinfile:
+        path: /etc/conf.d/prometheus
+        regexp: '^prometheus_args='
+        line: 'prometheus_args="--web.listen-address={{ prometheus_listen_address }}"'
+        create: true
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart Prometheus
+
+    - name: Configure node exporter listen address
+      ansible.builtin.lineinfile:
+        path: /etc/conf.d/node-exporter
+        regexp: '^ARGS='
+        line: 'ARGS="--web.listen-address={{ node_exporter_listen_address }}"'
+        create: true
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart node exporter
+
+    - name: Start node exporter
+      ansible.builtin.service:
+        name: node-exporter
+        state: started
+
+    - name: Start Prometheus
+      ansible.builtin.service:
+        name: prometheus
+        state: started
+
+  handlers:
+    - name: Restart Prometheus
+      ansible.builtin.service:
+        name: prometheus
+        state: restarted
+
+    - name: Restart node exporter
+      ansible.builtin.service:
+        name: node-exporter
+        state: restarted
