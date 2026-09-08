@@ -8,17 +8,11 @@
     path: /var/run/docker.sock
   register: docker_sock
 
-- name: Look for Podman sock
-  ansible.builtin.stat:
-    path: /var/run/podman/podman.sock
-  register: podman_sock
-
 - name: Set detected log sources
   ansible.builtin.set_fact:
     kubelet_detected: "{{ ('kubelet.service' in services.ansible_facts.services and 'running' == services.ansible_facts.services['kubelet.service'].state) |
     bool }}"
     docker_detected: "{{ (docker_sock.stat.exists and docker_sock.stat.issock and docker_sock.stat.writeable) | bool }}"
-    podman_detected: "{{ (podman_sock.stat.exists and podman_sock.stat.issock and podman_sock.stat.writeable) | bool }}"
 
 - name: Enable different log sources
   ansible.builtin.set_fact:
@@ -26,15 +20,12 @@
     ternary(logging_filebeat_kubernetes_enabled, kubelet_detected)) | bool }}"
     logging_filebeat_docker_enabled: "{{ ((logging_filebeat_docker_enabled is defined and logging_filebeat_docker_enabled != 'auto') |
     ternary(logging_filebeat_docker_enabled, docker_detected)) | bool }}"
-    logging_filebeat_podman_enabled: "{{ ((logging_filebeat_podman_enabled is defined and logging_filebeat_podman_enabled != 'auto') |
-    ternary(logging_filebeat_podman_enabled, podman_detected)) | bool }}"
 
 - name: Display filebeat runtime information
   ansible.builtin.debug:
     msg: "OCI: {{ logging_filebeat_oci_engine }} | \
     Kubernetes logs enabled: {{ logging_filebeat_kubernetes_enabled }} | \
-    Docker logs enabled: {{ logging_filebeat_docker_enabled }} | \
-    Podman logs enabled: {{ logging_filebeat_podman_enabled }}"
+    Docker logs enabled: {{ logging_filebeat_docker_enabled }}"
 
 - name: Write filebeat config
   ansible.builtin.template:
@@ -69,4 +60,3 @@
     create: true
     mode: "0644"
   when: not meta_json.stat.exists
-

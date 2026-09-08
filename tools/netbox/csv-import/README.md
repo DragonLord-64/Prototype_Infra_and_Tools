@@ -1,6 +1,7 @@
 # NetBox workbook import
 
-This create-only Python tool reads an inventory workbook and adds missing
+This create-only Python tool reads an inventory workbook or a directory of CSV
+files and adds missing
 objects to an existing NetBox instance through `pynetbox`. It does not deploy
 NetBox, update existing objects, delete objects, or export data.
 
@@ -9,16 +10,14 @@ NetBox, update existing objects, delete objects, or export data.
 From the repository root:
 
 ```sh
-cd tools/netbox/csv-import
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-cp template/inventory-template.xlsx my-inventory.xlsx
-
 export NETBOX_URL=https://netbox.lab.internal
 export NETBOX_TOKEN=your-api-token
-.venv/bin/python -m netbox_import.cli my-inventory.xlsx --dry-run
-.venv/bin/python -m netbox_import.cli my-inventory.xlsx
+./tools/netbox/csv-import/import.sh tools/netbox/csv-import/example --dry-run
+./tools/netbox/csv-import/import.sh path/to/inventory-csv-directory
 ```
+
+The first run creates a local virtual environment and installs dependencies.
+For Excel, pass an `.xlsx` workbook instead of a directory.
 
 You can pass `--url` and `--token` instead of environment variables. Dry-run
 performs lookups and reports predicted creates without sending writes. Because
@@ -48,6 +47,11 @@ workbook. That row may resolve to an object already in NetBox. Unrecognized
 sheets are ignored; missing sheets and blank rows are skipped. An IP address's
 interface defaults to `eth0`; `true`, `yes`, or `1` marks it as the device's
 primary IPv4 address. Regenerate the template after schema changes with:
+
+For CSV input, create a directory with one file per desired object type, named
+exactly like the sheet names in the table (for example `Sites.csv` and
+`Devices.csv`). The same columns and dependency order apply; omitted files are
+skipped. Copy [`example/`](example/) as a starting point.
 
 ```sh
 .venv/bin/python make_template.py

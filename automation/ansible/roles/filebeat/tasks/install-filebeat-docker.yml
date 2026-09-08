@@ -5,7 +5,7 @@
       - "docker_detected"
 
 - name: "Docker pull {{ logging_filebeat_image }}"
-  community.general.docker_image:
+  community.docker.docker_image:
     source: pull
     name: "{{ logging_filebeat_image }}"
   register: docker_pull_retry
@@ -14,7 +14,7 @@
   delay: 5
 
 - name: "Run the container {{ logging_filebeat_name }}"
-  community.general.docker_container:
+  community.docker.docker_container:
     name: "{{ logging_filebeat_name }}"
     user: "{{ logging_filebeat_user }}"
     hostname: "{{ inventory_hostname }}"
@@ -40,9 +40,7 @@
         (logging_filebeat_ilm_enabled | ternary(logging_filebeat_ilm_volumes, [])) +
         (logging_filebeat_kubernetes_enabled | ternary(logging_filebeat_kubernetes_volumes, [])) +
         (logging_filebeat_docker_enabled | ternary(logging_filebeat_docker_volumes, [])) +
-        (logging_filebeat_podman_enabled | ternary(logging_filebeat_podman_volumes, [])) +
         (logging_filebeat_http_authentication_required | ternary(logging_filebeat_pki_volumes, []))
       }}
     env: "{{ logging_filebeat_env_defaults | combine(logging_filebeat_env_variables) }}"
     recreate: true
-

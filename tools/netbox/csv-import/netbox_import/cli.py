@@ -14,12 +14,12 @@ import sys
 import pynetbox
 
 from .sync import run_sync
-from .workbook import WorkbookError, load_workbook
+from .workbook import WorkbookError, load_inventory
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("workbook", help="Path to the inventory .xlsx file")
+    parser.add_argument("inventory", help="Path to an .xlsx workbook or directory of CSV files")
     parser.add_argument(
         "--url", default=os.environ.get("NETBOX_URL"), help="NetBox base URL (default: $NETBOX_URL)"
     )
@@ -35,12 +35,12 @@ def main(argv=None):
         parser.error("NetBox URL and token are required (--url/--token or $NETBOX_URL/$NETBOX_TOKEN)")
 
     try:
-        sheets = load_workbook(args.workbook)
+        sheets = load_inventory(args.inventory)
     except WorkbookError as exc:
         parser.error(str(exc))
 
     if not sheets:
-        print("No recognized sheets found in the workbook -- nothing to do.", file=sys.stderr)
+        print("No recognized inventory data found -- nothing to do.", file=sys.stderr)
         return 1
 
     nb = pynetbox.api(args.url, token=args.token)

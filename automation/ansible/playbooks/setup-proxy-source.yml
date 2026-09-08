@@ -1,5 +1,5 @@
 ---
-- name: Configure an offline server to use the proxy services
+- name: Set up an offline server to use the proxy services
   hosts: all
   become: true
 

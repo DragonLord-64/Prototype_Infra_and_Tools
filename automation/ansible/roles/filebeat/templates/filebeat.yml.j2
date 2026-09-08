@@ -152,40 +152,6 @@ filebeat:
 {% endfor %}
             ska.application: docker
 {% endif %}
-{% if logging_filebeat_podman_enabled|bool %}
-    - type: filestream
-      id: podman_logs
-      file_identity.{{ logging_filebeat_identity }}: ~
-      paths:
-        - "/var/lib/containers/storage/overlay-containers/*/*/*.log"
-      parsers:
-        - container:
-            stream: all
-            format: docker
-      combine_partial: true
-      prospector:
-        scanner:
-          exclude_files: ['\.gz$']
-      exclude_lines: ["^\\s+[\\-`('.|_]"]  # drop asciiart lines
-      processors:
-      - add_docker_metadata:
-          match_source_index: 5
-          host: "unix:///var/run/podman/podman.sock"
-# get rid of all filebeat/journalbeat related logs
-      - drop_event:
-          when:
-              and:
-                - equals:
-                    container.name: {{ logging_filebeat_name }}
-      - add_fields:
-          target: ''
-          fields:
-{% for field in logging_filebeat_add_fields %}
-            {{ field.name }}: {{ field.value }}
-{% endfor %}
-            ska.application: podman
-{% endif %}
-
 # output configuration
 output:
   elasticsearch:

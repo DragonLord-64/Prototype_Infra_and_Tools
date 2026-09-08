@@ -1,0 +1,6 @@
+---
+- name: Deploy Elasticsearch and Kibana on MiniCube
+  ansible.builtin.import_playbook: install-minimal-elastic-stack.yml
+
+- name: Deploy Filebeat on MiniCube
+  ansible.builtin.import_playbook: install-filebeat.yml

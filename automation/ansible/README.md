@@ -2,7 +2,7 @@
 
 ## Minimal Elastic Stack
 
-`playbooks/install-minimal-elastic-stack.yml` installs Podman and runs one
+`playbooks/install-minimal-elastic-stack.yml` uses Docker to run one
 Elasticsearch container and one Kibana container on a single node. It is the
 low-volume prototype path: there is no Logstash, HAProxy, Metricbeat,
 Prometheus exporter, replication, or multi-node discovery. Elasticsearch data
@@ -28,7 +28,7 @@ and Filebeat.
 
 ## Filebeat
 
-This Ansible project installs containerized Filebeat on standalone servers and sends system, journald, Docker, or Podman logs to Elasticsearch.
+This Ansible project installs containerized Filebeat on standalone servers and sends system, journald, or Docker logs to Elasticsearch. The prototype is Docker-only.
 
 The vendored `filebeat` role comes from [`ska_collections.logging.beats`](https://gitlab.com/ska-telescope/sdi/ska-ser-ansible-collections) at commit `9248a0108a22117dfaff82aae002cdb7d5e3d17c` (BSD-3-Clause).
 
@@ -51,7 +51,7 @@ ansible-playbook -i inventory.ini playbooks/install-filebeat.yml \
   -e @filebeat-vars.yml --ask-vault-pass
 ```
 
-Targets need Docker or Podman. The default inventory group is `filebeat_servers`; override it with `-e filebeat_target=my_group`, and use `--limit server01` to select one host.
+Targets need a running Docker daemon. The default inventory group is `filebeat_servers`; override it with `-e filebeat_target=my_group`, and use `--limit server01` to select one host.
 
 The example uses unauthenticated HTTP so it can send directly to the minimal
 stack above. The vendored role has a small local extension for this mode. For
@@ -59,6 +59,21 @@ a secured deployment, use HTTPS with basic authentication, an API key, or
 mutual TLS and protect the variables with Ansible Vault.
 
 Keep `inventory.ini`, `filebeat-vars.yml`, and all credentials out of Git.
+
+## MiniCube deployment
+
+The tracked MiniCube configuration deploys the complete low-volume stack and
+Filebeat to the local Docker host in one command:
+
+```sh
+ansible-playbook -i inventory.minikube.ini playbooks/deploy-minicube-logging.yml \
+  -e @minicube-vars.yml
+```
+
+This creates `elasticsearch`, `kibana`, and `filebeat` containers. The
+Elasticsearch data persists in `/var/lib/elastic-stack/elasticsearch`.
+The deployment deliberately has no TLS or authentication and must remain on a
+trusted development network.
 
 `playbooks/configure-mirror-client.yml` configures DNS, Git, apt, and pip on a
 host that consumes the air-gapped mirror:

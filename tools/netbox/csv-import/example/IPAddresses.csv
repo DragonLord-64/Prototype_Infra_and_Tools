@@ -1,0 +1,2 @@
+address,device,interface,status,primary
+192.0.2.10/24,example-server,eth0,active,true

@@ -141,11 +141,6 @@ logging_filebeat_docker_volumes:
   - "/var/run/docker.sock:/var/run/docker.sock:Z"
   - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
 
-logging_filebeat_podman_enabled: auto
-logging_filebeat_podman_volumes:
-  - "/var/run/podman/podman.sock:/var/run/podman/podman.sock:Z"
-  - "/var/lib/containers:/var/lib/containers:ro"
-
 logging_filebeat_enable_audit_logs: false
 logging_filebeat_audit_log_paths: []
 

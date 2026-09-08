@@ -1,0 +1,22 @@
+---
+# Local, low-volume logging stack for the Docker-backed Minikube lab.
+elastic_stack_data_dir: /var/lib/elastic-stack
+elasticsearch_bind_address: 0.0.0.0
+kibana_bind_address: 0.0.0.0
+elasticsearch_heap: 1g
+elasticsearch_memory: 2g
+kibana_memory: 1g
+
+logging_filebeat_oci_engine: docker
+logging_filebeat_version: "9.3.3"
+logging_filebeat_elasticsearch_address: 127.0.0.1
+logging_filebeat_elasticsearch_protocol: http
+logging_filebeat_elasticsearch_auth_method: none
+elasticsearch_http_authentication: none
+logging_filebeat_index_pattern_prefix: minicube
+logging_filebeat_pipeline_enabled: false
+logging_filebeat_kubernetes_enabled: false
+logging_filebeat_docker_enabled: true
+ska_datacentre: mid
+ska_environment: development
+ska_service: minicube

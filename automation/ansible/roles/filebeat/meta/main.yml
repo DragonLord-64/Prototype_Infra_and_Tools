@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: SKAO System Team
-  description: Run Filebeat in Docker or Podman on monitored servers
+  description: Run Filebeat in Docker on monitored servers
   license: BSD-3-Clause
   min_ansible_version: "2.13"
   platforms:

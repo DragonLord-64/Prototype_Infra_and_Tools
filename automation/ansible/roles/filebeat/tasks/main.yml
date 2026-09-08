@@ -1,18 +1,13 @@
 ---
-- name: Validate the selected Filebeat container engine
+- name: Validate the Filebeat container engine
   ansible.builtin.assert:
     that:
-      - logging_filebeat_oci_engine in ['docker', 'podman']
+      - logging_filebeat_oci_engine == 'docker'
     fail_msg: >-
-      logging_filebeat_oci_engine must be either 'docker' or 'podman'.
+      This prototype supports Docker only; set logging_filebeat_oci_engine to docker.
 
 - name: Prepare Filebeat configuration
   ansible.builtin.include_tasks: install-filebeat-common.yml
 
 - name: Install Filebeat with Docker
-  when: logging_filebeat_oci_engine == 'docker'
   ansible.builtin.include_tasks: install-filebeat-docker.yml
-
-- name: Install Filebeat with Podman
-  when: logging_filebeat_oci_engine == 'podman'
-  ansible.builtin.include_tasks: install-filebeat-podman.yml

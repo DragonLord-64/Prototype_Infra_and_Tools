@@ -1,0 +1,2 @@
+name,device_type,role,site,rack,position,face,status,serial
+example-server,Cube Server,Server,Mining Cube,Cube Rack,1,front,active,

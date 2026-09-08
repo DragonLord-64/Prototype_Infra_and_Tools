@@ -45,7 +45,7 @@
         elasticsearch_version: "{{ es_root_info.json.version.number }}"
 
     - name: "Docker pull {{ filebeat_config.image }}"
-      community.general.docker_image:
+      community.docker.docker_image:
         source: pull
         name: "{{ filebeat_config.image }}"
       register: docker_pull_retry
@@ -54,7 +54,7 @@
       delay: 5
 
     - name: "Export Filebeat template for Elasticsearch {{ elasticsearch_version }}"
-      community.general.docker_container:
+      community.docker.docker_container:
         name: "{{ filebeat_config.name }}-export-template"
         restart_policy: false
         detach: false
@@ -105,4 +105,3 @@
         body: "{{ filebeat_ecs_component_body }}"
       environment:
         SSL_CERT_FILE: "{{ certificates_dir }}/ca-certificate.crt"
-

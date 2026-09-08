@@ -1,0 +1,45 @@
+# Small-cluster defaults for the official NetBox community chart.
+allowedHosts:
+  - "*"
+
+timeZone: America/Vancouver
+preferIPv4: true
+
+service:
+  type: ClusterIP
+
+persistence:
+  enabled: true
+  size: 2Gi
+
+resourcesPreset: micro
+
+worker:
+  enabled: true
+  resourcesPreset: micro
+
+housekeeping:
+  enabled: true
+  resourcesPreset: nano
+
+postgresql:
+  enabled: true
+  primary:
+    persistence:
+      enabled: true
+      size: 4Gi
+    resourcesPreset: micro
+
+valkey:
+  enabled: true
+  architecture: standalone
+  primary:
+    persistence:
+      enabled: true
+      size: 1Gi
+    resourcesPreset: micro
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: false
