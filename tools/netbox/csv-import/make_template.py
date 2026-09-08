@@ -66,6 +66,40 @@ SCHEMA = [
             ("face", "front", False),
             ("status", "active", False),
             ("serial", "", False),
+            ("description", "", False),
+        ],
+    ),
+    (
+        "Interfaces",
+        [
+            ("device", "srv01", True),
+            ("name", "eth0", True),
+            ("type", "other", False),
+            ("enabled", "true", False),
+            ("description", "", False),
+        ],
+    ),
+    (
+        "MACAddresses",
+        [
+            ("address", "00:11:22:33:44:55", True),
+            ("device", "srv01", True),
+            ("interface", "eth0", True),
+            ("primary", "true", False),
+            ("description", "", False),
+        ],
+    ),
+    (
+        "InventoryItems",
+        [
+            ("device", "srv01", True),
+            ("name", "DIMM_A1", True),
+            ("manufacturer", "Dell", False),
+            ("part_id", "", False),
+            ("serial", "", False),
+            ("parent", "", False),
+            ("role", "Memory", False),
+            ("description", "", False),
         ],
     ),
     (

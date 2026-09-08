@@ -1,0 +1,21 @@
+---
+netbox_site: Prototype Lab
+netbox_device_role: Server
+netbox_primary_interface: eno1
+
+# These commands are deliberately site-specific. Their complete stdout and
+# stderr are retained in each host's raw JSON. The CSV initially contains a
+# placeholder InventoryItem until a parser is added for the real output.
+netbox_extra_probes:
+  - name: FPGA 1
+    category: fpga
+    command: /opt/vendor/bin/fpga-info --slot 0
+  - name: FPGA 2
+    category: fpga
+    command: /opt/vendor/bin/fpga-info --slot 1
+  - name: MBME 1
+    category: mbme
+    command: /opt/vendor/bin/mbme-info --slot 0
+  - name: MBME 2
+    category: mbme
+    command: /opt/vendor/bin/mbme-info --slot 1

@@ -1,0 +1,91 @@
+---
+- name: Start a uniquely named inventory collection
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Record collection identifier
+      ansible.builtin.set_fact:
+        netbox_collection_id: "{{ now(utc=true, fmt='%Y%m%dT%H%M%SZ') }}"
+
+- name: Collect hardware inventory for NetBox
+  hosts: "{{ netbox_inventory_target | default('netbox_inventory_servers') }}"
+  become: true
+  gather_facts: false
+  vars:
+    collector_script: "{{ playbook_dir }}/../../../tools/netbox/inventory-collector/collect_host.py"
+    collector_output: "{{ playbook_dir }}/../../../tools/netbox/inventory-collector/output"
+    netbox_extra_probes: []
+  tasks:
+    - name: Create temporary collector file
+      ansible.builtin.tempfile:
+        state: file
+        suffix: -netbox-inventory.py
+      register: collector_temp
+
+    - name: Create raw inventory directory on the controller
+      ansible.builtin.file:
+        path: "{{ collector_output }}/{{ hostvars['localhost']['netbox_collection_id'] }}/raw"
+        state: directory
+        mode: "0700"
+      delegate_to: localhost
+      become: false
+      run_once: true
+
+    - name: Copy collector to target
+      ansible.builtin.copy:
+        src: "{{ collector_script }}"
+        dest: "{{ collector_temp.path }}"
+        mode: "0700"
+
+    - name: Run hardware collector
+      ansible.builtin.command:
+        argv:
+          - python3
+          - "{{ collector_temp.path }}"
+          - --extra-probes-json
+          - "{{ netbox_extra_probes | to_json }}"
+      register: collected_inventory
+      changed_when: false
+
+    - name: Remove temporary collector
+      ansible.builtin.file:
+        path: "{{ collector_temp.path }}"
+        state: absent
+      when: collector_temp.path is defined
+
+    - name: Save raw inventory on the controller
+      ansible.builtin.copy:
+        content: "{{ collected_inventory.stdout }}\n"
+        dest: "{{ collector_output }}/{{ hostvars['localhost']['netbox_collection_id'] }}/raw/{{ inventory_hostname }}.json"
+        mode: "0600"
+      delegate_to: localhost
+      become: false
+
+- name: Build NetBox CSV files
+  hosts: localhost
+  gather_facts: false
+  vars:
+    collector_root: "{{ playbook_dir }}/../../../tools/netbox/inventory-collector"
+    collector_output: "{{ collector_root }}/output"
+    netbox_site: Prototype Lab
+    netbox_device_role: Server
+    netbox_primary_interface: ""
+  tasks:
+    - name: Convert raw inventories to relational CSV files
+      ansible.builtin.command:
+        argv:
+          - python3
+          - "{{ collector_root }}/build_csv.py"
+          - "{{ collector_output }}/{{ netbox_collection_id }}/raw"
+          - "{{ collector_output }}/{{ netbox_collection_id }}/csv"
+          - --site
+          - "{{ netbox_site }}"
+          - --role
+          - "{{ netbox_device_role }}"
+          - --primary-interface
+          - "{{ netbox_primary_interface }}"
+      changed_when: true
+
+    - name: Show generated inventory location
+      ansible.builtin.debug:
+        msg: "NetBox CSV inventory: {{ collector_output }}/{{ netbox_collection_id }}/csv"

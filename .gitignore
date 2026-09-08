@@ -14,6 +14,8 @@ automation/ansible/.venv/
 tools/netbox/csv-import/.venv/
 tools/netbox/csv-import/**/__pycache__/
 tools/netbox/csv-import/.pytest_cache/
+tools/netbox/inventory-collector/output/
+tools/netbox/inventory-collector/**/__pycache__/
 
 # tools
 tools/prometheus-rule-tables/__pycache__/

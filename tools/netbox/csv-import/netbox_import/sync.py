@@ -193,6 +193,8 @@ def sync_devices(nb, rows, refs, dry_run, stats):
                 create["face"] = row["face"]
         if row.get("serial"):
             create["serial"] = row["serial"]
+        if row.get("description"):
+            create["description"] = row["description"]
         try:
             obj = _get_or_create(
                 nb.dcim.devices, {"name": name, "site_id": site_id}, create, dry_run, stats
@@ -253,6 +255,108 @@ def _get_or_create_interface(nb, device, iface_name, dry_run, stats):
     )
 
 
+def sync_interfaces(nb, rows, refs, dry_run, stats):
+    cache = {}
+    for row in rows:
+        device = refs["Devices"].get(row["device"])
+        if device is None and not dry_run:
+            stats.errors.append(f"Interfaces row {row}: unknown device {row['device']!r}")
+            continue
+        create = {
+            "device": device.id if device else None,
+            "name": row["name"],
+            "type": row.get("type") or "other",
+            "enabled": str(row.get("enabled", "true")).lower() not in ("false", "no", "0"),
+        }
+        for field in ("description",):
+            if row.get(field):
+                create[field] = row[field]
+        try:
+            obj = _get_or_create(
+                nb.dcim.interfaces,
+                {"device_id": device.id if device else None, "name": row["name"]},
+                create,
+                dry_run,
+                stats,
+            )
+        except Exception as exc:
+            stats.errors.append(f"Interfaces row {row}: {exc}")
+            continue
+        cache[f"{row['device']}::{row['name']}"] = obj
+    return cache
+
+
+def sync_mac_addresses(nb, rows, refs, dry_run, stats):
+    for row in rows:
+        device = refs["Devices"].get(row["device"])
+        if device is None and not dry_run:
+            stats.errors.append(f"MACAddresses row {row}: unknown device {row['device']!r}")
+            continue
+        iface = refs["Interfaces"].get(f"{row['device']}::{row['interface']}")
+        if iface is None and not dry_run:
+            stats.errors.append(f"MACAddresses row {row}: unknown interface {row['interface']!r}")
+            continue
+        create = {"mac_address": row["address"]}
+        if iface:
+            create.update({"assigned_object_type": "dcim.interface", "assigned_object_id": iface.id})
+        if row.get("description"):
+            create["description"] = row["description"]
+        try:
+            obj = _get_or_create(
+                nb.dcim.mac_addresses, {"mac_address": row["address"]}, create, dry_run, stats
+            )
+        except Exception as exc:
+            stats.errors.append(f"MACAddresses row {row}: {exc}")
+            continue
+        wants_primary = str(row.get("primary", "true")).strip().lower() in ("true", "yes", "1")
+        if wants_primary and iface and obj and not dry_run:
+            iface.primary_mac_address = obj.id
+            iface.save()
+
+
+def sync_inventory_items(nb, rows, refs, dry_run, stats):
+    cache = {}
+    for row in rows:
+        device = refs["Devices"].get(row["device"])
+        if device is None and not dry_run:
+            stats.errors.append(f"InventoryItems row {row}: unknown device {row['device']!r}")
+            continue
+        key = f"{row['device']}::{row['name']}"
+        create = {"device": device.id if device else None, "name": row["name"]}
+        manufacturer_name = row.get("manufacturer")
+        if manufacturer_name:
+            manufacturer = refs["Manufacturers"].get(manufacturer_name)
+            if manufacturer is None and not dry_run:
+                stats.errors.append(
+                    f"InventoryItems row {row}: unknown manufacturer {manufacturer_name!r}"
+                )
+                continue
+            create["manufacturer"] = manufacturer.id if manufacturer else None
+        parent_name = row.get("parent")
+        if parent_name:
+            parent = cache.get(f"{row['device']}::{parent_name}")
+            if parent is None and not dry_run:
+                stats.errors.append(f"InventoryItems row {row}: unknown parent {parent_name!r}")
+                continue
+            create["parent"] = parent.id if parent else None
+        for field in ("part_id", "serial", "role", "description"):
+            if row.get(field):
+                create[field] = row[field]
+        try:
+            obj = _get_or_create(
+                nb.dcim.inventory_items,
+                {"device_id": device.id if device else None, "name": row["name"]},
+                create,
+                dry_run,
+                stats,
+            )
+        except Exception as exc:
+            stats.errors.append(f"InventoryItems row {row}: {exc}")
+            continue
+        cache[key] = obj
+    return cache
+
+
 def sync_ip_addresses(nb, rows, refs, dry_run, stats):
     for row in rows:
         address = row["address"]
@@ -290,6 +394,9 @@ SYNC_FUNCS = {
     "Sites": (sync_sites, []),
     "Racks": (sync_racks, ["Sites"]),
     "Devices": (sync_devices, ["DeviceTypes", "DeviceRoles", "Sites", "Racks"]),
+    "Interfaces": (sync_interfaces, ["Devices"]),
+    "MACAddresses": (sync_mac_addresses, ["Devices", "Interfaces"]),
+    "InventoryItems": (sync_inventory_items, ["Devices", "Manufacturers"]),
     "VLANs": (sync_vlans, ["Sites"]),
     "Prefixes": (sync_prefixes, ["Sites"]),
     "IPAddresses": (sync_ip_addresses, ["Devices"]),

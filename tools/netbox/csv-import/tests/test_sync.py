@@ -22,6 +22,12 @@ SAMPLE_SHEETS = {
             "position": 10,
         }
     ],
+    "Interfaces": [{"device": "srv01", "name": "eth1", "type": "1000base-t"}],
+    "MACAddresses": [{"address": "00:11:22:33:44:55", "device": "srv01",
+                      "interface": "eth1", "primary": "true"}],
+    "InventoryItems": [
+        {"device": "srv01", "name": "System board", "manufacturer": "Dell"}
+    ],
     "VLANs": [{"vid": 100, "name": "servers", "site": "Lab"}],
     "Prefixes": [{"prefix": "10.0.0.0/24", "site": "Lab"}],
     "IPAddresses": [
@@ -41,7 +47,9 @@ class RunSyncTests(unittest.TestCase):
         self.assertEqual(len(nb.dcim.sites.objects), 1)
         self.assertEqual(len(nb.dcim.racks.objects), 1)
         self.assertEqual(len(nb.dcim.devices.objects), 1)
-        self.assertEqual(len(nb.dcim.interfaces.objects), 1)
+        self.assertEqual(len(nb.dcim.interfaces.objects), 2)
+        self.assertEqual(len(nb.dcim.inventory_items.objects), 1)
+        self.assertEqual(len(nb.dcim.mac_addresses.objects), 1)
         self.assertEqual(len(nb.ipam.vlans.objects), 1)
         self.assertEqual(len(nb.ipam.prefixes.objects), 1)
         self.assertEqual(len(nb.ipam.ip_addresses.objects), 1)

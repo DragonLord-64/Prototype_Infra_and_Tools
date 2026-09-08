@@ -51,6 +51,7 @@ class FakeApp:
 class FakeNetbox:
     def __init__(self):
         self.dcim = FakeApp(
-            "manufacturers", "device_roles", "device_types", "sites", "racks", "devices", "interfaces"
+            "manufacturers", "device_roles", "device_types", "sites", "racks", "devices", "interfaces",
+            "inventory_items", "mac_addresses"
         )
         self.ipam = FakeApp("vlans", "prefixes", "ip_addresses")

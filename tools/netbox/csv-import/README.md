@@ -36,12 +36,16 @@ dependency order:
 | `DeviceTypes` | `manufacturer`, `model` | `slug`, `u_height` |
 | `Sites` | `name` | `slug`, `status` |
 | `Racks` | `name`, `site` | `status`, `u_height` |
-| `Devices` | `name`, `device_type`, `role`, `site` | `rack`, `position`, `face`, `status`, `serial` |
+| `Devices` | `name`, `device_type`, `role`, `site` | `rack`, `position`, `face`, `status`, `serial`, `description` |
+| `Interfaces` | `device`, `name` | `type`, `enabled`, `description` |
+| `MACAddresses` | `address`, `device`, `interface` | `primary`, `description` |
+| `InventoryItems` | `device`, `name` | `manufacturer`, `part_id`, `serial`, `parent`, `role`, `description` |
 | `VLANs` | `vid`, `name` | `site`, `status` |
 | `Prefixes` | `prefix` | `site`, `status`, `description` |
 | `IPAddresses` | `address` | `device`, `interface`, `status`, `primary` |
 
-References use names (or a device type's model). Include a row for each
+References use names (or a device type's model). Inventory item parents must
+appear earlier in the same sheet than their children. Include a row for each
 referenced manufacturer, role, device type, site, rack, or device in the same
 workbook. That row may resolve to an object already in NetBox. Unrecognized
 sheets are ignored; missing sheets and blank rows are skipped. An IP address's
