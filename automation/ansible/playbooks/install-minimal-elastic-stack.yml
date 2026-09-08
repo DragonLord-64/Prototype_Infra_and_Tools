@@ -15,6 +15,7 @@
     elasticsearch_port: 9200
     kibana_port: 5601
     elasticsearch_disk_threshold_enabled: true
+    kibana_data_views: []
 
   pre_tasks:
     - name: Refuse unsupported operating systems
@@ -125,6 +126,38 @@
       retries: 24
       delay: 5
       until: kibana_status.status == 200
+
+    - name: Check configured Kibana data views
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:{{ kibana_port }}/api/data_views/data_view/{{ item.id }}"
+        headers:
+          kbn-xsrf: ansible
+        status_code:
+          - 200
+          - 404
+      loop: "{{ kibana_data_views }}"
+      loop_control:
+        label: "{{ item.id }}"
+      register: kibana_data_view_checks
+
+    - name: Create missing Kibana data views
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:{{ kibana_port }}/api/data_views/data_view"
+        method: POST
+        headers:
+          kbn-xsrf: ansible
+        body_format: json
+        body:
+          data_view:
+            id: "{{ item.item.id }}"
+            name: "{{ item.item.name }}"
+            title: "{{ item.item.title }}"
+            timeFieldName: "{{ item.item.time_field | default('@timestamp') }}"
+        status_code: 200
+      loop: "{{ kibana_data_view_checks.results }}"
+      loop_control:
+        label: "{{ item.item.id }}"
+      when: item.status == 404
 
     - name: Show service addresses
       ansible.builtin.debug:

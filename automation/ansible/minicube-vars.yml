@@ -7,6 +7,11 @@ elasticsearch_heap: 1g
 elasticsearch_memory: 2g
 kibana_memory: 1g
 elasticsearch_disk_threshold_enabled: true
+kibana_data_views:
+  - id: filebeat-test-server
+    name: Filebeat test server
+    title: filebeat-test-server-*
+    time_field: "@timestamp"
 
 logging_filebeat_oci_engine: docker
 logging_filebeat_version: "9.3.3"

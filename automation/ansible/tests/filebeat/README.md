@@ -39,4 +39,6 @@ The server remains running for follow-up tests. Remove it when finished:
 
 The integration check creates a `filebeat-test-server-9.3.3` data stream in
 the prototype Elasticsearch instance. It is deliberately named separately
-from production indices.
+from production indices. The Minikube lab variables provision the
+`filebeat-test-server-*` Kibana data view, making these events available in
+Kibana Discover after the Elastic Stack playbook is run.
