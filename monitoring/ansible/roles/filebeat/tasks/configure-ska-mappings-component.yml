@@ -1,0 +1,37 @@
+- name: Set Elasticsearch authentication parameters
+  ansible.builtin.include_tasks: set-elasticsearch-auth.yml
+
+- name: Get SKA custom mappings component template
+  become: true
+  ansible.builtin.uri:
+    url: "{{ filebeat_config.elasticsearch_url }}/_component_template/{{ filebeat_ska_component_name }}"
+    method: GET
+    force: true
+    return_content: true
+    status_code: [200, 404]
+    url_username: "{{ username }}"
+    url_password: "{{ password }}"
+    force_basic_auth: "{{ force_basic }}"
+    headers: "{{ headers }}"
+  environment:
+    SSL_CERT_FILE: "{{ certificates_dir }}/ca-certificate.crt"
+  register: read_ska_component
+
+- name: "Create/update {{ filebeat_ska_component_name }}"
+  become: true
+  when: read_ska_component.status == 404 or (read_ska_component.status == 200 and filebeat_ska_mappings_overwrite)
+  ansible.builtin.uri:
+    url: "{{ filebeat_config.elasticsearch_url }}/_component_template/{{ filebeat_ska_component_name }}"
+    method: PUT
+    force: true
+    return_content: true
+    status_code: [200]
+    url_username: "{{ username }}"
+    url_password: "{{ password }}"
+    force_basic_auth: "{{ force_basic }}"
+    headers: "{{ headers }}"
+    body_format: "json"
+    body: "{{ lookup('template', 'ska-log-custom-mappings.json.j2') }}"
+  environment:
+    SSL_CERT_FILE: "{{ certificates_dir }}/ca-certificate.crt"
+

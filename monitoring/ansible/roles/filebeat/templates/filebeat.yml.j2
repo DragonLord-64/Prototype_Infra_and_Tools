@@ -1,0 +1,359 @@
+name: {{ inventory_hostname }}
+
+# input configuration
+filebeat:
+  inputs:
+{% if logging_filebeat_enable_audit_logs %}
+    - type: filestream
+      id: audit_logs
+      file_identity.{{ logging_filebeat_identity }}: ~
+      paths: {{ logging_filebeat_audit_log_paths }}
+      processors:
+      - add_fields:
+          target: ''
+          fields:
+{% for field in logging_filebeat_add_fields %}
+            {{ field.name }}: {{ field.value }}
+{% endfor %}
+            ska.application: auditing
+{% endif %}
+    - type: filestream
+      id: system_logs
+      file_identity.{{ logging_filebeat_identity }}: ~
+      paths:
+        - '/var/log/syslog'
+        - '/var/log/*.log'
+      prospector:
+        scanner:
+{% if logging_filebeat_exclude_var_log_files %}
+          exclude_files: {{ logging_filebeat_exclude_var_log_files }}
+{% endif %}
+      processors:
+      - add_fields:
+          target: ''
+          fields:
+{% for field in logging_filebeat_add_fields %}
+            {{ field.name }}: {{ field.value }}
+{% endfor %}
+            ska.application: syslog
+    - type: journald
+      id: everything
+      paths: []
+      seek: tail
+      processors:
+      - add_fields:
+          target: ''
+          fields:
+{% for field in logging_filebeat_add_fields %}
+            {{ field.name }}: {{ field.value }}
+{% endfor %}
+            ska.application: journald
+{% if logging_filebeat_kubernetes_enabled|bool %}
+    - type: {{ 'container' if (logging_filebeat_kubernetes_legacy | bool) else 'filestream' }}
+      id: kubernetes_logs
+      paths:
+        - /var/log/containers/*.log
+      exclude_lines: ["^\\s+[\\-`('.|_]"]  # drop asciiart lines
+{% if logging_filebeat_kubernetes_legacy|bool %}
+      allow_deprecated_use: true
+      symlinks: true
+      exclude_files: ['\.gz$']
+      multiline.type: pattern
+# if the message start with "PyTango.DevFailed: DevFailed" or "DevError" or "Traceback" # or "severity" or
+# " " or "]" or the line is empty then it is considered multiline and will be attached to the previous line
+# that does not match. The "parsers" option indicated in the documentation does not work.
+      multiline.pattern: '^PyTango.DevFailed: DevFailed|^DevError|^Traceback|^severity|^[[:space:]]|^\]|^$'
+      multiline.negate: false
+      multiline.match: after
+{% else %}
+      file_identity.{{ logging_filebeat_identity }}: ~
+      take_over: true
+      prospector:
+        scanner:
+          symlinks: true
+          exclude_files: ['\.gz$']
+      parsers:
+        - container:
+            stream: all
+        - multiline:
+            type: pattern
+            # if the message start with "PyTango.DevFailed: DevFailed" or "DevError" or "Traceback" # or "severity" or
+            # " " or "]" or the line is empty then it is considered multiline and will be attached to the previous line
+            # that does not match. The "parsers" option indicated in the documentation does not work.
+            pattern: '^PyTango.DevFailed: DevFailed|^DevError|^Traceback|^severity|^[[:space:]]|^\]|^$'
+            negate: false
+            match: after
+{% endif %}
+      processors:
+{% if logging_filebeat_containers_pre_processors | length > 0 %}
+{{ logging_filebeat_containers_pre_processors | to_nice_yaml(indent=2) | indent(6, True) }}
+{% endif %}
+
+      - truncate_fields:  # guard against extremely long log messages eg. pg slow queries
+          fields: ["message"]
+          max_bytes: 65536
+          fail_on_error: false
+          ignore_missing: true
+
+      - add_kubernetes_metadata:
+          kube_config: /kube_config
+          node: {{ inventory_hostname }}
+          default_indexers.enabled: false
+          default_matchers.enabled: false
+          indexers:
+            - container:
+          matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"
+
+      - add_fields:
+          target: ''
+          fields:
+{% for field in logging_filebeat_add_fields %}
+            {{ field.name }}: {{ field.value }}
+{% endfor %}
+            ska.application: kubernetes
+            ska.deployment: oci
+{% endif %}
+
+{% if logging_filebeat_containers_post_processors | length > 0 %}
+{{ logging_filebeat_containers_post_processors | to_nice_yaml(indent=2) | indent(6, True) }}
+{% endif %}
+
+{% if logging_filebeat_docker_enabled|bool %}
+    - type: filestream
+      id: docker_logs
+      file_identity.{{ logging_filebeat_identity }}: ~
+      paths:
+        - "/var/lib/docker/containers/*/*.log"
+      parsers:
+        - container:
+            stream: all
+            format: docker
+      combine_partial: true
+      prospector:
+        scanner:
+          exclude_files: ['\.gz$']
+      exclude_lines: ["^\\s+[\\-`('.|_]"]  # drop asciiart lines
+      processors:
+      - add_docker_metadata:
+          host: "unix:///var/run/docker.sock"
+# get rid of all filebeat/journalbeat related logs
+      - drop_event:
+          when:
+            and:
+              - equals:
+                  container.name: {{ logging_filebeat_name }}
+      - add_fields:
+          target: ''
+          fields:
+{% for field in logging_filebeat_add_fields %}
+            {{ field.name }}: {{ field.value }}
+{% endfor %}
+            ska.application: docker
+{% endif %}
+{% if logging_filebeat_podman_enabled|bool %}
+    - type: filestream
+      id: podman_logs
+      file_identity.{{ logging_filebeat_identity }}: ~
+      paths:
+        - "/var/lib/containers/storage/overlay-containers/*/*/*.log"
+      parsers:
+        - container:
+            stream: all
+            format: docker
+      combine_partial: true
+      prospector:
+        scanner:
+          exclude_files: ['\.gz$']
+      exclude_lines: ["^\\s+[\\-`('.|_]"]  # drop asciiart lines
+      processors:
+      - add_docker_metadata:
+          match_source_index: 5
+          host: "unix:///var/run/podman/podman.sock"
+# get rid of all filebeat/journalbeat related logs
+      - drop_event:
+          when:
+              and:
+                - equals:
+                    container.name: {{ logging_filebeat_name }}
+      - add_fields:
+          target: ''
+          fields:
+{% for field in logging_filebeat_add_fields %}
+            {{ field.name }}: {{ field.value }}
+{% endfor %}
+            ska.application: podman
+{% endif %}
+
+# output configuration
+output:
+  elasticsearch:
+    index: "{{ logging_filebeat_index_pattern_prefix }}-%{[agent.version]}"
+    hosts: ["{{ logging_filebeat_elasticsearch_url }}"]
+{% if logging_filebeat_bulk_max_size is not none %}
+    bulk_max_size: {{ logging_filebeat_bulk_max_size }}
+{% endif %}
+{% if logging_filebeat_http_authentication_required %}
+    ssl.certificate_authorities: ["/etc/ca-certificate.crt"]
+    ssl.certificate: "/etc/{{ logging_filebeat_certificate_name }}.crt"
+    ssl.key: "/etc/{{ logging_filebeat_certificate_name }}.key"
+{% else %}
+    ssl.ca_trusted_fingerprint: "{{ logging_filebeat_ca_fingerprint }}"
+{% endif %}
+{% if logging_filebeat_elasticsearch_auth_method == "api-key" %}
+    api_key: "{{ logging_filebeat_elasticsearch_password | b64decode }}"
+{% else %}
+    username: "{{ logging_filebeat_elasticsearch_user }}"
+    password: "{{ logging_filebeat_elasticsearch_password }}"
+{% endif %}
+    loadbalance: true
+    worker: "{{ logging_filebeat_workers }}"
+{% if (logging_filebeat_pipeline_enabled | bool) and (logging_filebeat_ilm_enabled | bool)  %}
+    pipeline: {{ logging_filebeat_pipeline_name }}
+{% endif %}
+{% if logging_filebeat_indices | length > 0 %}
+    indices:
+{% for idx in logging_filebeat_indices %}
+    - index: "{{ idx.prefix }}-%{[agent.version]}"
+      when: {{ idx.when | to_json }}
+{% endfor %}
+{% endif %}
+{# Build pipeline rules separately #}
+    pipelines:
+{% for idx in logging_filebeat_indices %}
+{% if (idx.pipeline_enabled | default(logging_filebeat_pipeline_enabled)) | bool %}
+    - pipeline: "{{ idx.pipeline_name | default(logging_filebeat_pipeline_name) }}"
+      when: {{ idx.when | to_json }}
+{% endif %}
+{% endfor %}
+
+{% if not logging_filebeat_queue_disk_enabled|bool %}
+# queue memory configuration
+queue.mem:
+  events: {{ logging_filebeat_queue_mem_events }}
+  flush.timeout: "{{ logging_filebeat_queue_mem_flush_timeout }}"
+{% endif %}
+{% if logging_filebeat_queue_disk_enabled|bool %}
+# queue disk configuration
+queue.disk:
+  max_size: "{{ logging_filebeat_queue_disk_max_size }}"
+  read_ahead: {{ logging_filebeat_queue_disk_read_ahead }}
+  write_ahead: {{ logging_filebeat_queue_disk_write_ahead }}
+{% if logging_filebeat_queue_disk_segment_size is defined %}
+  segment_size: "{{ logging_filebeat_queue_disk_segment_size }}"
+{% endif %}
+{% endif %}
+
+# ilm configuration
+# https://www.elastic.co/guide/en/beats/filebeat/master/ilm.html#setup-ilm-check_exists-option
+setup.ilm.enabled: {{ logging_filebeat_ilm_enabled | lower }}
+{% if logging_filebeat_ilm_enabled %}
+setup.ilm.rollover_alias: "{{ logging_filebeat_index_pattern_prefix }}-%{[agent.version]}"
+setup.ilm.pattern: "{now/d}-000001"
+setup.ilm.check_exists: true
+setup.ilm.overwrite: false
+setup.ilm.policy_name: "{{ logging_filebeat_ilm_policy }}"
+setup.ilm.policy_file: /etc/filebeat-ilm-policy.json
+{% endif %}
+
+# template configuration
+setup.template.enabled: {{ logging_filebeat_template_enabled | lower }}
+{% if logging_filebeat_ilm_enabled %}
+setup.template.name: "{{ logging_filebeat_index_pattern_prefix }}-%{[agent.version]}"
+setup.template.pattern: "{{ logging_filebeat_index_pattern_prefix }}-%{[agent.version]}"
+setup.template.overwrite: false
+{% if logging_filebeat_pipeline_enabled|bool %}
+setup.template.settings:
+  index.default_pipeline: "{{ logging_filebeat_pipeline_name }}"
+{% endif %}
+setup.template.append_fields:
+- name: ska_function
+  type: text
+  multi_fields:
+    - type: keyword
+      name: keyword
+- name: ska_pipeline
+  type: text
+  multi_fields:
+    - type: keyword
+      name: keyword
+- name: ska_line_loc
+  type: text
+  multi_fields:
+    - type: keyword
+      name: keyword
+- name: ska_message
+  type: text
+- name: ska_log_timestamp
+  type: date
+- name: ska_severity
+  type: text
+  multi_fields:
+    - type: keyword
+      name: keyword
+- name: ska_tags
+  type: text
+  multi_fields:
+    - type: keyword
+      name: keyword
+- name: ska_thread_id
+  type: text
+  multi_fields:
+    - type: keyword
+      name: keyword
+- name: ska_version
+  type: text
+  multi_fields:
+    - type: keyword
+      name: keyword
+- name: ska_transaction_id
+  type: text
+  multi_fields:
+    - type: keyword
+      name: keyword
+- name: ska.audit.timestamp
+  type: date
+- name: ska.audit.hostname
+  type: text
+  multi_fields:
+    - type: keyword
+      name: keyword
+- name: ska.audit.loglevel
+  type: text
+  multi_fields:
+    - type: keyword
+      name: keyword
+- name: ska.audit.node
+  type: text
+  multi_fields:
+    - type: keyword
+      name: keyword
+- name: ska.audit.username
+  type: text
+  multi_fields:
+    - type: keyword
+      name: keyword
+- name: ska.audit.user
+  type: text
+  multi_fields:
+    - type: keyword
+      name: keyword
+- name: ska.audit.workdir
+  type: text
+  multi_fields:
+    - type: keyword
+      name: keyword
+- name: ska.audit.message
+  type: text
+  multi_fields:
+    - type: keyword
+      name: keyword
+{% endif %}
+
+{% if logging_filebeat_http_enabled|bool %}
+http.enabled: true
+http.host: 0.0.0.0
+http.port: 5066
+{% endif %}
+

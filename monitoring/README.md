@@ -1,5 +1,7 @@
 # Monitoring
 
+Bare-metal Filebeat provisioning is available under [`ansible/`](ansible/README.md).
+
 Prometheus, Alertmanager, and Grafana for the lab, deployed via the
 `prometheus-community/kube-prometheus-stack` Helm chart. The chart bundles
 the Prometheus Operator, CRDs, default alert rules, kube-state-metrics,

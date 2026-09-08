@@ -1,0 +1,91 @@
+---
+- name: Configure an offline server to use the proxy services
+  hosts: all
+  become: true
+
+  # Keep site-specific values here for now. These can move into inventory
+  # group_vars when this prototype is adopted by the bare-metal repository.
+  vars:
+    proxy_hostname: air-gapped-mirror
+
+    resolver_nameservers:
+      - 192.0.2.53
+    resolver_search_domains: []
+
+    apt_proxy_port: 3142
+    pip_proxy_port: 3141
+    git_proxy_port: 9418
+
+    # The more-specific rewrite wins over the general GitLab block below.
+    gitlab_allowed_prefix: https://gitlab.com/ska-telescope/ska-mid-cbf/
+    git_mirror_prefix: >-
+      git://{{ proxy_hostname }}:{{ git_proxy_port }}/ska-telescope/ska-mid-cbf/
+    gitlab_blocked_prefix: https://gitlab.com/
+    git_blocked_replacement: blocked-by-policy://gitlab.com/
+
+  tasks:
+    - name: Configure DNS resolution
+      ansible.builtin.template:
+        src: templates/resolv.conf.j2
+        dest: /etc/resolv.conf
+        owner: root
+        group: root
+        mode: "0644"
+        backup: true
+        # Docker bind-mounts this file, which prevents an atomic rename.
+        # Normal filesystems still use Ansible's atomic write path.
+        unsafe_writes: true
+
+    - name: Ensure the apt configuration directory exists
+      ansible.builtin.file:
+        path: /etc/apt/apt.conf.d
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Configure the system apt proxy
+      ansible.builtin.template:
+        src: templates/00-air-gapped-mirror-proxy.j2
+        dest: /etc/apt/apt.conf.d/00-air-gapped-mirror-proxy
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Configure the system pip proxy
+      ansible.builtin.template:
+        src: templates/pip.conf.j2
+        dest: /etc/pip.conf
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Read existing system Git URL rewrites
+      ansible.builtin.command:
+        argv:
+          - git
+          - config
+          - --system
+          - --get-all
+          - "url.{{ item.replacement }}.insteadOf"
+      loop:
+        - replacement: "{{ git_mirror_prefix }}"
+          source: "{{ gitlab_allowed_prefix }}"
+        - replacement: "{{ git_blocked_replacement }}"
+          source: "{{ gitlab_blocked_prefix }}"
+      register: existing_git_url_rewrites
+      changed_when: false
+      failed_when: existing_git_url_rewrites.rc not in [0, 1]
+
+    - name: Configure system Git URL rewrites
+      ansible.builtin.command:
+        argv:
+          - git
+          - config
+          - --system
+          - --add
+          - "url.{{ item.item.replacement }}.insteadOf"
+          - "{{ item.item.source }}"
+      loop: "{{ existing_git_url_rewrites.results }}"
+      when: item.item.source not in item.stdout_lines
+      changed_when: true

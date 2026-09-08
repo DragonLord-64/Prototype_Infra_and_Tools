@@ -1,0 +1,29 @@
+{
+  "index_patterns": ["{{ datastream_config.index_pattern }}*"],
+  "priority": {{ datastream_config.priority }},
+  "data_stream": {},
+  "composed_of": [
+    "{{ filebeat_ecs_component_name }}",
+    "{{ filebeat_ska_component_name }}"
+  ],
+  "template": {
+    "settings": {
+      "index.lifecycle.name": "{{ datastream_config.ilm_policy_name }}",
+      "index.mapping.total_fields.limit": "{{ filebeat_index_total_fields_limit }}"
+{% if datastream_config.pipeline_enabled %}
+      ,"index.default_pipeline": "{{ datastream_config.pipeline_name }}"
+{% endif %}
+{% for setkey, setval in datastream_config.settings.items() %}
+{% if setkey != "index.mapping.total_fields.limit" %}
+      ,"{{ setkey }}": "{{ setval }}"
+{% endif %}
+{% endfor %}
+    }
+  },
+  "_meta": {
+    "description": "{{ datastream_config.description }}",
+    "managed_by": "ansible",
+    "filebeat_core_component": "{{ filebeat_ecs_component_name }}"
+  }
+}
+

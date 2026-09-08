@@ -12,6 +12,6 @@ monitoring/fhs-rule-tables/__pycache__/
 
 # netbox-import
 netbox-import/.venv/
+monitoring/ansible/.venv/
 netbox-import/**/__pycache__/
 netbox-import/.pytest_cache/
-

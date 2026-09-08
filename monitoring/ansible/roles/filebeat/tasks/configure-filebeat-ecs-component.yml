@@ -1,0 +1,108 @@
+- name: Set Elasticsearch authentication parameters
+  ansible.builtin.include_tasks: set-elasticsearch-auth.yml
+
+- name: Set Filebeat ECS component template name
+  ansible.builtin.set_fact:
+    filebeat_ecs_component_name: "filebeat-ecs-mappings-{{ filebeat_config.version }}"
+
+- name: Get Filebeat ECS component template
+  become: true
+  ansible.builtin.uri:
+    url: "{{ filebeat_config.elasticsearch_url }}/_component_template/{{ filebeat_ecs_component_name }}"
+    method: GET
+    force: true
+    return_content: true
+    status_code: [200, 404]
+    url_username: "{{ username }}"
+    url_password: "{{ password }}"
+    force_basic_auth: "{{ force_basic }}"
+    headers: "{{ headers }}"
+  environment:
+    SSL_CERT_FILE: "{{ certificates_dir }}/ca-certificate.crt"
+  register: read_ecs_component
+
+- name: "Generate and install {{ filebeat_ecs_component_name }}"
+  when: read_ecs_component.status == 404
+  block:
+    - name: Get Elasticsearch version
+      become: true
+      ansible.builtin.uri:
+        url: "{{ filebeat_config.elasticsearch_url }}/"
+        method: GET
+        force: true
+        return_content: true
+        status_code: [200]
+        url_username: "{{ username }}"
+        url_password: "{{ password }}"
+        force_basic_auth: "{{ force_basic }}"
+        headers: "{{ headers }}"
+      environment:
+        SSL_CERT_FILE: "{{ certificates_dir }}/ca-certificate.crt"
+      register: es_root_info
+
+    - name: Set Elasticsearch version
+      ansible.builtin.set_fact:
+        elasticsearch_version: "{{ es_root_info.json.version.number }}"
+
+    - name: "Docker pull {{ filebeat_config.image }}"
+      community.general.docker_image:
+        source: pull
+        name: "{{ filebeat_config.image }}"
+      register: docker_pull_retry
+      until: "docker_pull_retry is not failed"
+      retries: 5
+      delay: 5
+
+    - name: "Export Filebeat template for Elasticsearch {{ elasticsearch_version }}"
+      community.general.docker_container:
+        name: "{{ filebeat_config.name }}-export-template"
+        restart_policy: false
+        detach: false
+        cleanup: true
+        image: "{{ filebeat_config.image }}"
+        command: "filebeat export template --es.version {{ elasticsearch_version }}"
+        state: started
+      register: filebeat_export_template
+      failed_when: filebeat_export_template.status != 0
+
+    - name: Extract JSON body from exported Filebeat template
+      # `docker_container`'s captured Output can be preceded/followed by stray log lines
+      # (e.g. a credential-helper WARN on stderr) that aren't part of the JSON itself.
+      ansible.builtin.set_fact:
+        filebeat_export_template_json: >-
+          {{
+            (filebeat_export_template.container.Output
+              | regex_replace('^[^{]*', '')
+              | regex_replace('[^}]*$', ''))
+            | from_json
+          }}
+
+    - name: Build Filebeat ECS component template body
+      ansible.builtin.set_fact:
+        filebeat_ecs_component_body:
+          _meta:
+            description: "Filebeat/ECS core mappings generated from Filebeat {{ filebeat_config.version }}"
+            managed_by: ansible
+            source: "filebeat export template"
+          template:
+            settings:
+              index.mapping.total_fields.limit: "{{ filebeat_index_total_fields_limit }}"
+            mappings: "{{ filebeat_export_template_json.template.mappings }}"
+
+    - name: "Create {{ filebeat_ecs_component_name }}"
+      become: true
+      ansible.builtin.uri:
+        url: "{{ filebeat_config.elasticsearch_url }}/_component_template/{{ filebeat_ecs_component_name }}"
+        method: PUT
+        force: true
+        return_content: true
+        status_code: [200]
+        url_username: "{{ username }}"
+        url_password: "{{ password }}"
+        force_basic_auth: "{{ force_basic }}"
+        headers: "{{ headers }}"
+        body_format: "json"
+        body: "{{ filebeat_ecs_component_body }}"
+      environment:
+        SSL_CERT_FILE: "{{ certificates_dir }}/ca-certificate.crt"
+

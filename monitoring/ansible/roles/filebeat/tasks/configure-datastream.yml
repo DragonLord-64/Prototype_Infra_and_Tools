@@ -1,0 +1,171 @@
+# `datastream` and `filebeat_config` are local variables that must be set in the caller task
+- name: Set configurations
+  ansible.builtin.set_fact:
+    index_pattern: "{{ datastream.prefix }}-{{ filebeat_config.version }}"
+    ilm_policy_name: "{{ datastream.ilm_policy_name | default(datastream.prefix) }}"
+    filebeat_ecs_component_name: "filebeat-ecs-mappings-{{ filebeat_config.version }}"
+
+- name: Set Elasticsearch authentication parameters
+  ansible.builtin.include_tasks: set-elasticsearch-auth.yml
+
+- name: Set configurations
+  ansible.builtin.set_fact:
+    ilm_policy_config: "{{ filebeat_config.default_ilm_policy_config | combine((datastream.ilm_policy_config | default({})), recursive=True) }}"
+    overwrite: "{{ datastream.overwrite | default(True) }}"
+    datastream_config:
+      index_pattern: "{{ index_pattern }}"
+      ilm_policy_name: "{{ datastream.ilm_policy_name | default(datastream.prefix) }}"
+      description: "{{ datastream.description | default('Index template for datastream ' + index_pattern) }}"
+      priority: "{{ datastream.priority | default(150) }}"
+      pipeline_enabled: "{{ datastream.pipeline_enabled | default(filebeat_config.default_pipeline_enabled) }}"
+      pipeline_name: "{{ datastream.pipeline_name | default(filebeat_config.default_pipeline_name) }}"
+      settings: "{{ datastream.settings | default({}) }}"
+
+- name: Build Datastream index template body
+  ansible.builtin.set_fact:
+    datastream_index_template_body_raw: "{{ lookup('template', 'filebeat-datastream.json.j2') }}"
+
+- name: Normalize Datastream index template body
+  ansible.builtin.set_fact:
+    datastream_index_template_body: >-
+      {{
+        datastream_index_template_body_raw
+        if datastream_index_template_body_raw is mapping
+        else (datastream_index_template_body_raw | from_json)
+      }}
+
+- name: "Show ILM policy configuration for {{ index_pattern }}"
+  ansible.builtin.debug:
+    var: ilm_policy_config
+
+- name: Get ILM policy
+  become: true
+  ansible.builtin.uri:
+    url: "{{ filebeat_config.elasticsearch_url }}/_ilm/policy/{{ ilm_policy_name }}"
+    method: GET
+    force: true
+    return_content: true
+    status_code: [200, 404]
+    url_username: "{{ username }}"
+    url_password: "{{ password }}"
+    force_basic_auth: "{{ force_basic }}"
+    headers: "{{ headers }}"
+  environment:
+    SSL_CERT_FILE: "{{ certificates_dir }}/ca-certificate.crt"
+  register: read_ilm_policy
+
+- name: Create ILM policy
+  when: read_ilm_policy.status == 404 or (read_ilm_policy.status == 200 and overwrite)
+  become: true
+  ansible.builtin.uri:
+    url: "{{ filebeat_config.elasticsearch_url }}/_ilm/policy/{{ ilm_policy_name }}"
+    method: PUT
+    force: true
+    return_content: true
+    status_code: [200]
+    url_username: "{{ username }}"
+    url_password: "{{ password }}"
+    force_basic_auth: "{{ force_basic }}"
+    headers: "{{ headers }}"
+    body_format: "json"
+    body: "{{ lookup('template', 'filebeat-ilm-policy.json.j2') | from_json }}"
+  environment:
+    SSL_CERT_FILE: "{{ certificates_dir }}/ca-certificate.crt"
+
+- name: Get Datastream index template
+  become: true
+  ansible.builtin.uri:
+    url: "{{ filebeat_config.elasticsearch_url }}/_index_template/{{ index_pattern }}?flat_settings=true"
+    method: GET
+    force: true
+    return_content: true
+    status_code: [200, 404]
+    url_username: "{{ username }}"
+    url_password: "{{ password }}"
+    force_basic_auth: "{{ force_basic }}"
+    headers: "{{ headers }}"
+  environment:
+    SSL_CERT_FILE: "{{ certificates_dir }}/ca-certificate.crt"
+  register: read_index_template
+
+- name: Create Datastream index template
+  become: true
+  when: >-
+    read_index_template.status == 404
+    or (
+      read_index_template.status == 200
+      and overwrite
+      and read_index_template.json.index_templates[0].index_template != datastream_index_template_body
+    )
+  ansible.builtin.uri:
+    url: "{{ filebeat_config.elasticsearch_url }}/_index_template/{{ index_pattern }}"
+    method: PUT
+    force: true
+    return_content: true
+    status_code: [200]
+    url_username: "{{ username }}"
+    url_password: "{{ password }}"
+    force_basic_auth: "{{ force_basic }}"
+    headers: "{{ headers }}"
+    body_format: "json"
+    body: "{{ datastream_index_template_body }}"
+  environment:
+    SSL_CERT_FILE: "{{ certificates_dir }}/ca-certificate.crt"
+  register: write_index_template
+  changed_when: true
+
+- name: "Simulate resolved index template for {{ index_pattern }}"
+  become: true
+  ansible.builtin.uri:
+    url: "{{ filebeat_config.elasticsearch_url }}/_index_template/_simulate_index/{{ index_pattern }}"
+    method: POST
+    force: true
+    return_content: true
+    status_code: [200]
+    url_username: "{{ username }}"
+    url_password: "{{ password }}"
+    force_basic_auth: "{{ force_basic }}"
+    headers: "{{ headers }}"
+  environment:
+    SSL_CERT_FILE: "{{ certificates_dir }}/ca-certificate.crt"
+  register: simulate_index_result
+
+- name: "Validate Filebeat/ECS core mappings are present for {{ index_pattern }}"
+  vars:
+    resolved_properties: "{{ simulate_index_result.json.template.mappings.properties }}"
+  ansible.builtin.assert:
+    that:
+      - "'agent' in resolved_properties"
+      - "'ecs' in resolved_properties"
+      - "'host' in resolved_properties"
+      - "'log' in resolved_properties"
+      - "'container' in resolved_properties"
+      - resolved_properties.host.properties.name.type == 'keyword'
+      - resolved_properties.agent.properties.version.type == 'keyword'
+      - resolved_properties.ecs.properties.version.type == 'keyword'
+      - resolved_properties.container.properties.id.type == 'keyword'
+      - resolved_properties.kubernetes.properties.namespace.type == 'keyword'
+      - resolved_properties.kubernetes.properties.pod.properties.ip.type == 'ip'
+    fail_msg: >-
+      Resolved index template for {{ index_pattern }} is missing standard Filebeat/ECS mappings.
+      Check that {{ filebeat_ecs_component_name }} and {{ filebeat_ska_component_name }}
+      are composed correctly in the {{ index_pattern }} index template.
+
+- name: "Roll over datastream after template update: {{ index_pattern }}"
+  when:
+    - (datastream.rollover_after_template_update | default(filebeat_rollover_after_template_update)) | bool
+    - write_index_template is changed
+  become: true
+  ansible.builtin.uri:
+    url: "{{ filebeat_config.elasticsearch_url }}/{{ index_pattern }}/_rollover"
+    method: POST
+    force: true
+    return_content: true
+    status_code: [200, 404]
+    url_username: "{{ username }}"
+    url_password: "{{ password }}"
+    force_basic_auth: "{{ force_basic }}"
+    headers: "{{ headers }}"
+  environment:
+    SSL_CERT_FILE: "{{ certificates_dir }}/ca-certificate.crt"
+

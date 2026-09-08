@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+{% for nameserver in resolver_nameservers %}
+nameserver {{ nameserver }}
+{% endfor %}
+{% if resolver_search_domains %}
+search {{ resolver_search_domains | join(' ') }}
+{% endif %}

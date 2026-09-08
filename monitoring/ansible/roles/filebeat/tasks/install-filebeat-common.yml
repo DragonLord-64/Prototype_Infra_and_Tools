@@ -1,0 +1,72 @@
+---
+- name: Collect facts about system services
+  ansible.builtin.service_facts:
+  register: services
+
+- name: Look for Docker sock
+  ansible.builtin.stat:
+    path: /var/run/docker.sock
+  register: docker_sock
+
+- name: Look for Podman sock
+  ansible.builtin.stat:
+    path: /var/run/podman/podman.sock
+  register: podman_sock
+
+- name: Set detected log sources
+  ansible.builtin.set_fact:
+    kubelet_detected: "{{ ('kubelet.service' in services.ansible_facts.services and 'running' == services.ansible_facts.services['kubelet.service'].state) |
+    bool }}"
+    docker_detected: "{{ (docker_sock.stat.exists and docker_sock.stat.issock and docker_sock.stat.writeable) | bool }}"
+    podman_detected: "{{ (podman_sock.stat.exists and podman_sock.stat.issock and podman_sock.stat.writeable) | bool }}"
+
+- name: Enable different log sources
+  ansible.builtin.set_fact:
+    logging_filebeat_kubernetes_enabled: "{{ ((logging_filebeat_kubernetes_enabled is defined and logging_filebeat_kubernetes_enabled != 'auto') |
+    ternary(logging_filebeat_kubernetes_enabled, kubelet_detected)) | bool }}"
+    logging_filebeat_docker_enabled: "{{ ((logging_filebeat_docker_enabled is defined and logging_filebeat_docker_enabled != 'auto') |
+    ternary(logging_filebeat_docker_enabled, docker_detected)) | bool }}"
+    logging_filebeat_podman_enabled: "{{ ((logging_filebeat_podman_enabled is defined and logging_filebeat_podman_enabled != 'auto') |
+    ternary(logging_filebeat_podman_enabled, podman_detected)) | bool }}"
+
+- name: Display filebeat runtime information
+  ansible.builtin.debug:
+    msg: "OCI: {{ logging_filebeat_oci_engine }} | \
+    Kubernetes logs enabled: {{ logging_filebeat_kubernetes_enabled }} | \
+    Docker logs enabled: {{ logging_filebeat_docker_enabled }} | \
+    Podman logs enabled: {{ logging_filebeat_podman_enabled }}"
+
+- name: Write filebeat config
+  ansible.builtin.template:
+    src: filebeat.yml.j2
+    dest: /etc/filebeat.yml
+    mode: "0644"
+
+- name: Write filebeat ilm policy
+  when: logging_filebeat_ilm_enabled
+  vars:
+    ilm_policy_config: "{{ logging_filebeat_ilm_policy_config }}"
+  ansible.builtin.template:
+    src: filebeat-ilm-policy.json.j2
+    dest: /etc/filebeat-ilm-policy.json
+    mode: "0644"
+
+- name: Create filebeat data directory
+  ansible.builtin.file:
+    path: "{{ logging_filebeat_data_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Check if meta.json file exists
+  ansible.builtin.stat:
+    path: "{{ logging_filebeat_data_dir }}/meta.json"
+  register: meta_json
+
+- name: Set version file for filebeat
+  ansible.builtin.lineinfile:
+    line: '{"version": "1"}'
+    dest: "{{ logging_filebeat_data_dir }}/meta.json"
+    create: true
+    mode: "0644"
+  when: not meta_json.stat.exists
+
