@@ -10,7 +10,7 @@ its API.
 ## Quick start
 
 ```sh
-cd netbox-import
+cd tools/netbox-import
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 
 cp template/inventory-template.xlsx my-inventory.xlsx
@@ -73,7 +73,7 @@ change `DEVICE_ROLE_FIELD` at the top of `netbox_import/sync.py`.
 ## Running the tests
 
 ```sh
-cd netbox-import
+cd tools/netbox-import
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt pytest
 PYTHONPATH=. .venv/bin/python -m pytest tests -v
 ```
