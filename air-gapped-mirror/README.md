@@ -1,34 +1,37 @@
-# Air-Gapped Mirror System
+# Air-gapped mirror
 
-A pod on the internet-connected side of the cluster (the "192 network")
-that mirrors Git repos, Python packages, and apt packages for
-internet-isolated worker nodes. Plain HTTP where possible, no TLS -- the
-network is trusted and internal.
+This prototype runs Git, Python, and apt mirrors in one Kubernetes pod for
+clients that cannot reach the internet. The containers share persistent
+volumes; a Python sidecar periodically reconciles configured Git repositories,
+while devpi and apt-cacher-ng populate their caches on demand.
 
-## Components
+## Layout
 
-| Container | Role | Directory |
-| --- | --- | --- |
-| `git-daemon` | Read-only `git://` on 9418, unauthenticated | [`git-daemon/`](git-daemon) |
-| `devpi` | Caching PyPI proxy -- caches on first `pip install` | [`devpi/`](devpi) |
-| `apt-cacher-ng` | Caching apt proxy -- caches on first `apt install` | [`apt-cacher-ng/`](apt-cacher-ng) |
-| sync | Reconcile loop, a sidecar in the same pod | [`sync-job/`](sync-job) |
-
-All four run as one Deployment sharing volumes -- the sync loop is a
-sidecar rather than a separate CronJob, so exactly one pod mounts the
-volumes and `ReadWriteOnce` storage is enough. Deploy it with the Helm
-chart -- see [`chart/README.md`](chart/README.md).
-
-## Data ingress
-
-| Content | How it's added |
+| Path | Purpose |
 | --- | --- |
-| Git repos (public upstream) | Entry in `syncJob.repos` → `helm upgrade` → sync loop `git clone --mirror` / `git remote update` |
-| Python / apt packages | Not pre-populated -- devpi/apt-cacher-ng cache on first client request |
+| [`chart/`](chart/) | Helm chart and deployment instructions |
+| [`git-daemon/`](git-daemon/) | Read-only `git://` service |
+| [`devpi/`](devpi/) | PyPI caching proxy |
+| [`apt-cacher-ng/`](apt-cacher-ng/) | apt caching proxy |
+| [`sync-job/`](sync-job/) | Git manifest validation and reconciliation |
+| [`test/`](test/) | Disposable Minikube smoke test |
+| [`setup-proxy-source.yml`](setup-proxy-source.yml) | Ansible playbook for configuring client hosts |
 
-## Configuration
+## Quick start
 
-The repos to mirror are listed in the chart's values:
+From the repository root:
+
+```sh
+for image in git-daemon devpi apt-cacher-ng sync-job; do
+  docker build -t "air-gapped-mirror/$image:latest" "air-gapped-mirror/$image"
+  minikube image load "air-gapped-mirror/$image:latest"
+done
+
+helm upgrade --install air-gapped-mirror ./air-gapped-mirror/chart \
+  --namespace air-gapped-mirror --create-namespace
+```
+
+Git synchronization is disabled by default. Enable it in a values file:
 
 ```yaml
 syncJob:
@@ -39,111 +42,33 @@ syncJob:
       dest: your-org/widgets
 ```
 
-Helm renders that into a ConfigMap and mounts it into the sync sidecar at
-`/etc/mirror/git-repos.yaml`. `helm upgrade` is the whole config path:
-there is no separate config repo, nothing to clone, and no credentials
-anywhere in the system.
+Apply the file with `helm upgrade ... -f my-values.yaml`. See the
+[`chart` guide](chart/README.md) for client endpoints and settings.
 
-Because the manifest is a mounted ConfigMap rather than a file baked into
-the image, the kubelet refreshes it in place. The sync loop re-reads it
-every pass, so a changed repo list applies without restarting the pod --
-though not instantly: the kubelet takes up to ~60s to push the new file
-into the container, and the next pass acts on it after that.
+Client machines can be configured with Ansible after replacing the example
+DNS and Git values in `setup-proxy-source.yml`:
 
-**No API, no webhooks, no state.** Every `intervalSeconds`, the sidecar
-re-reads the manifest and makes the git volume match it. Nothing is
-remembered between passes, so there is no cursor to corrupt and no event
-to miss -- a pass that fails just runs again.
-
-## Repo layout
-
-```
-air-gapped-mirror/
-├── chart/                 Helm chart -- the supported way to deploy
-├── test/                  Minikube smoke test (up.sh / verify.sh / down.sh)
-├── git-daemon/            Dockerfile
-├── devpi/                 Dockerfile + entrypoint
-├── apt-cacher-ng/         Dockerfile + acng.conf
-└── sync-job/              The sync sidecar's image: source + tests
+```sh
+ansible-playbook -i inventory.ini air-gapped-mirror/setup-proxy-source.yml
 ```
 
-## The sync loop (`sync-job/`)
-
-The only component with real logic, so it's a small Python package rather
-than a shell script:
-
-- `mirror_sync/manifest.py` -- loads/validates the git-repo manifest
-  (rejects path traversal, bad URL schemes, duplicates)
-- `mirror_sync/sync.py` -- git mirror/update reconciliation and the
-  `sync_forever` loop the container runs
-
-The subprocess runner and sleep are injected rather than hardcoded, so
-the tests run without a cluster.
-
-### Running the tests
+## Tests
 
 ```sh
 cd air-gapped-mirror/sync-job
-python3 -m venv .venv && .venv/bin/pip install -r requirements.txt pytest
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt pytest
 PYTHONPATH=. .venv/bin/python -m pytest tests -v
 ```
 
-- `tests/test_manifest.py`, `tests/test_sync.py` -- unit tests against
-  fakes/mocks (no network, no real git)
-- `tests/test_integration.py` -- runs `run_sync()` end to end against a
-  real `git daemon` serving a bare repo over `git://`. Covers first-pass
-  population, second-pass idempotency, picking up a new upstream commit,
-  and the `sync_forever` loop driving all of it repeatedly.
+The integration test requires `git daemon`. For a complete cluster test, use
+the scripts documented in [`test/README.md`](test/README.md).
 
-`tests/test_integration.py` needs a real `git daemon` binary: on Debian/
-Ubuntu it ships in `git-daemon-run`, on Alpine in `git-daemon`. Without
-it those tests fail with "Connection refused" rather than a
-missing-binary error.
+## Security
 
-## Building the images
-
-```sh
-cd air-gapped-mirror
-for i in git-daemon devpi apt-cacher-ng sync-job; do
-  docker build -t air-gapped-mirror/$i:latest $i
-done
-```
-
-These bare names are what the chart expects by default. Load them onto
-the node afterwards -- see [`chart/README.md`](chart/README.md) step 1.
-
-[`test/`](test) builds all four, deploys the chart to a throwaway
-minikube cluster, and exercises every component end to end.
-
-## Deploying
-
-Use the Helm chart -- **[`chart/README.md`](chart/README.md) is the
-step-by-step guide**, written for someone new to Kubernetes:
-
-```sh
-helm install air-gapped-mirror ./chart \
-  --namespace air-gapped-mirror --create-namespace
-```
-
-No registry is needed: build the images locally, load them onto the node
-(`minikube image load`, `kind load docker-image`, or `k3s ctr images
-import`), and the chart's defaults pick them up by bare name.
-
-There are no hand-written manifests to keep in sync -- `helm template`
-renders the plain YAML if you want to read or diff it.
-
-`ReadWriteOnce` storage is sufficient: the sync sidecar shares the mirror
-pod, so nothing else mounts those volumes.
-
-## Security notes
-
-- `git-daemon`, `devpi`, `apt-cacher-ng` are unauthenticated and
-  unencrypted by design -- only safe because the 192 network is internal
-  and trusted.
-- The mirror holds no credentials at all: everything it mirrors is public
-  open source, and the repo list is a plain ConfigMap. What needs guarding
-  is write access to the chart values -- changing `syncJob.repos` means
-  "can point the sync loop at an arbitrary URL".
-- `mirror_sync.manifest` rejects absolute paths, `..` traversal, and
-  URL schemes outside http(s)/git/ssh on every entry, so a bad value
-  cannot write outside the bare-repo root.
+The services use unauthenticated, unencrypted protocols and must only be
+exposed on a trusted network. Restrict who may change Helm values: Git sources
+are fetched by the sync sidecar. The manifest parser limits supported URL
+schemes and rejects absolute or traversing destination paths, but it is not a
+substitute for network policy. Do not place credentials in committed values or
+repository URLs.

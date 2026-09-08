@@ -6,20 +6,28 @@
   # Keep site-specific values here for now. These can move into inventory
   # group_vars when this prototype is adopted by the bare-metal repository.
   vars:
-    proxy_hostname: air-gapped-mirror
+    # Hostname through which the external server reaches the proxy cluster.
+    # The local prototype uses the Minikube profile/node name "monitoring".
+    # Override this when the cluster is given a routable DNS name.
+    cluster_name: monitoring
+    git_proxy_hostname: "{{ cluster_name }}"
+    apt_proxy_hostname: "{{ cluster_name }}"
+    pip_proxy_hostname: "{{ cluster_name }}"
 
+    # Docker's embedded DNS resolves the Minikube node name for this test
+    # server. Replace this with the site's DNS server on bare metal.
     resolver_nameservers:
-      - 192.0.2.53
+      - 127.0.0.11
     resolver_search_domains: []
 
     apt_proxy_port: 3142
     pip_proxy_port: 3141
-    git_proxy_port: 9418
+    git_proxy_port: 3128
+    git_http_proxy: "http://{{ git_proxy_hostname }}:{{ git_proxy_port }}"
 
-    # The more-specific rewrite wins over the general GitLab block below.
+    # The more-specific identity rewrite wins over the general GitLab block.
     gitlab_allowed_prefix: https://gitlab.com/ska-telescope/ska-mid-cbf/
-    git_mirror_prefix: >-
-      git://{{ proxy_hostname }}:{{ git_proxy_port }}/ska-telescope/ska-mid-cbf/
+    gitlab_allowed_replacement: "{{ gitlab_allowed_prefix }}"
     gitlab_blocked_prefix: https://gitlab.com/
     git_blocked_replacement: blocked-by-policy://gitlab.com/
 
@@ -60,7 +68,31 @@
         group: root
         mode: "0644"
 
-    - name: Read existing system Git URL rewrites
+    - name: Read the existing system Git HTTP proxy
+      ansible.builtin.command:
+        argv:
+          - git
+          - config
+          - --system
+          - --get
+          - http.proxy
+      register: existing_git_http_proxy
+      changed_when: false
+      failed_when: existing_git_http_proxy.rc not in [0, 1]
+
+    - name: Configure the system Git HTTP proxy
+      ansible.builtin.command:
+        argv:
+          - git
+          - config
+          - --system
+          - --replace-all
+          - http.proxy
+          - "{{ git_http_proxy }}"
+      when: existing_git_http_proxy.stdout != git_http_proxy
+      changed_when: true
+
+    - name: Read existing system Git URL policy rewrites
       ansible.builtin.command:
         argv:
           - git
@@ -69,7 +101,7 @@
           - --get-all
           - "url.{{ item.replacement }}.insteadOf"
       loop:
-        - replacement: "{{ git_mirror_prefix }}"
+        - replacement: "{{ gitlab_allowed_replacement }}"
           source: "{{ gitlab_allowed_prefix }}"
         - replacement: "{{ git_blocked_replacement }}"
           source: "{{ gitlab_blocked_prefix }}"
@@ -77,7 +109,7 @@
       changed_when: false
       failed_when: existing_git_url_rewrites.rc not in [0, 1]
 
-    - name: Configure system Git URL rewrites
+    - name: Configure system Git URL policy rewrites
       ansible.builtin.command:
         argv:
           - git

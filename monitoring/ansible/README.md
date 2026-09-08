@@ -1,44 +1,30 @@
 # Filebeat provisioning
 
-This directory provisions Filebeat on standalone servers and sends their
-system, journald, Docker, or Podman logs to Elasticsearch.
+This Ansible project installs containerized Filebeat on standalone servers and sends system, journald, Docker, or Podman logs to Elasticsearch.
 
-The local `filebeat` role was copied from `ska_collections.logging.beats` in
-[`ska-ser-ansible-collections`](https://gitlab.com/ska-telescope/sdi/ska-ser-ansible-collections),
-commit `9248a0108a22117dfaff82aae002cdb7d5e3d17c` (BSD-3-Clause).
-It is intentionally vendored so this prototype can run independently.
+The vendored `filebeat` role comes from [`ska_collections.logging.beats`](https://gitlab.com/ska-telescope/sdi/ska-ser-ansible-collections) at commit `9248a0108a22117dfaff82aae002cdb7d5e3d17c` (BSD-3-Clause).
 
-## Prerequisites
+## Run
 
-The target server must already run Docker or Podman. The Ansible controller
-also needs the collections used by the selected container engine:
+From `monitoring/ansible`:
 
 ```sh
-cd monitoring/ansible
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 ansible-galaxy collection install -r requirements.yml
-```
 
-## Configure and run
-
-Copy `inventory.example.ini` and `filebeat-vars.example.yml`, then replace all
-example addresses and `CHANGE_ME` values. Keep the resulting secrets file out
-of Git and encrypt it with Ansible Vault.
-
-```sh
+cp inventory.example.ini inventory.ini
+cp filebeat-vars.example.yml filebeat-vars.yml
+# Replace the examples and CHANGE_ME values before continuing.
 ansible-vault encrypt filebeat-vars.yml
+
 ansible-playbook -i inventory.ini playbooks/install-filebeat.yml \
   -e @filebeat-vars.yml --ask-vault-pass
 ```
 
-The default inventory group is `filebeat_servers`. Select another group or a
-single host with `-e filebeat_target=my_group` and/or `--limit server01`.
+Targets need Docker or Podman. The default inventory group is `filebeat_servers`; override it with `-e filebeat_target=my_group`, and use `--limit server01` to select one host.
 
-The example uses API-key authentication and a CA fingerprint. The SKA role
-expects the API-key variable in its existing base64-encoded form and decodes
-it when rendering Filebeat's `api_key` setting. For mutual TLS, set
-`elasticsearch_http_authentication: required` and provision the CA, client
-certificate, and private key under `certificates_dir` before running this
-playbook.
+The example uses an API key and a CA fingerprint. The role expects the API key in its existing base64-encoded form. For mutual TLS, set `elasticsearch_http_authentication: required` and provision the CA, client certificate, and key under `certificates_dir`.
+
+Keep `inventory.ini`, `filebeat-vars.yml`, and all credentials out of Git.
