@@ -18,7 +18,13 @@ resources:
     memory: 512Mi
   limits:
     cpu: "1"
-    memory: 1Gi
+    memory: 1536Mi
+
+readinessProbe:
+  timeoutSeconds: 5
+
+startupProbe:
+  timeoutSeconds: 5
 
 worker:
   enabled: true

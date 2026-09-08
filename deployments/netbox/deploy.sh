@@ -5,6 +5,7 @@ readonly namespace="${NETBOX_NAMESPACE:-netbox}"
 readonly release="${NETBOX_RELEASE:-netbox}"
 readonly chart="${NETBOX_CHART:-oci://ghcr.io/netbox-community/netbox-chart/netbox}"
 readonly script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly profile="${MINIKUBE_PROFILE:-monitoring}"
 
 if ! command -v helm >/dev/null 2>&1; then
   echo "helm is required (https://helm.sh/docs/intro/install/)" >&2
@@ -14,7 +15,10 @@ fi
 : "${NETBOX_ADMIN_PASSWORD:?Set NETBOX_ADMIN_PASSWORD before deploying}"
 : "${NETBOX_API_TOKEN:?Set NETBOX_API_TOKEN before deploying}"
 
+minikube -p "${profile}" status >/dev/null
+
 helm upgrade --install "${release}" "${chart}" \
+  --kube-context "${profile}" \
   --namespace "${namespace}" \
   --create-namespace \
   --values "${script_dir}/values.yaml" \
@@ -23,4 +27,4 @@ helm upgrade --install "${release}" "${chart}" \
   --wait \
   --timeout 15m
 
-kubectl --namespace "${namespace}" get pods,service,pvc
+minikube -p "${profile}" kubectl -- --namespace "${namespace}" get pods,service,pvc
