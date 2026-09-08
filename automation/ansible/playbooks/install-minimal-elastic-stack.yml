@@ -14,6 +14,7 @@
     kibana_bind_address: 0.0.0.0
     elasticsearch_port: 9200
     kibana_port: 5601
+    elasticsearch_disk_threshold_enabled: true
 
   pre_tasks:
     - name: Refuse unsupported operating systems
@@ -70,7 +71,7 @@
         name: elasticsearch
         image: "docker.elastic.co/elasticsearch/elasticsearch:{{ elastic_version }}"
         state: started
-        recreate: false
+        recreate: "{{ elastic_stack_recreate | default(false) }}"
         restart_policy: always
         networks:
           - name: elastic
@@ -82,10 +83,9 @@
           discovery.type: single-node
           xpack.security.enabled: "false"
           xpack.security.enrollment.enabled: "false"
+          cluster.routing.allocation.disk.threshold_enabled: "{{ elasticsearch_disk_threshold_enabled | string | lower }}"
           ES_JAVA_OPTS: "-Xms{{ elasticsearch_heap }} -Xmx{{ elasticsearch_heap }}"
         memory: "{{ elasticsearch_memory }}"
-        ulimits:
-          - nofile=65535:65535
         labels:
           org.ska.app.group: logging
 
@@ -103,7 +103,7 @@
         name: kibana
         image: "docker.elastic.co/kibana/kibana:{{ elastic_version }}"
         state: started
-        recreate: false
+        recreate: "{{ elastic_stack_recreate | default(false) }}"
         restart_policy: always
         networks:
           - name: elastic

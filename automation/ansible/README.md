@@ -1,5 +1,13 @@
 # Minimal Elastic Stack and Filebeat provisioning
 
+## NetBox hardware inventory
+
+`playbooks/collect-netbox-inventory.yml` gathers system, DIMM, BMC, interface,
+address, NIC firmware, and available transceiver data from a server group and
+builds CSV files for the repository's NetBox importer. It also supports custom
+FPGA probes. See [`../../tools/netbox/inventory-collector/`](../../tools/netbox/inventory-collector/)
+for setup, limitations, and the import workflow.
+
 ## Minimal Elastic Stack
 
 `playbooks/install-minimal-elastic-stack.yml` uses Docker to run one
@@ -72,8 +80,15 @@ ansible-playbook -i inventory.minikube.ini playbooks/deploy-minicube-logging.yml
 
 This creates `elasticsearch`, `kibana`, and `filebeat` containers. The
 Elasticsearch data persists in `/var/lib/elastic-stack/elasticsearch`.
-The deployment deliberately has no TLS or authentication and must remain on a
-trusted development network.
+The tracked MiniCube values bind Elasticsearch and Kibana to loopback because
+the deployment deliberately has no TLS or authentication. Use an SSH tunnel
+for remote access; do not expose these ports on an untrusted network.
+Elasticsearch's disk allocation protection remains enabled. Keep at least 10%
+of the host filesystem free before deployment so its system indices can be
+allocated.
+
+See [`MINICUBE_LOGGING_DEPLOYMENT.md`](MINICUBE_LOGGING_DEPLOYMENT.md) for the
+latest verified operational state and resource notes.
 
 `playbooks/configure-mirror-client.yml` configures DNS, Git, apt, and pip on a
 host that consumes the air-gapped mirror:

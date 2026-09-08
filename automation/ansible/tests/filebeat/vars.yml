@@ -1,0 +1,30 @@
+---
+# Test-only overrides for the disposable Docker-in-Docker server.
+# The production role and playbook remain unchanged.
+logging_filebeat_oci_engine: docker
+logging_filebeat_version: "9.3.3"
+
+# The test server joins the private Docker network used by the prototype stack.
+logging_filebeat_elasticsearch_address: elasticsearch
+logging_filebeat_elasticsearch_protocol: http
+logging_filebeat_elasticsearch_auth_method: none
+elasticsearch_http_authentication: none
+# Work around the role's mandatory default being evaluated during validation.
+# This value is unused and is not rendered when the auth method is `none`.
+logging_filebeat_elasticsearch_password: unused-test-placeholder
+
+logging_filebeat_index_pattern_prefix: filebeat-test-server
+logging_filebeat_pipeline_enabled: false
+logging_filebeat_kubernetes_enabled: false
+logging_filebeat_docker_enabled: true
+
+ska_datacentre: mid
+ska_environment: test
+ska_service: filebeat-test-server
+
+# The lightweight test server has no systemd or machine-id. Keep only mounts
+# that exist inside it; this does not alter the role's production defaults.
+logging_filebeat_volumes:
+  - /etc/filebeat.yml:/etc/filebeat.yml:ro
+  - /var/lib/filebeat:/usr/share/filebeat/data/registry/filebeat:rw
+  - /var/log:/var/log:ro

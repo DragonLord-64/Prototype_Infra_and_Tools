@@ -11,3 +11,10 @@ elasticsearch_memory: 2g
 kibana_memory: 1g
 
 elastic_stack_data_dir: /var/lib/elastic-stack
+
+# Set true for one run when a stopped container must be replaced.
+elastic_stack_recreate: false
+
+# Keep enabled normally. Disable only on a deliberately small disposable lab
+# volume where Elasticsearch's default free-space watermarks cannot be met.
+elasticsearch_disk_threshold_enabled: true
