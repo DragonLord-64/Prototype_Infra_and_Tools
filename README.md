@@ -10,7 +10,7 @@ currently being developed for the lab.
 - [`monitoring/`](monitoring/) contains the monitoring stack, Ansible roles,
   and the local monitoring demo.
 - [`tools/`](tools/) contains standalone utilities, including the NetBox
-  inventory importer and local Minikube setup.
+  inventory importer, local Minikube setup, and package-cache proxies.
 
 ## Local Kubernetes
 

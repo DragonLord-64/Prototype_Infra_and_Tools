@@ -1,0 +1,190 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: proxy-cache
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: apt-cache
+  namespace: proxy-cache
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pip-cache
+  namespace: proxy-cache
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: git-proxy
+  namespace: proxy-cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: git-proxy
+  template:
+    metadata:
+      labels:
+        app: git-proxy
+    spec:
+      containers:
+        - name: squid
+          image: local/ska-mid-cbf-git-proxy:0.0.3
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3128
+          readinessProbe:
+            tcpSocket:
+              port: 3128
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: git-proxy
+  namespace: proxy-cache
+spec:
+  type: NodePort
+  selector:
+    app: git-proxy
+  ports:
+    - name: http-proxy
+      port: 3128
+      targetPort: 3128
+      nodePort: 30128
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apt-proxy
+  namespace: proxy-cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apt-proxy
+  template:
+    metadata:
+      labels:
+        app: apt-proxy
+    spec:
+      containers:
+        - name: apt-cacher-ng
+          image: local/ska-mid-cbf-apt-cacher-ng:0.0.3
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3142
+          readinessProbe:
+            tcpSocket:
+              port: 3142
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          volumeMounts:
+            - name: cache
+              mountPath: /var/cache/apt-cacher-ng
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: cache
+          persistentVolumeClaim:
+            claimName: apt-cache
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apt-proxy
+  namespace: proxy-cache
+spec:
+  type: NodePort
+  selector:
+    app: apt-proxy
+  ports:
+    - name: apt
+      port: 3142
+      targetPort: 3142
+      nodePort: 30142
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pip-proxy
+  namespace: proxy-cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pip-proxy
+  template:
+    metadata:
+      labels:
+        app: pip-proxy
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: devpi
+          image: local/ska-mid-cbf-devpi:0.0.3
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3141
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3141
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          volumeMounts:
+            - name: cache
+              mountPath: /var/devpi
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+      volumes:
+        - name: cache
+          persistentVolumeClaim:
+            claimName: pip-cache
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pip-proxy
+  namespace: proxy-cache
+spec:
+  type: NodePort
+  selector:
+    app: pip-proxy
+  ports:
+    - name: devpi
+      port: 3141
+      targetPort: 3141
+      nodePort: 30141
