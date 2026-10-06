@@ -11,15 +11,24 @@
     bifrost_provisioning_tag: bifrost-provisioning
     allowed_extra: [uuid, properties, instance_info, ipv4_address, provisioning_ipv4_address, addressing_mode, node_network_data, ipa_kernel_url, ipa_ramdisk_url, boot_interface, deploy_interface, management_interface, power_interface, inspect_interface, automated_clean, host_groups]
   tasks:
-    - name: Require deliberate selection and private output location
+    - name: Require a device type and provisioning-interface selector
       ansible.builtin.assert:
         that:
           - bifrost_device_type is defined
           - bifrost_device_type | string | length > 0
           - bifrost_provisioning_tag | length > 0
-          - bifrost_output.startswith(playbook_dir ~ '/private/')
-          - "'..' not in bifrost_output.split('/')"
-        fail_msg: Choose a NetBox device type and nonempty provisioning-interface tag and write beneath this demo's ignored private directory.
+        fail_msg: Set bifrost_device_type and a nonempty bifrost_provisioning_tag.
+
+    - name: Require a nonempty output file path
+      ansible.builtin.assert:
+        that:
+          - bifrost_output is string
+          - bifrost_output | trim | length > 0
+        fail_msg: Set bifrost_output to the desired YAML file path (absolute or relative to this playbook).
+
+    - name: Resolve the configured output path
+      ansible.builtin.set_fact:
+        bifrost_output_path: "{{ ((bifrost_output | expanduser) if (bifrost_output | expanduser).startswith('/') else playbook_dir ~ '/' ~ bifrost_output) | normpath }}"
 
     - name: Resolve the selected device type with the NetBox lookup plugin
       ansible.builtin.set_fact:
@@ -157,15 +166,21 @@
         all_macs: "{{ bifrost_inventory.values() | map(attribute='nics') | flatten | map(attribute='mac') | list }}"
       no_log: true
 
-    - name: Ensure export directory is private
+    - name: Inspect the output directory without changing its permissions
+      ansible.builtin.stat:
+        path: "{{ bifrost_output_path | dirname }}"
+      register: export_directory
+
+    - name: Create a missing export directory with private permissions
       ansible.builtin.file:
-        path: "{{ bifrost_output | dirname }}"
+        path: "{{ bifrost_output_path | dirname }}"
         state: directory
         mode: '0700'
+      when: not export_directory.stat.exists
 
     - name: Write private Bifrost-compatible YAML
       ansible.builtin.copy:
-        dest: "{{ bifrost_output }}"
+        dest: "{{ bifrost_output_path }}"
         content: "{{ bifrost_inventory | to_nice_yaml(indent=2, sort_keys=false) }}"
         mode: '0600'
       no_log: true

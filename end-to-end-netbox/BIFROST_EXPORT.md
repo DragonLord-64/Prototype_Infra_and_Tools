@@ -1,12 +1,12 @@
 # NetBox → Bifrost YAML export
 
-`export-bifrost.yml` uses the official `netbox.netbox.nb_lookup` lookup plugin to read inventory from NetBox and generates Bifrost's node-name-keyed YAML. There is no second hand-maintained Bifrost inventory. `bifrost-export.example.yml` contains optional shared selector/file-path settings only; copying it is not required. The generated `private/baremetal.yml` is the inventory output, not an input settings file.
+`export-bifrost.yml` uses the official `netbox.netbox.nb_lookup` lookup plugin to read inventory from NetBox and generates Bifrost's node-name-keyed YAML. There is no second hand-maintained Bifrost inventory. `bifrost-export.example.yml` contains optional shared selector/file-path settings only; copying it is not required. The generated YAML file is the inventory output, not an input settings file.
 
 ## Authentication and invocation
 
 All three lookup calls receive `netbox_validate_certs | default(true) | bool` directly. Lookup plugins do not inherit Ansible module defaults. Set `netbox_validate_certs: false` in your shared NetBox login file for an explicitly trusted self-signed development instance. This controls NetBox HTTPS, separately from the BMC’s `redfish_verify_ca`.
 
-The exporter loads the same `private/netbox.json` vars file as the bootstrap by default. Choose your existing YAML/JSON/Vault file with `netbox_credentials_file`; it must define `netbox_url` and `netbox_token`. Supply Redfish credentials separately in ignored `private/redfish.yml` (or another chosen Vault file):
+The exporter loads the same `private/netbox.json` vars file as the bootstrap by default. Choose your existing YAML/JSON/Vault file with `netbox_credentials_file`; it must define `netbox_url` and `netbox_token`. Supply Redfish credentials separately in `private/redfish.yml` by default, or any chosen YAML/JSON/Vault file:
 
 ```yaml
 redfish_credentials:
@@ -35,7 +35,7 @@ From this folder, preview then export:
 
 Only the chosen type, provisioning-port tag and file-path settings live in repository YAML; server names, endpoints, ports, properties and intended image settings come from NetBox. Redfish auth secrets live in Ansible/Vault. Keep names stable; preserve an existing Ironic UUID in `bifrost.uuid` when available. Without one, Ironic assigns a UUID on enrollment; hardware serials are not Ironic UUIDs. This exporter does not create custom fields or update NetBox.
 
-Output is ignored `private/baremetal.yml` (directory 0700, file 0600) and contains credentials. Preview reads/validates but writes no inventory; normal task output and diffs suppress secrets. Do not use `-vvvv` or higher with credential-bearing runs: the upstream lookup plugin logs its token at that verbosity. Missing/invalid/duplicate MACs, unnamed or simulated devices, and incomplete/ambiguous API records fail before writing. The lookup plugin’s pynetbox client follows all API pagination for devices and interfaces; duplicate records fail before writing. The Ubuntu simulator cannot generate deployable inventory.
+All paths are configurable; a `private` directory is not required. Set `bifrost_output` to any desired YAML file path, e.g. `-e bifrost_output=/srv/exports/baremetal.yml` or `-e bifrost_output=output/baremetal.yml`. Relative output paths resolve against the playbook directory (including `../`); absolute paths are preserved. The default `private/baremetal.yml` is a demo convenience. New parent directories are created with mode 0700; existing directory permissions are preserved. The output file has mode 0600 and contains credentials. Output outside the default ignored folder must be kept out of version control by your own ignore rules. Preview reads/validates but writes no inventory; normal task output and diffs suppress secrets. Do not use `-vvvv` or higher with credential-bearing runs: the upstream lookup plugin logs its token at that verbosity. Missing/invalid/duplicate MACs, unnamed or simulated devices, and incomplete/ambiguous API records fail before writing. The lookup plugin’s pynetbox client follows all API pagination for devices and interfaces; duplicate records fail before writing. The Ubuntu simulator cannot generate deployable inventory.
 
 Bifrost consumes this file through `BIFROST_INVENTORY_SOURCE` and its inventory adapter, not directly as standard Ansible YAML inventory. Export never installs Bifrost, enrolls, deploys, changes power or writes NetBox. Enrollment/reimaging remain deliberate separate actions; this file by itself cannot prevent a downstream enrollment workflow from cleaning disks.
 
