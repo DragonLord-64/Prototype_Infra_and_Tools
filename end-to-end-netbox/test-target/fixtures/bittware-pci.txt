@@ -1,0 +1,5 @@
+0000:21:00.0 Ethernet controller [0200]: Synthetic Arkville IP endpoint [1c2c:1001]
+0000:65:00.0 Processing accelerators [1200]: Synthetic Altera endpoint [1172:0001]
+0000:42:00.0 Ethernet controller [0200]: Synthetic Arkville IP endpoint [1c2c:1001]
+0000:87:00.0 Processing accelerators [1200]: Synthetic Altera endpoint [1172:0001]
+0000:a1:00.0 Ethernet controller [0200]: Synthetic NVIDIA/Mellanox NIC [15b3:1017]

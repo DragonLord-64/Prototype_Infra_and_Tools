@@ -1,0 +1,3 @@
+Card Serial Number: SIM-FPGA-0002
+Card Number: 1
+BMC Firmware Version: SIM-4.5.6

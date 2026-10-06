@@ -10,6 +10,25 @@
     # Override netbox_validate_certs in inventory, a vars file, or extra vars.
     netbox_validate_certs_default: false
     hardware_command_path: "{{ '/opt/netbox-demo/bin:/usr/sbin:/usr/bin:/sbin:/bin' if hardware_simulation | default(false) | bool else '/usr/sbin:/usr/bin:/sbin:/bin' }}"
+    # BittWare discovery: fill these reviewed read-only values before enabling.
+    # Override with -e @bittware-vars.yml; examples use synthetic container values.
+    bootstrap_bittware_enabled: false
+    bootstrap_bittware_contract_confirmed: false
+    bootstrap_bittware_venv: /opt/venv/FHS
+    bootstrap_bittware_python: /opt/venv/FHS/bin/python
+    bootstrap_bittware_sdk_root: ''  # Confirm actual /usr/share/... SDK path.
+    bootstrap_bittware_bmc_display_argv: []  # Read-only display argv; {card} substituted.
+    bootstrap_bittware_serial_pattern: ''  # Regex with exactly one capture group.
+    bootstrap_bittware_firmware_pattern: ''
+    bootstrap_bittware_pci_list_argv: [lspci, -D, -nn]
+    bootstrap_bittware_pci_keywords: [Arkville, Altera, BittWare, NVIDIA, Mellanox]
+    bootstrap_bittware_cards: []  # Fill actual addresses; no real BDFs are assumed.
+    # - index: 0
+    #   name: card 0
+    #   pci_endpoints:
+    #     - {address: DOMAIN:BUS:DEVICE.FUNCTION, function: Arkville}
+    #     - {address: DOMAIN:BUS:DEVICE.FUNCTION, function: Altera}
+    # Repeat for index 1. Synthetic usable values are in the example vars file.
     resource_field_definitions: {cpu_arch: text, ram: integer, cpus: integer, disk_size: integer}
     unavailable_values: ['', unknown, 'not specified', 'not available', none, 'to be filled by o.e.m.']
     facts: "{{ hostvars[inventory_hostname].ansible_facts }}"
@@ -60,6 +79,7 @@
             discovered_components: []
             memory_records: []
             discovered_nics: {}
+            fpga_enriched_components: []
             selected_primary_ipv4: ''
             ip_ownership: []
             mac_ownership: []
@@ -475,6 +495,84 @@
           ansible.builtin.debug:
             msg: "Found {{ discovered_nics | length }} PCI NIC functions. Vendor-specific part/serial discovery needs the user's read-only command/output; virtual container ports are not physical cards."
 
+    - name: Discover optional BittWare SDK FPGA cards
+      tags: [fpga, compare, apply]
+      become: false
+      when: bootstrap_bittware_enabled | default(false) | bool
+      block:
+        - name: Require reviewed SDK contract for real hardware
+          ansible.builtin.assert:
+            that:
+              - hardware_simulation | default(false) | bool or bootstrap_bittware_contract_confirmed | default(false) | bool
+              - bootstrap_bittware_bmc_display_argv | length > 0
+              - bootstrap_bittware_serial_pattern | length > 0
+              - bootstrap_bittware_firmware_pattern | length > 0
+              - bootstrap_bittware_sdk_root | length > 0
+              - bootstrap_bittware_cards | length > 0
+              - "'{card}' in (bootstrap_bittware_bmc_display_argv | join(' '))"
+            fail_msg: Confirm exact read-only SDK commands and text grammar before enabling real hardware discovery.
+
+        - name: Create transient read-only discovery workspace
+          ansible.builtin.tempfile:
+            state: directory
+            prefix: netbox-fpga-
+          changed_when: false
+          register: fpga_workspace
+          check_mode: false
+
+        - name: Run read-only SDK adapter and remove transient files
+          block:
+            - name: Transfer provisional SDK text adapter
+              ansible.builtin.copy:
+                src: scripts/discover_bittware.py
+                dest: "{{ fpga_workspace.path }}/discover_bittware.py"
+                mode: '0600'
+              changed_when: false
+              check_mode: false
+
+            - name: Read per-card serial BMC version and PCI endpoints
+              ansible.builtin.command:
+                argv:
+                  - "{{ bootstrap_bittware_python | default('python3') }}"
+                  - "{{ fpga_workspace.path }}/discover_bittware.py"
+                  - --config-json
+                  - "{{ {'bmc_display_argv': bootstrap_bittware_bmc_display_argv, 'pci_list_argv': bootstrap_bittware_pci_list_argv, 'serial_pattern': bootstrap_bittware_serial_pattern, 'firmware_pattern': bootstrap_bittware_firmware_pattern, 'pci_keywords': bootstrap_bittware_pci_keywords, 'cards': bootstrap_bittware_cards} | to_json }}"
+              environment:
+                BW_SDK_ROOT: "{{ bootstrap_bittware_sdk_root }}"
+                PATH: "{{ bootstrap_bittware_venv | default('/opt/venv/FHS') }}/bin:{{ hardware_command_path }}"
+                LC_ALL: C
+              register: bittware_probe
+              changed_when: false
+              check_mode: false
+
+            - name: Keep SDK records separate from manually supplied cards
+              ansible.builtin.set_fact:
+                discovered_bittware: "{{ bittware_probe.stdout | from_json }}"
+
+            - name: Enrich discovered NICs only with their exact PCI endpoint
+              ansible.builtin.set_fact:
+                fpga_enriched_components: "{{ fpga_enriched_components | default([]) + [component | combine({'pci_endpoints': matching_pci}) if matching_pci | length > 0 else component] }}"
+              vars:
+                matching_pci: "{{ discovered_bittware.unassociated_pci_endpoints | selectattr('address', 'equalto', component.name | regex_replace('^NIC ', '')) | list if component.kind == 'NIC' else [] }}"
+              loop: "{{ discovered_components }}"
+              loop_control:
+                loop_var: component
+
+            - name: Retain all existing components after NIC enrichment
+              ansible.builtin.set_fact:
+                discovered_components: "{{ fpga_enriched_components | default(discovered_components) }}"
+
+            - name: Report PCI endpoints without proven FPGA card association
+              ansible.builtin.debug:
+                var: discovered_bittware.unassociated_pci_endpoints
+          always:
+            - name: Remove transient SDK adapter
+              ansible.builtin.file:
+                path: "{{ fpga_workspace.path }}"
+                state: absent
+              check_mode: false
+              changed_when: false
+
     - name: Map user-discovered FPGA cards into inventory items
       tags: [fpga, compare, apply]
       become: false
@@ -486,7 +584,7 @@
               - fpga_card.name | string | length > 0
               - fpga_card.interface | default('') == '' or fpga_card.interface in facts.interfaces
             fail_msg: FPGA records need a unique stable slot/name and any supplied interface must exist on this server.
-          loop: "{{ bootstrap_fpga_cards | default([]) }}"
+          loop: "{{ bootstrap_fpga_cards | default([]) + (discovered_bittware.cards | default([])) }}"
           loop_control:
             loop_var: fpga_card
 
@@ -500,14 +598,16 @@
               part: "{{ fpga_card.part | default('') | string | trim }}"
               serial: "{{ fpga_card.serial | default('') | string | trim }}"
               interface: "{{ fpga_card.interface | default('') }}"
-          loop: "{{ bootstrap_fpga_cards | default([]) }}"
+              bmc_firmware: "{{ fpga_card.bmc_firmware | default('') }}"
+              pci_endpoints: "{{ fpga_card.pci_endpoints | default([]) }}"
+          loop: "{{ bootstrap_fpga_cards | default([]) + (discovered_bittware.cards | default([])) }}"
           loop_control:
             loop_var: fpga_card
 
         - name: Report FPGA command integration status
           ansible.builtin.debug:
             msg: FPGA inventory mapping is ready; no SDK command is assumed. Supply parsed bootstrap_fpga_cards or add the reviewed SDK discovery block before this block.
-          when: bootstrap_fpga_cards | default([]) | length == 0
+          when: bootstrap_fpga_cards | default([]) | length == 0 and discovered_bittware.cards | default([]) | length == 0
 
     - name: Reject component names that would overwrite another discovered component
       tags: [ddr, nvme, nic, fpga, compare, apply]
@@ -790,6 +890,17 @@
               slug: "{{ netbox_device_type | lower | regex_replace('[^a-z0-9]+', '-') | trim('-') }}"
               u_height: 0
 
+        - name: Ensure per-inventory-item FPGA firmware and PCI fields
+          netbox.netbox.netbox_custom_field:
+            data:
+              name: "{{ item.name }}"
+              type: "{{ item.type }}"
+              object_types: [dcim.inventoryitem]
+          loop:
+            - {name: fpga_bmc_firmware, type: text}
+            - {name: pci_endpoints, type: json}
+          when: bootstrap_bittware_enabled | default(false) | bool or bootstrap_fpga_cards | default([]) | length > 0
+
         - name: Ensure OS version field
           netbox.netbox.netbox_custom_field:
             data:
@@ -913,6 +1024,7 @@
               tags: "{{ ['simulated-hardware'] if hardware_simulation | default(false) | bool else omit }}"
               part_id: "{{ item.part if item.part | lower not in unavailable_values else omit }}"
               serial: "{{ item.serial if item.serial | lower not in unavailable_values else omit }}"
+              custom_fields: "{{ ( {'fpga_bmc_firmware': item.bmc_firmware} if item.bmc_firmware | default('') | length > 0 else {} ) | combine({'pci_endpoints': item.pci_endpoints} if item.pci_endpoints | default([]) | length > 0 else {}) or omit }}"
               description: "{{ ('SIMULATED fixture: ' if hardware_simulation | default(false) | bool else 'Discovered: ') ~ item.kind ~ (': ' ~ item.details if item.details is defined else '') }}"
           loop: "{{ discovered_components }}"
           loop_control:

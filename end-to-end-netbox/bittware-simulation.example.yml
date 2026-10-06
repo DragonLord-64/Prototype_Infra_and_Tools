@@ -1,0 +1,25 @@
+# Synthetic dedicated-container values, not real vendor command syntax or BDFs.
+bootstrap_bittware_enabled: true
+bootstrap_bittware_python: /opt/venv/FHS/bin/python
+bootstrap_bittware_venv: /opt/venv/FHS
+bootstrap_bittware_sdk_root: /opt/netbox-demo/fixtures
+bootstrap_bittware_bmc_display_argv: [/opt/netbox-demo/bin/bw-sdk-simulator, bmc-display, -c, '{card}', display]
+bootstrap_bittware_pci_list_argv: [/opt/netbox-demo/bin/bw-sdk-simulator, pci-list, -D, -nn]
+bootstrap_bittware_serial_pattern: '^Card Serial Number:\s*(.+)$'
+bootstrap_bittware_firmware_pattern: '^BMC Firmware Version:\s*(.+)$'
+bootstrap_bittware_cards:
+  - index: 0
+    name: card 0
+    pci_endpoints:
+      - {address: '0000:21:00.0', function: Arkville}
+      - {address: '0000:65:00.0', function: Altera}
+  - index: 1
+    name: card 1
+    pci_endpoints:
+      - {address: '0000:42:00.0', function: Arkville}
+      - {address: '0000:87:00.0', function: Altera}
+# Synthetic NIC record to verify firmware stays off NICs and PCI remains on NIC.
+bootstrap_nic_cards:
+  - name: '0000:a1:00.0'
+    part: SIM-NVIDIA-MELLANOX
+    serial: SIM-NIC-0001

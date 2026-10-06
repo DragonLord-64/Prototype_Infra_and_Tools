@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+"""Synthetic read-only fixture interface; NOT verified BittWare CLI syntax."""
+import os
+from pathlib import Path
+import sys
+
+root = Path(os.environ.get("BW_SIMULATION_ROOT", "/opt/netbox-demo"))
+if not (root / "SIMULATION").is_file():
+    sys.exit("Refusing to run outside a marked simulation directory")
+if not os.environ.get("BW_SDK_ROOT"):
+    sys.exit("BW_SDK_ROOT is required")
+args = sys.argv[1:]
+if len(args) == 4 and args[:2] == ["bmc-display", "-c"] and args[2] in ("0", "1") and args[3] == "display":
+    fixture = f"bittware-bmc-{args[2]}.txt"
+elif args == ["pci-list", "-D", "-nn"]:
+    fixture = "bittware-pci.txt"
+else:
+    sys.exit("Only synthetic pci-list -D -nn and bmc-display -c 0|1 display are supported")
+sys.stdout.write((root / "fixtures" / fixture).read_text())
