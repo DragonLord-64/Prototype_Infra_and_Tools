@@ -1,0 +1,149 @@
+---
+- name: Discover Nexus switch inventory and populate NetBox
+  hosts: nexus
+  gather_facts: false
+  any_errors_fatal: true
+  connection: ansible.netcommon.network_cli
+  vars_files:
+    - "{{ netbox_credentials_file | default('private/netbox.yml') }}"
+  vars:
+    ansible_network_os: cisco.nxos.nxos
+    nexus_site: "{{ bootstrap_site | default('Bootstrap Lab') }}"
+    nexus_role: "{{ bootstrap_role | default('Network switch') }}"
+    nexus_commands:
+      - show inventory all | json
+      - show version | json
+      - show interface transceiver | json
+    nexus_epld_command: show version module 1 epld
+    netbox_validate_certs_default: false
+  module_defaults:
+    group/netbox.netbox.netbox:
+      netbox_url: "{{ netbox_url }}"
+      netbox_token: "{{ netbox_token }}"
+      validate_certs: "{{ netbox_validate_certs | default(netbox_validate_certs_default) | bool }}"
+  tasks:
+    - name: Read switch inventory software and every port transceiver
+      cisco.nxos.nxos_command:
+        commands: "{{ nexus_commands }}"
+      register: discovered
+      check_mode: false
+      changed_when: false
+      tags: [always]
+
+    - name: Normalize discovered inventory before any writes
+      ansible.builtin.set_fact:
+        switch: "{{ discovered.stdout | nexus_inventory }}"
+      tags: [always]
+
+    - name: Read EPLD firmware report when supported
+      cisco.nxos.nxos_command:
+        commands: "{{ nexus_epld_command }}"
+      register: epld
+      check_mode: false
+      changed_when: false
+      failed_when: false
+      when: nexus_epld_command | length > 0
+      tags: [always]
+
+    - name: Include available EPLD report
+      ansible.builtin.set_fact:
+        switch: "{{ switch | combine({'custom_fields': switch.custom_fields | combine({'epld_version': epld.stdout[0] | trim})}) }}"
+      when:
+        - epld.stdout is defined
+        - epld.stdout | length > 0
+        - epld.stdout[0] | trim | length > 0
+        - epld.stdout[0] is not search('(?i)invalid|error|not supported|incomplete|ambiguous')
+      tags: [always]
+
+    - name: Preview discovered inventory and omissions
+      ansible.builtin.debug:
+        var: switch
+      tags: [always]
+
+    - name: Populate NetBox from discovered switch inventory
+      when: not ansible_check_mode and 'facts' not in ansible_run_tags and 'compare' not in ansible_run_tags
+      tags: [apply]
+      delegate_to: localhost
+      connection: local
+      become: false
+      throttle: 1
+      vars:
+        ansible_python_interpreter: "{{ ansible_playbook_python }}"
+      block:
+        - name: Ensure site
+          netbox.netbox.netbox_site:
+            data:
+              name: "{{ nexus_site }}"
+              slug: "{{ nexus_site | lower | regex_replace('[^a-z0-9]+', '-') | trim('-') }}"
+
+        - name: Ensure switch role
+          netbox.netbox.netbox_device_role:
+            data:
+              name: "{{ nexus_role }}"
+              slug: "{{ nexus_role | lower | regex_replace('[^a-z0-9]+', '-') | trim('-') }}"
+
+        - name: Ensure reported manufacturers
+          netbox.netbox.netbox_manufacturer:
+            data:
+              name: "{{ item }}"
+              slug: "{{ item | lower | regex_replace('[^a-z0-9]+', '-') | trim('-') }}"
+          loop: "{{ (['Cisco'] + (switch.modules | map(attribute='manufacturer') | list)) | unique }}"
+
+        - name: Ensure switch type with reported product ID
+          netbox.netbox.netbox_device_type:
+            data:
+              manufacturer: Cisco
+              model: "{{ switch.model }}"
+              part_number: "{{ switch.model }}"
+              slug: "{{ switch.model | lower }}"
+              u_height: 1
+
+        - name: Ensure switch custom fields
+          netbox.netbox.netbox_custom_field:
+            data:
+              name: "{{ item.key }}"
+              type: "{{ item.value }}"
+              object_types: [dcim.device]
+          loop: "{{ {'os_version': 'text', 'operating_system': 'text', 'bios_version': 'text', 'epld_version': 'longtext', 'fan_count': 'integer'} | dict2items }}"
+
+        - name: Ensure switch identity and versions
+          netbox.netbox.netbox_device:
+            data:
+              name: "{{ switch.name }}"
+              site: "{{ nexus_site }}"
+              device_role: "{{ nexus_role }}"
+              device_type: "{{ switch.model }}"
+              serial: "{{ switch.serial }}"
+              custom_fields: "{{ switch.custom_fields }}"
+
+        - name: Ensure PSU fan and port module bays
+          netbox.netbox.netbox_module_bay:
+            data:
+              device: "{{ switch.name }}"
+              name: "{{ item }}"
+          loop: "{{ switch.bays }}"
+
+        - name: Ensure reported module types
+          netbox.netbox.netbox_module_type:
+            data:
+              manufacturer: "{{ item.manufacturer }}"
+              model: "{{ item.model }}"
+              part_number: "{{ item.part }}"
+          loop: "{{ switch.modules | unique(attribute='model') }}"
+          loop_control:
+            label: "{{ item.model }}"
+
+        - name: Ensure installed modules by device and bay
+          netbox.netbox.netbox_module:
+            query_params: [device, module_bay]
+            data:
+              device: "{{ switch.name }}"
+              module_bay:
+                device: "{{ switch.name }}"
+                name: "{{ item.bay }}"
+              module_type: "{{ item.model }}"
+              serial: "{{ item.serial if item.serial | length > 0 else omit }}"
+              description: "{{ item.description if item.description | length > 0 else omit }}"
+          loop: "{{ switch.modules }}"
+          loop_control:
+            label: "{{ item.bay }}"

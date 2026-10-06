@@ -241,3 +241,10 @@ Run the isolated metadata regression checks from this directory with
 actual Ansible reader and validation tasks with temporary local files,
 including check mode and multi-host rack conflicts; no NetBox or SSH
 connection is made.
+
+## Nexus switch inventory
+
+[Nexus 9332D-GX2B discovery](NEXUS.md) uses a separate NX-OS playbook to collect
+switch identity/software/firmware, PSU serials, fan module count, and port
+transceivers as NetBox modules. DACs record the local end without invented
+remote cable terminations.

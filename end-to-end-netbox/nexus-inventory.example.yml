@@ -1,0 +1,15 @@
+---
+all:
+  children:
+    nexus:
+      hosts:
+        nexus-example:
+          ansible_host: 192.0.2.10
+      vars:
+        ansible_user: admin
+        ansible_network_os: cisco.nxos.nxos
+        ansible_connection: ansible.netcommon.network_cli
+        ansible_network_cli_ssh_type: paramiko
+        bootstrap_site: Bootstrap Lab
+        bootstrap_role: Network switch
+        # Supply password via Vault or use an SSH key; never commit credentials.
