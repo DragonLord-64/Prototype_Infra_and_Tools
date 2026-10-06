@@ -108,7 +108,7 @@
           {% endif %}
           {% endfor %}
           {% set bmc = (device.oob_ip | default({}, true)).get('address', '') | regex_replace('/.*$', '') %}
-          {% set endpoint = fields.redfish_address | default('', true) %}
+          {% set endpoint = fields.redfish_address | default('', true) | string %}
           {% if not endpoint and bmc and fields.redfish_enabled | default(false) | bool %}
           {% set endpoint = 'https://' ~ ('[' ~ bmc ~ ']' if ':' in bmc else bmc) %}
           {% endif %}
@@ -119,23 +119,35 @@
       loop: "{{ selected_devices }}"
       no_log: true
 
-    - name: Validate NetBox fields and separately supplied authentication
-      ansible.builtin.assert:
-        that:
-          - item.nics | length > 0
-          - item.nics | selectattr('mgmt_only', 'equalto', true) | list | length == 0
-          - item.nics | selectattr('enabled', 'equalto', false) | list | length == 0
-          - item.redfish_address is match('^https://[^/]+/?$')
-          - credentials.redfish_username | default('') | length > 0
-          - credentials.redfish_password | default('') | length > 0
-          - credentials | list | difference(['redfish_username', 'redfish_password', 'redfish_auth_type']) | length == 0
-          - item.extra is mapping
-          - item.extra | list | difference(allowed_extra) | length == 0
-        fail_msg: Review NetBox Redfish metadata, provisioning-port tags, and separate credentials; no export was written.
+    - name: Collect sanitized enrollment diagnostics without exposing raw records
+      ansible.builtin.set_fact:
+        enrollment_diagnostics: "{{ enrollment_diagnostics | default([]) + [diagnostic | from_json] }}"
       vars:
-        credentials: "{{ redfish_credentials.defaults | default({}) | combine((redfish_credentials.devices | default({})).get(item.name, {})) }}"
+        credentials: "{{ (redfish_credentials | default({})).get('defaults', {}) | combine((redfish_credentials | default({})).get('devices', {}).get(item.name, {})) }}"
+        diagnostic: >-
+          {% set issues = [] %}
+          {% if not item.nics %}{% set _ = issues.append('No provisioning interfaces: tag the intended NetBox port with ' ~ bifrost_provisioning_tag) %}{% endif %}
+          {% if item.nics | selectattr('mgmt_only', 'equalto', true) | list %}{% set _ = issues.append('A tagged provisioning interface is management-only in NetBox') %}{% endif %}
+          {% if item.nics | selectattr('enabled', 'equalto', false) | list %}{% set _ = issues.append('A tagged provisioning interface is disabled in NetBox') %}{% endif %}
+          {% if not item.redfish_address is match('^https://[^/]+/?$') %}{% set _ = issues.append('Missing/invalid Redfish HTTPS endpoint: set custom redfish_address, or redfish_enabled=true with native oob_ip') %}{% endif %}
+          {% if not credentials.redfish_username | default('', true) is string or not credentials.redfish_username | default('', true) | length %}{% set _ = issues.append('Missing redfish_credentials username: set defaults.redfish_username or devices[device-name].redfish_username in your secrets vars') %}{% endif %}
+          {% if not credentials.redfish_password | default('', true) is string or not credentials.redfish_password | default('', true) | length %}{% set _ = issues.append('Missing redfish_credentials password: set defaults.redfish_password or devices[device-name].redfish_password in your secrets vars') %}{% endif %}
+          {% if credentials | list | difference(['redfish_username', 'redfish_password', 'redfish_auth_type']) %}{% set _ = issues.append('Authentication has unsupported keys; only username/password/auth_type Redfish keys are allowed') %}{% endif %}
+          {% if not item.extra is mapping %}{% set _ = issues.append('NetBox custom bifrost field must be a JSON object') %}
+          {% elif item.extra | list | difference(allowed_extra) %}{% set _ = issues.append('NetBox custom bifrost field contains unsupported top-level settings') %}{% endif %}
+          {{ {'name': item.name, 'issues': issues} | to_json }}
       loop: "{{ export_nodes }}"
       no_log: true
+
+    - name: Report missing enrollment fields using sanitized diagnostics
+      ansible.builtin.assert:
+        that:
+          - item.issues | length == 0
+        fail_msg: "{{ item.name }}: {{ item.issues | join('; ') }}"
+        quiet: true
+      loop: "{{ enrollment_diagnostics }}"
+      loop_control:
+        label: "{{ item.name }}"
 
     - name: Build the Bifrost inventory with secrets kept out of logs
       ansible.builtin.set_fact:
