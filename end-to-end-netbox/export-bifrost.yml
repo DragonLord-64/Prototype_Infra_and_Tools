@@ -1,0 +1,124 @@
+---
+- name: Export selected NetBox servers to Bifrost inventory (no enrollment)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    netbox_auth: "{{ ('Bearer ' if netbox_token.startswith('nbt_') else 'Token ') ~ netbox_token }}"
+    bifrost_output: "{{ playbook_dir }}/private/baremetal.yml"
+  tasks:
+    - name: Require deliberate selection and private output location
+      ansible.builtin.assert:
+        that:
+          - bifrost_nodes is defined
+          - bifrost_nodes | length > 0
+          - bifrost_nodes | map(attribute='name') | unique | length == bifrost_nodes | length
+          - bifrost_output.startswith(playbook_dir ~ '/private/')
+          - "'..' not in bifrost_output.split('/')"
+        fail_msg: Select unique server names in bifrost_nodes and write beneath this demo's ignored private directory.
+
+    - name: Read selected devices from NetBox
+      ansible.builtin.uri:
+        url: "{{ netbox_url | regex_replace('/$', '') }}/api/dcim/devices/?name={{ item.name | urlencode }}"
+        headers:
+          Authorization: "{{ netbox_auth }}"
+        validate_certs: "{{ netbox_validate_certs | default(true) }}"
+        return_content: true
+      loop: "{{ bifrost_nodes }}"
+      register: devices
+      no_log: true
+      check_mode: false
+
+    - name: Require exactly one real device per selection
+      ansible.builtin.assert:
+        that:
+          - item.json.count == 1
+          - "'simulated-hardware' not in (item.json.results[0].tags | map(attribute='name') | list)"
+        fail_msg: Selected device is absent, ambiguous, or marked simulated-hardware; no export was written.
+      loop: "{{ devices.results }}"
+      no_log: true
+
+    - name: Read explicitly selected provisioning interfaces
+      ansible.builtin.uri:
+        url: "{{ netbox_url | regex_replace('/$', '') }}/api/dcim/interfaces/?device_id={{ item.json.results[0].id }}&limit=1000"
+        headers:
+          Authorization: "{{ netbox_auth }}"
+        validate_certs: "{{ netbox_validate_certs | default(true) }}"
+        return_content: true
+      loop: "{{ devices.results }}"
+      register: interfaces
+      no_log: true
+      check_mode: false
+
+    - name: Validate enrollment mappings before rendering
+      ansible.builtin.assert:
+        that:
+          - item.json.next == none
+          - selection.provisioning_interfaces | default([]) | length > 0
+          - selection.provisioning_interfaces | unique | length == selection.provisioning_interfaces | length
+          - selected_ports | length == selection.provisioning_interfaces | length
+          - selected_ports | selectattr('mgmt_only', 'equalto', true) | list | length == 0
+          - selected_ports | selectattr('enabled', 'equalto', false) | list | length == 0
+          - selection.redfish_address | default('') is match('^https://[^/]+/?$')
+          - bifrost_credentials[selection.name].redfish_username | default('') | length > 0
+          - bifrost_credentials[selection.name].redfish_password | default('') | length > 0
+          - selection.extra | default({}) is mapping
+          - selection.extra | default({}) | list | difference(allowed_extra) | length == 0
+        fail_msg: Required BMC credentials, HTTPS endpoint, or provisioning interfaces are missing/invalid; no export was written.
+      vars:
+        selection: "{{ item.item.item }}"
+        selected_ports: "{{ item.json.results | selectattr('name', 'in', selection.provisioning_interfaces | default([])) | list }}"
+        allowed_extra: [uuid, properties, instance_info, ipv4_address, provisioning_ipv4_address, addressing_mode, node_network_data, ipa_kernel_url, ipa_ramdisk_url, boot_interface, deploy_interface, management_interface, power_interface, inspect_interface, automated_clean, host_groups]
+      loop: "{{ interfaces.results }}"
+      no_log: true
+
+    - name: Build the Bifrost node mapping
+      ansible.builtin.set_fact:
+        bifrost_inventory: "{{ bifrost_inventory | default({}) | combine({selection.name: node | from_json}) }}"
+      vars:
+        selection: "{{ item.item.item }}"
+        selected_ports: "{{ item.json.results | selectattr('name', 'in', selection.provisioning_interfaces) | list }}"
+        node: >-
+          {% set nics = [] %}
+          {% for port in selected_ports %}
+          {% set mac = (port.primary_mac_address | default({}, true)).get('mac_address', port.mac_address | default('', true)) %}
+          {% set _ = nics.append({'mac': mac | lower}) %}
+          {% endfor %}
+          {{ selection.extra | default({}) | combine({
+            'name': selection.name,
+            'driver': 'redfish',
+            'driver_info': {'redfish_address': selection.redfish_address,
+                            'redfish_verify_ca': selection.redfish_verify_ca | default(true)}
+                           | combine(bifrost_credentials[selection.name])
+                           | combine({'redfish_system_id': selection.redfish_system_id} if selection.redfish_system_id is defined else {}),
+            'nics': nics}) | to_json }}
+      loop: "{{ interfaces.results }}"
+      no_log: true
+
+    - name: Require nonzero valid and unambiguous provisioning MAC addresses
+      ansible.builtin.assert:
+        that:
+          - all_macs | length == all_macs | unique | length
+          - all_macs | reject('match', '^([0-9a-f]{2}:){5}[0-9a-f]{2}$') | list | length == 0
+          - "'00:00:00:00:00:00' not in all_macs"
+      vars:
+        all_macs: "{{ bifrost_inventory.values() | map(attribute='nics') | flatten | map(attribute='mac') | list }}"
+      no_log: true
+
+    - name: Ensure export directory is private
+      ansible.builtin.file:
+        path: "{{ bifrost_output | dirname }}"
+        state: directory
+        mode: '0700'
+
+    - name: Write private Bifrost-compatible YAML
+      ansible.builtin.copy:
+        dest: "{{ bifrost_output }}"
+        content: "{{ bifrost_inventory | to_nice_yaml(indent=2, sort_keys=false) }}"
+        mode: '0600'
+      no_log: true
+      diff: false
+
+    - name: Report export count without exposing credentials
+      ansible.builtin.debug:
+        msg: "{{ bifrost_inventory | length }} selected server(s) validated{{ '; check mode wrote no inventory' if ansible_check_mode else ' and exported' }}. No enrollment, deployment, or NetBox changes performed."

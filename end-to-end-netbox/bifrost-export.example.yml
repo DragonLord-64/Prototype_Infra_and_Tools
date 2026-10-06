@@ -1,0 +1,26 @@
+---
+# Copy to private/bifrost-export.yml and replace with real NetBox names/settings.
+bifrost_nodes:
+  - name: REPLACE_WITH_REAL_NETBOX_DEVICE_NAME
+    provisioning_interfaces: [REPLACE_WITH_PROVISIONING_PORT_NAME]
+    redfish_address: https://REPLACE_WITH_REAL_BMC_ADDRESS
+    # Optional: only the real ComputerSystem path; never assume Systems/1.
+    # redfish_system_id: /redfish/v1/Systems/ACTUAL_ID
+    # redfish_verify_ca: /path/on/bifrost/conductor/to/trusted-ca.pem
+    extra:
+      automated_clean: false
+      # Preserve the existing Ironic UUID here if one already exists.
+      # uuid: EXISTING_IRONIC_UUID
+      # properties:
+      #   cpu_arch: x86_64
+      #   root_device: {serial: ACTUAL_TARGET_DISK_SERIAL}
+      # instance_info:
+      #   image_source: https://image-server/approved-image.qcow2
+      #   image_checksum: ACTUAL_IMAGE_CHECKSUM
+      # boot_interface: redfish-virtual-media
+      # ipv4_address: ACTUAL_DEPLOYED_OS_ADDRESS
+# Store separately in an Ansible Vault file or another ignored private file:
+# bifrost_credentials:
+#   REPLACE_WITH_REAL_NETBOX_DEVICE_NAME:
+#     redfish_username: ACTUAL_USER
+#     redfish_password: ACTUAL_SECRET
