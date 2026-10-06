@@ -189,3 +189,11 @@ inputs accept stable name, available part/serial, and optional verified interfac
 missing fields preserve existing values. See [cards.example.yml](cards.example.yml)
 and [FPGA_EXTENSION.md](FPGA_EXTENSION.md). `--tags nic`/`--tags fpga` discover/map
 only; full apply and preview include these blocks.
+
+TLS validation defaults to enabled for both bootstrap URI reads and NetBox
+collection writes. Put `netbox_validate_certs: false` in the shared credentials
+YAML only for the existing self-signed setup, or trust the NetBox CA instead.
+Select the same YAML/JSON/Vault file as the exporter with
+`-e netbox_credentials_file=private/netbox.yml`; it supplies `netbox_url`,
+`netbox_token`, and optional `netbox_validate_certs`. The default file remains
+`private/netbox.json`. Certificate verification stays enabled unless overridden.
