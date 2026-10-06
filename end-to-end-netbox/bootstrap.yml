@@ -66,6 +66,8 @@
               name: "{{ item }}"
               mac: "{{ interface.macaddress | default('') }}"
               mtu: "{{ interface.mtu | default(1500) }}"
+              management_only: "{{ (interface.mgmt_only | default(false) | bool) or (item | lower in ['bmc', 'lo']) or (item in bootstrap_management_only_interfaces | default([])) }}"
+              lan_eligible: "{{ interface.type | default('ether') in ['ether', 'bonding'] and not ((interface.mgmt_only | default(false) | bool) or (item | lower in ['bmc', 'lo']) or (item in bootstrap_management_only_interfaces | default([]))) }}"
               addresses: "{{ raw_addresses if netbox_include_local_addresses | default(false) | bool else raw_addresses | rejectattr('address', 'match', '^(127\\.|169\\.254\\.|::1$|[Ff][Ee][89AaBb][0-9A-Fa-f]:)') | list }}"
           loop: "{{ facts.interfaces | sort }}"
           loop_control:
@@ -399,16 +401,17 @@
     - name: Select discovered management primary IPv4
       tags: [compare, apply]
       block:
-        - name: Select the requested or default-route IPv4 only from discovered addresses
+        - name: Select requested IPv4 or the first eligible LAN IPv4 without requiring a default route
           ansible.builtin.set_fact:
             selected_primary_ipv4: "{{ primary_candidates | first | default({}) }}"
           vars:
-            requested_primary: "{{ bootstrap_primary_ipv4 | default(facts.default_ipv4.address | default('')) }}"
-            primary_candidates: "{{ discovered_interfaces | map(attribute='addresses') | flatten | selectattr('address', 'equalto', requested_primary) | rejectattr('address', 'search', ':') | list }}"
+            all_ipv4: "{{ discovered_interfaces | rejectattr('management_only') | map(attribute='addresses') | flatten | rejectattr('address', 'search', ':') | rejectattr('address', 'match', '^(127\\.|169\\.254\\.|0\\.)') | list }}"
+            lan_ipv4: "{{ discovered_interfaces | selectattr('lan_eligible') | map(attribute='addresses') | flatten | rejectattr('address', 'search', ':') | rejectattr('address', 'match', '^(127\\.|169\\.254\\.|0\\.)') | list }}"
+            primary_candidates: "{{ (all_ipv4 | selectattr('address', 'equalto', bootstrap_primary_ipv4) | list) if bootstrap_primary_ipv4 is defined else lan_ipv4 }}"
 
         - name: Report unavailable primary IPv4 selection
           ansible.builtin.debug:
-            msg: Requested/default primary IPv4 was not discovered; existing NetBox primary IPv4 will be preserved.
+            msg: Requested/first-LAN primary IPv4 was not discovered; existing NetBox primary IPv4 will be preserved.
           when: selected_primary_ipv4.address is not defined
 
     - name: Show hardware discovery and omitted component fields
@@ -721,6 +724,7 @@
               device: "{{ facts.hostname }}"
               name: bmc
               type: other
+              mgmt_only: true
               description: "{{ 'SIMULATED motherboard BMC management' if hardware_simulation | default(false) | bool else 'Motherboard BMC management' }}"
           when: bmc_address is defined
 

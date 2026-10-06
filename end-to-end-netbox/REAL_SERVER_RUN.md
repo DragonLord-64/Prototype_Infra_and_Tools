@@ -38,7 +38,7 @@ BMC LAN channel and motherboard FRU ID are configurable inventory variables.
 
 Review tool stderr and parsed fields, validate the BMC channel/FRU selection,
 set `bootstrap_primary_ipv4` to a discovered management address if the
-default-route IP is not appropriate, then apply the same selected target
+first eligible LAN IP is not appropriate, then apply the same selected target
 without `--check`. Run it again and require
 zero changes. Expand the inventory only after this smoke test. Prerequisites
 (site, role, generic type, and custom fields) are ensured during apply; the

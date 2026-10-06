@@ -46,7 +46,7 @@ discovery only; add `--check` to a full run for a NetBox write-free preview.
 The device name is the discovered hostname; OS version is `os_version`.
 The generic type is a placeholder, not hardware identification. The test
 inventory includes loopback addresses; real-target defaults exclude loopback
-and link-local addresses. Primary IPv4 uses the discovered default-route address, or explicit
+and link-local addresses. Primary IPv4 uses the first eligible LAN address in sorted interface order, or explicit
 `bootstrap_primary_ipv4`; unavailable selections preserve the existing value. Stale records
 are preserved. Duplicate hostnames and IP/MAC ownership conflicts stop before
 writes; resolving moves is left to explicit review. Vendor SDK discovery and
@@ -174,8 +174,11 @@ without recollecting the actual server. NVMe JSON still requires the documented
 flat Devices schema; supply raw output if the CLI reports another schema.
 
 `bootstrap_primary_ipv4` accepts a plain discovered management IPv4 (no CIDR).
-Without an override, the default-route IPv4 is selected if it was discovered
-and included in the address list. It is assigned only after address creation;
+Without an override, the first IPv4 on an Ethernet/bond LAN interface is
+selected in sorted interface discovery order, even without a default route.
+BMC/management-only interfaces, loopback and link-local IPs are excluded.
+Use `bootstrap_management_only_interfaces` to mark any additional management-only
+OS interfaces. Explicit overrides must also be discovered non-management IPv4s. It is assigned only after address creation;
 preview shows the selected value alongside the current device record. A NAT
 SSH address not actually present on a target must not be used as its primary.
 

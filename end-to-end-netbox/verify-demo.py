@@ -69,7 +69,7 @@ if not args.skip_runs:
     fact_result = subprocess.run([str(ROOT.parent / '.venv/bin/ansible'), '-i', 'inventory.yml', 'bootstrap_servers', '-m', 'ansible.builtin.setup', '--tree', str(fact_dir)], cwd=ROOT, capture_output=True, text=True)
     assert fact_result.returncode == 0, 'SSH fact gathering failed'
     facts = json.loads((fact_dir / '127.0.0.1').read_text())['ansible_facts']
-    assert device['primary_ip4']['address'].split('/')[0] == facts['ansible_default_ipv4']['address']
+    assert device['primary_ip4']['address'].split('/')[0] == facts['ansible_eth0']['ipv4']['address']
     assert device['name'] == facts['ansible_hostname']
     assert device['custom_fields']['os_version'] == facts['ansible_distribution'] + ' ' + facts['ansible_distribution_version']
     for interface_name in facts['ansible_interfaces']:
