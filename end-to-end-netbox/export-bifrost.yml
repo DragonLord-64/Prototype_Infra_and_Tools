@@ -128,7 +128,7 @@
           {% set lan_ip = (device.primary_ip4 | default({}, true)).get('address', '') | regex_replace('/.*$', '') %}
           {{ {'name': device.name, 'nics': nics, 'redfish_address': endpoint,
               'redfish_system_id': fields.redfish_system_id | default('', true),
-              'redfish_verify_ca': fields.redfish_verify_ca | default(false),
+              'redfish_verify_ca': fields.redfish_verify_ca | default(false, true),
               'raw_extra': extra,
               'extra': (extra if extra is mapping else {}) | combine({'properties': properties}) | combine({'uuid': uuid} if uuid else {}) | combine({'ipv4_address': lan_ip} if lan_ip else {})} | to_json }}
       loop: "{{ selected_devices }}"
