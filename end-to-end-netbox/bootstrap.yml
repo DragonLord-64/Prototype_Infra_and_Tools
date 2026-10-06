@@ -5,11 +5,12 @@
   any_errors_fatal: true
   # Use your existing YAML/JSON/Vault vars files; these paths are demo defaults.
   vars_files:
-    - "{{ netbox_credentials_file | default('private/netbox.yaml') }}"
+    - "{{ netbox_credentials_file | default('private/netbox.yml') }}"
   vars:
     # Override netbox_validate_certs in inventory, a vars file, or extra vars.
     netbox_validate_certs_default: false
     hardware_command_path: "{{ '/opt/netbox-demo/bin:/usr/sbin:/usr/bin:/sbin:/bin' if hardware_simulation | default(false) | bool else '/usr/sbin:/usr/bin:/sbin:/bin' }}"
+    resource_field_definitions: {cpu_arch: text, ram: integer, cpus: integer, disk_size: integer}
     unavailable_values: ['', unknown, 'not specified', 'not available', none, 'to be filled by o.e.m.']
     facts: "{{ hostvars[inventory_hostname].ansible_facts }}"
     netbox_site: "{{ bootstrap_site | default('Bootstrap Lab') }}"
@@ -52,6 +53,10 @@
           ansible.builtin.set_fact:
             discovered_interfaces: []
             hardware_fields: {}
+            resource_fields: {}
+            netbox_resource_fields: {}
+            resource_field_types: {}
+            disk_candidates: []
             discovered_components: []
             memory_records: []
             discovered_nics: {}
@@ -79,6 +84,36 @@
         - name: Show discovered server
           ansible.builtin.debug:
             msg: "{{ facts.hostname }}: {{ facts.distribution }} {{ facts.distribution_version }}"
+
+    - name: Gather measured CPU architecture RAM and logical CPU count
+      tags: [always, facts]
+      become: false
+      block:
+        - name: Record available architecture
+          ansible.builtin.set_fact:
+            resource_fields: "{{ resource_fields | combine({'cpu_arch': facts.architecture}) }}"
+          when: facts.architecture | default('') | lower not in unavailable_values
+
+        - name: Record available RAM in MiB
+          ansible.builtin.set_fact:
+            resource_fields: "{{ resource_fields | combine({'ram': facts.memtotal_mb | int}) }}"
+          when: facts.memtotal_mb | default(0) | int > 0
+
+        - name: Read logical CPU count only if the fact is unavailable
+          ansible.builtin.command:
+            argv: [nproc]
+          register: cpu_count_probe
+          changed_when: false
+          failed_when: false
+          check_mode: false
+          when: facts.processor_vcpus | default(0) | int <= 0
+
+        - name: Record available logical CPU count
+          ansible.builtin.set_fact:
+            resource_fields: "{{ resource_fields | combine({'cpus': logical_cpus | int}) }}"
+          vars:
+            logical_cpus: "{{ facts.processor_vcpus | default(0) if facts.processor_vcpus | default(0) | int > 0 else cpu_count_probe.stdout | default(0) }}"
+          when: logical_cpus | int > 0
 
     - name: Discover server BIOS
       tags: [bios, compare, apply]
@@ -282,6 +317,42 @@
           loop_control:
             label: "{{ item.DevicePath }}"
 
+    - name: Gather individual eligible disk capacities without summing disks
+      tags: [resources, compare, apply]
+      become: false
+      block:
+        - name: Record measured nonremovable whole-disk capacities from Linux facts
+          ansible.builtin.set_fact:
+            disk_candidates: "{{ disk_candidates + [{'name': '/dev/' ~ disk_fact.key, 'bytes': disk_bytes | int}] }}"
+          vars:
+            disk_bytes: "{{ (disk_fact.value.sectors | default(0) | int) * (disk_fact.value.sectorsize | default(512) | int) }}"
+          loop: "{{ facts.devices | default({}) | dict2items | sort(attribute='key') }}"
+          loop_control:
+            loop_var: disk_fact
+            label: "{{ disk_fact.key }}"
+          when: not (hardware_simulation | default(false) | bool) and facts.virtualization_type | default('') not in ['docker', 'lxc', 'container'] and disk_fact.key is match('^(sd[a-z]+|vd[a-z]+|xvd[a-z]+|nvme[0-9]+n[0-9]+|mmcblk[0-9]+)$') and disk_fact.value.removable | default('0') | string != '1' and (disk_bytes | int // 1073741824) > 900
+
+        - name: Record simulated disk capacities only from the marked test fixture
+          ansible.builtin.set_fact:
+            disk_candidates: "{{ disk_candidates + [{'name': disk_fixture.DevicePath, 'bytes': disk_fixture.PhysicalSize | int}] }}"
+          loop: "{{ (nvme_probe.stdout | from_json).Devices if nvme_probe is defined and nvme_probe.rc == 0 else [] }}"
+          loop_control:
+            loop_var: disk_fixture
+            label: "{{ disk_fixture.DevicePath }}"
+          when: hardware_simulation | default(false) | bool and (disk_fixture.PhysicalSize | default(0) | int // 1073741824) > 900
+
+        - name: Record actual common eligible capacity in whole GiB
+          ansible.builtin.set_fact:
+            resource_fields: "{{ resource_fields | combine({'disk_size': (disk_candidates | first).bytes | int // 1073741824}) }}"
+          when: disk_candidates | length > 0 and (disk_candidates | map(attribute='bytes') | unique | list | length == 1)
+
+        - name: Report disk capacity selection without blocking inventory
+          ansible.builtin.debug:
+            msg:
+              eligible_disks: "{{ disk_candidates }}"
+              disk_size_gib: "{{ resource_fields.disk_size | default('unavailable or differing capacities; existing value preserved') }}"
+              policy: Individual nonremovable whole disks above 900 GiB; equal capacities are interchangeable for this informational field. No install target is chosen or disk written.
+
     - name: Discover NIC PCI inventory identities
       tags: [nic, compare, apply]
       become: false
@@ -449,6 +520,40 @@
           check_mode: false
           no_log: true
 
+        - name: Read existing custom field definitions without changing their types
+          ansible.builtin.uri:
+            url: "{{ netbox_url }}/api/extras/custom-fields/?limit=1000"
+            headers:
+              Authorization: "{{ netbox_auth }}"
+            return_content: true
+          register: existing_resource_definitions
+          check_mode: false
+          no_log: true
+
+        - name: Remember existing resource field types
+          ansible.builtin.set_fact:
+            resource_field_types: "{{ resource_field_types | combine({definition.name: definition.type.value | default(definition.type)}) }}"
+          loop: "{{ existing_resource_definitions.json.results }}"
+          loop_control:
+            loop_var: definition
+          when: definition.name in resource_field_definitions
+          no_log: true
+
+        - name: Adapt measured resource values to existing field types
+          ansible.builtin.set_fact:
+            netbox_resource_fields: "{{ netbox_resource_fields | combine({resource.key: stored_value}) }}"
+          vars:
+            field_type: "{{ resource_field_types[resource.key] | default(resource_field_definitions[resource.key]) }}"
+            stored_value: "{{ resource.value | string if field_type in ['text', 'longtext'] else (resource.value | float if field_type == 'decimal' else resource.value | int) }}"
+          loop: "{{ resource_fields | dict2items }}"
+          loop_control:
+            loop_var: resource
+          when: (resource.key == 'cpu_arch' and field_type in ['text', 'longtext']) or (resource.key != 'cpu_arch' and field_type in ['integer', 'decimal', 'text', 'longtext'])
+
+        - name: Report unavailable or incompatible optional resource fields
+          ansible.builtin.debug:
+            msg: "Omitted resource fields preserve existing values: {{ resource_field_definitions.keys() | list | difference(netbox_resource_fields.keys() | list) }}"
+
         - name: Reject ambiguous device names and duplicate discovery identities
           ansible.builtin.assert:
             that:
@@ -559,6 +664,7 @@
               desired_role: "{{ netbox_role }}"
               desired_device_type: "{{ netbox_device_type }}"
               desired_interfaces: "{{ discovered_interfaces }}"
+              desired_resource_fields: "{{ netbox_resource_fields }}"
               desired_hardware_fields: "{{ hardware_fields }}"
               desired_components: "{{ discovered_components }}"
               current_primary_ipv4: "{{ (existing_device.json.results | first | default({})).primary_ip4.address | default('not set') }}"
@@ -622,6 +728,17 @@
               object_types: [dcim.device]
           loop: [bios_version, bmc_firmware, motherboard_part_number, motherboard_serial]
 
+        - name: Create only missing resource custom fields
+          netbox.netbox.netbox_custom_field:
+            data:
+              name: "{{ resource_definition.key }}"
+              type: "{{ resource_definition.value }}"
+              object_types: [dcim.device]
+          loop: "{{ resource_field_definitions | dict2items }}"
+          loop_control:
+            loop_var: resource_definition
+          when: resource_definition.key not in resource_field_types
+
         - name: Ensure explicit simulated hardware tag
           netbox.netbox.netbox_tag:
             data:
@@ -647,7 +764,7 @@
               device_role: "{{ netbox_role }}"
               device_type: "{{ netbox_device_type }}"
               status: active
-              custom_fields: "{{ {'os_version': facts.distribution ~ ' ' ~ facts.distribution_version} | combine(hardware_fields) }}"
+              custom_fields: "{{ {'os_version': facts.distribution ~ ' ' ~ facts.distribution_version} | combine(hardware_fields) | combine(netbox_resource_fields) }}"
               tags: "{{ ((existing_device.json.results | first | default({})).tags | default([]) | map(attribute='name') | list + ['simulated-hardware']) | unique if hardware_simulation | default(false) | bool else omit }}"
               description: "{{ 'Ubuntu test container: hardware fields are SIMULATED fixtures.' if hardware_simulation | default(false) | bool else omit }}"
 
