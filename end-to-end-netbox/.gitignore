@@ -1,0 +1,4 @@
+private/
+test-target/authorized_keys
+netbox/env/
+netbox/configuration/__pycache__/

@@ -1,0 +1,10 @@
+all:
+  children:
+    bootstrap_servers:
+      hosts:
+        127.0.0.1:
+      vars:
+        ansible_port: 2222
+        ansible_user: ansible
+        ansible_ssh_private_key_file: private/test_ed25519
+        ansible_ssh_common_args: -o UserKnownHostsFile=private/known_hosts

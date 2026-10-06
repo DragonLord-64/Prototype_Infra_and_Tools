@@ -1,0 +1,201 @@
+---
+- name: Discover servers and bootstrap NetBox directly
+  hosts: bootstrap_servers
+  gather_facts: false
+  vars_files:
+    - private/netbox.json
+  vars:
+    facts: "{{ hostvars[inventory_hostname].ansible_facts }}"
+    netbox_site: Bootstrap Lab
+    netbox_role: Server
+    netbox_manufacturer: Generic
+    netbox_device_type: Discovered Linux server
+    netbox_auth: "{{ ('Bearer ' if netbox_token.startswith('nbt_') else 'Token ') ~ netbox_token }}"
+  module_defaults:
+    group/netbox.netbox.netbox:
+      netbox_url: "{{ netbox_url }}"
+      netbox_token: "{{ netbox_token }}"
+
+  tasks:
+    - name: Discover standard facts over SSH
+      tags: [always, facts]
+      become: false
+      block:
+        - name: Gather OS and network facts
+          ansible.builtin.setup:
+
+        - name: Start interface discovery list
+          ansible.builtin.set_fact:
+            discovered_interfaces: []
+
+        - name: Normalize each interface and its addresses
+          ansible.builtin.set_fact:
+            discovered_interfaces: "{{ discovered_interfaces + [discovered_interface] }}"
+          vars:
+            interface: "{{ facts[item] }}"
+            discovered_interface:
+              name: "{{ item }}"
+              mac: "{{ interface.macaddress | default('') }}"
+              mtu: "{{ interface.mtu | default(1500) }}"
+              addresses: "{{ ([interface.ipv4] if interface.ipv4 is defined else []) + (interface.ipv4_secondaries | default([])) + (interface.ipv6 | default([])) }}"
+          loop: "{{ facts.interfaces | sort }}"
+          loop_control:
+            label: "{{ item }}"
+
+        - name: Show discovered server
+          ansible.builtin.debug:
+            msg: "{{ facts.hostname }}: {{ facts.distribution }} {{ facts.distribution_version }}"
+
+    - name: Compare discovered facts with NetBox
+      tags: [compare, apply]
+      delegate_to: localhost
+      connection: local
+      become: false
+      vars:
+        ansible_python_interpreter: "{{ ansible_playbook_python }}"
+      block:
+        - name: Read existing device
+          ansible.builtin.uri:
+            url: "{{ netbox_url }}/api/dcim/devices/?name={{ facts.hostname | urlencode }}"
+            headers:
+              Authorization: "{{ netbox_auth }}"
+            return_content: true
+          register: existing_device
+          check_mode: false
+          no_log: true
+
+        - name: Read existing interfaces and addresses for preview
+          ansible.builtin.uri:
+            url: "{{ netbox_url }}/api/{{ item }}/?device={{ facts.hostname | urlencode }}&limit=1000"
+            headers:
+              Authorization: "{{ netbox_auth }}"
+            return_content: true
+          loop: [dcim/interfaces, ipam/ip-addresses]
+          register: existing_network
+          check_mode: false
+          no_log: true
+          when: (ansible_check_mode or 'compare' in ansible_run_tags) and existing_device.json.count > 0
+
+        - name: Preview desired facts alongside existing records
+          ansible.builtin.debug:
+            msg:
+              desired_hostname: "{{ facts.hostname }}"
+              desired_os_version: "{{ facts.distribution }} {{ facts.distribution_version }}"
+              desired_site: "{{ netbox_site }}"
+              desired_role: "{{ netbox_role }}"
+              desired_device_type: "{{ netbox_device_type }}"
+              desired_interfaces: "{{ discovered_interfaces }}"
+              current_devices: "{{ existing_device.json.results }}"
+              current_network: "{{ existing_network.results | default([]) | selectattr('json', 'defined') | map(attribute='json.results') | list }}"
+          when: ansible_check_mode or 'compare' in ansible_run_tags
+
+    - name: Ensure minimal NetBox prerequisites
+      tags: [apply]
+      when: not ansible_check_mode
+      run_once: true
+      delegate_to: localhost
+      connection: local
+      become: false
+      vars:
+        ansible_python_interpreter: "{{ ansible_playbook_python }}"
+      block:
+        - name: Ensure site
+          netbox.netbox.netbox_site:
+            data:
+              name: "{{ netbox_site }}"
+              slug: bootstrap-lab
+
+        - name: Ensure server role
+          netbox.netbox.netbox_device_role:
+            data:
+              name: "{{ netbox_role }}"
+              slug: server
+              color: 2196f3
+
+        - name: Ensure generic manufacturer
+          netbox.netbox.netbox_manufacturer:
+            data:
+              name: "{{ netbox_manufacturer }}"
+              slug: generic
+
+        - name: Ensure discovered server type
+          netbox.netbox.netbox_device_type:
+            data:
+              manufacturer: "{{ netbox_manufacturer }}"
+              model: "{{ netbox_device_type }}"
+              slug: discovered-linux-server
+              u_height: 0
+
+        - name: Ensure OS version field
+          netbox.netbox.netbox_custom_field:
+            data:
+              name: os_version
+              label: OS version
+              type: text
+              object_types: [dcim.device]
+
+    - name: Apply discovered server inventory to NetBox
+      tags: [apply]
+      when: not ansible_check_mode
+      delegate_to: localhost
+      connection: local
+      become: false
+      vars:
+        ansible_python_interpreter: "{{ ansible_playbook_python }}"
+      block:
+        - name: Ensure server device
+          netbox.netbox.netbox_device:
+            data:
+              name: "{{ facts.hostname }}"
+              site: "{{ netbox_site }}"
+              device_role: "{{ netbox_role }}"
+              device_type: "{{ netbox_device_type }}"
+              status: active
+              custom_fields:
+                os_version: "{{ facts.distribution }} {{ facts.distribution_version }}"
+
+        - name: Ensure discovered interfaces
+          netbox.netbox.netbox_device_interface:
+            data:
+              device: "{{ facts.hostname }}"
+              name: "{{ item.name }}"
+              type: "{{ 'virtual' if item.name == 'lo' else 'other' }}"
+              mtu: "{{ item.mtu }}"
+          loop: "{{ discovered_interfaces }}"
+          loop_control:
+            label: "{{ item.name }}"
+
+        - name: Ensure MAC objects (NetBox 4.2+)
+          netbox.netbox.netbox_mac_address:
+            data:
+              mac_address: "{{ item.mac }}"
+              assigned_object:
+                device: "{{ facts.hostname }}"
+                name: "{{ item.name }}"
+          loop: "{{ discovered_interfaces }}"
+          loop_control:
+            label: "{{ item.name }}"
+          when: item.mac | length > 0 and item.mac != '00:00:00:00:00:00'
+
+        - name: Set interface primary MACs
+          netbox.netbox.netbox_device_interface:
+            data:
+              device: "{{ facts.hostname }}"
+              name: "{{ item.name }}"
+              primary_mac_address: "{{ item.mac }}"
+          loop: "{{ discovered_interfaces }}"
+          loop_control:
+            label: "{{ item.name }}"
+          when: item.mac | length > 0 and item.mac != '00:00:00:00:00:00'
+
+        - name: Ensure discovered IPv4 and IPv6 addresses
+          netbox.netbox.netbox_ip_address:
+            data:
+              address: "{{ item.1.address }}/{{ item.1.prefix }}"
+              assigned_object:
+                device: "{{ facts.hostname }}"
+                name: "{{ item.0.name }}"
+              status: active
+          loop: "{{ discovered_interfaces | subelements('addresses') }}"
+          loop_control:
+            label: "{{ item.0.name }}: {{ item.1.address }}"

@@ -19,3 +19,7 @@ tools/netbox/inventory-collector/**/__pycache__/
 
 # tools
 tools/prometheus-rule-tables/__pycache__/
+
+# Direct NetBox bootstrap development environment
+/.venv/
+/.ansible/
