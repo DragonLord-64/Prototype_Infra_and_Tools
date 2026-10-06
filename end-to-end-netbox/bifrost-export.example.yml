@@ -3,7 +3,7 @@
 # Export every device of this exact NetBox model; replace it.
 bifrost_device_type: REPLACE_WITH_NETBOX_DEVICE_TYPE_MODEL
 # Or set a numeric NetBox device-type ID, e.g. bifrost_device_type: 42
-bifrost_provisioning_tag: bifrost-provisioning
+bifrost_provisioning_tag: provisioning-interface
 # Supply these paths with -e or here; YAML, JSON and Ansible Vault are supported.
 netbox_credentials_file: private/netbox.json
 redfish_credentials_file: private/redfish.yml
