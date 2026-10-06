@@ -13,6 +13,9 @@
     bifrost_output: "{{ playbook_dir }}/private/baremetal.yml"
     bifrost_device_type: "FPGA host server"
     bifrost_provisioning_tag: provisioning-interface
+    # Deployment defaults for the fleet; override in your vars or NetBox bifrost.properties.
+    bifrost_root_device: {size: '> 900'}
+    bifrost_capabilities: 'boot_mode:uefi'
     allowed_extra: [uuid, properties, instance_info, ipv4_address, provisioning_ipv4_address, addressing_mode, node_network_data, ipa_kernel_url, ipa_ramdisk_url, boot_interface, deploy_interface, management_interface, power_interface, inspect_interface, automated_clean, host_groups]
   tasks:
     - name: Require a device type and provisioning-interface selector
@@ -112,11 +115,22 @@
           {% endif %}
           {% endfor %}
           {% set bmc = (device.oob_ip | default({}, true)).get('address', '') | regex_replace('/.*$', '') %}
-          {% set endpoint = 'http://' ~ ('[' ~ bmc ~ ']' if ':' in bmc else bmc) if bmc else '' %}
+          {% set endpoint = 'https://'  ~ ('[' ~ bmc ~ ']' if ':' in bmc else bmc) if bmc else '' %}
+          {% set extra = fields.bifrost | default({}, true) %}
+          {% set properties = {'root_device': bifrost_root_device, 'capabilities': bifrost_capabilities} %}
+          {% for key in ['capabilities', 'root_device'] %}
+          {% if fields.get(key) not in [none, ''] %}{% set _ = properties.update({key: fields[key]}) %}{% endif %}
+          {% endfor %}
+          {% set additional = extra.get('properties', {}) if extra is mapping else {} %}
+          {% set additional = additional | dict2items | rejectattr('key', 'in', ['cpu_arch', 'ram', 'disk_size', 'cpus']) | list | items2dict %}
+          {% set properties = properties | combine(additional) %}
+          {% set uuid = extra.get('uuid', fields.ironic_uuid | default('', true)) if extra is mapping else '' %}
+          {% set lan_ip = (device.primary_ip4 | default({}, true)).get('address', '') | regex_replace('/.*$', '') %}
           {{ {'name': device.name, 'nics': nics, 'redfish_address': endpoint,
               'redfish_system_id': fields.redfish_system_id | default('', true),
-              'redfish_verify_ca': fields.redfish_verify_ca | default(true, true),
-              'extra': fields.bifrost | default({}, true)} | to_json }}
+              'redfish_verify_ca': fields.redfish_verify_ca | default(false),
+              'raw_extra': extra,
+              'extra': (extra if extra is mapping else {}) | combine({'properties': properties}) | combine({'uuid': uuid} if uuid else {}) | combine({'ipv4_address': lan_ip} if lan_ip else {})} | to_json }}
       loop: "{{ selected_devices }}"
       no_log: true
 
@@ -130,12 +144,14 @@
           {% if not item.nics %}{% set _ = issues.append('No provisioning interfaces: tag the intended NetBox port with ' ~ bifrost_provisioning_tag) %}{% endif %}
           {% if item.nics | selectattr('mgmt_only', 'equalto', true) | list %}{% set _ = issues.append('A tagged provisioning interface is management-only in NetBox') %}{% endif %}
           {% if item.nics | selectattr('enabled', 'equalto', false) | list %}{% set _ = issues.append('A tagged provisioning interface is disabled in NetBox') %}{% endif %}
-          {% if not item.redfish_address is match('^http://[^/]+/?$') %}{% set _ = issues.append('Missing/invalid native NetBox oob_ip: set the device out-of-band IP address') %}{% endif %}
+          {% if not item.redfish_address is match('^https://[^/]+/?$') %}{% set _ = issues.append('Missing/invalid native NetBox oob_ip: set the device out-of-band IP address') %}{% endif %}
           {% if not credentials.redfish_username | default('', true) is string or not credentials.redfish_username | default('', true) | length %}{% set _ = issues.append('Missing redfish_credentials username: set defaults.redfish_username or devices[device-name].redfish_username in your secrets vars') %}{% endif %}
           {% if not credentials.redfish_password | default('', true) is string or not credentials.redfish_password | default('', true) | length %}{% set _ = issues.append('Missing redfish_credentials password: set defaults.redfish_password or devices[device-name].redfish_password in your secrets vars') %}{% endif %}
           {% if credentials | list | difference(['redfish_username', 'redfish_password', 'redfish_auth_type']) %}{% set _ = issues.append('Authentication has unsupported keys; only username/password/auth_type Redfish keys are allowed') %}{% endif %}
-          {% if not item.extra is mapping %}{% set _ = issues.append('NetBox custom bifrost field must be a JSON object') %}
-          {% elif item.extra | list | difference(allowed_extra) %}{% set _ = issues.append('NetBox custom bifrost field contains unsupported top-level settings') %}{% endif %}
+          {% if not item.raw_extra is mapping %}{% set _ = issues.append('NetBox custom bifrost field must be a JSON object') %}
+          {% elif item.raw_extra | list | difference(allowed_extra) %}{% set _ = issues.append('NetBox custom bifrost field contains unsupported top-level settings') %}{% endif %}
+          {% if not item.extra.get('ipv4_address', '') is match('^([0-9]{1,3}\.){3}[0-9]{1,3}$') %}{% set _ = issues.append('Missing primary LAN IPv4: set native NetBox primary_ip4') %}{% endif %}
+          {% if not item.extra.properties.get('root_device') is mapping or not item.extra.properties.get('root_device') %}{% set _ = issues.append('Missing root disk criteria: set NetBox root_device JSON or bifrost.properties.root_device') %}{% endif %}
           {{ {'name': item.name, 'issues': issues} | to_json }}
       loop: "{{ export_nodes }}"
       no_log: true

@@ -15,3 +15,7 @@ redfish_credentials_file: private/redfish.yml
 #   devices:
 #     NETBOX_NAME_REQUIRING_DIFFERENT_AUTH:
 #       redfish_password: DIFFERENT_SECRET
+
+# Common deployment defaults; optional NetBox per-device settings override them.
+bifrost_root_device: {size: "> 900"}
+bifrost_capabilities: boot_mode:uefi
