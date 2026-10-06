@@ -5,7 +5,7 @@
   gather_facts: false
   # Use your existing YAML/JSON/Vault vars files; these paths are demo defaults.
   vars_files:
-    - "{{ netbox_credentials_file | default('private/netbox.json') }}"
+    - "{{ netbox_credentials_file | default('private/netbox.yaml') }}"
     - "{{ redfish_credentials_file | default('private/redfish.yml') }}"
   vars:
     # Override netbox_validate_certs in inventory, a vars file, or extra vars.

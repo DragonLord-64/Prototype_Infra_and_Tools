@@ -5,7 +5,7 @@
   any_errors_fatal: true
   # Use your existing YAML/JSON/Vault vars files; these paths are demo defaults.
   vars_files:
-    - "{{ netbox_credentials_file | default('private/netbox.json') }}"
+    - "{{ netbox_credentials_file | default('private/netbox.yaml') }}"
   vars:
     # Override netbox_validate_certs in inventory, a vars file, or extra vars.
     netbox_validate_certs_default: false
