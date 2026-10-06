@@ -8,7 +8,7 @@ Reuse your existing bootstrap `vars_files` arrangement: the exporter needs the s
 
 Validation now reports the selected device name and actionable missing/invalid field labels without printing raw records or secret values. The native NetBox out-of-band IP supplies the controller address automatically; provisioning ports must carry the chosen tag, and username/password must be present in the secrets variables.
 
-All three lookup calls receive `netbox_validate_certs | default(false) | bool` directly. Lookup plugins do not inherit Ansible module defaults. NetBox certificate verification defaults to false for this development setup; set `netbox_validate_certs: true` to enable it. This controls NetBox HTTPS, separately from the BMC’s `redfish_verify_ca`.
+All three lookup calls honor `netbox_validate_certs`, falling back to the clearly declared `netbox_validate_certs_default` near the top of the playbook. Lookup plugins do not inherit Ansible module defaults. NetBox certificate verification defaults to false for this development setup; set `netbox_validate_certs: true` to enable it. This controls NetBox HTTPS, separately from the BMC’s `redfish_verify_ca`.
 
 The exporter loads the same `private/netbox.json` vars file as the bootstrap by default. Choose your existing YAML/JSON/Vault file with `netbox_credentials_file`; it must define `netbox_url` and `netbox_token`. Supply Redfish credentials separately in `private/redfish.yml` by default, or any chosen YAML/JSON/Vault file:
 

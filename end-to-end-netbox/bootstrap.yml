@@ -3,9 +3,12 @@
   hosts: all
   gather_facts: false
   any_errors_fatal: true
+  # Use your existing YAML/JSON/Vault vars files; these paths are demo defaults.
   vars_files:
     - "{{ netbox_credentials_file | default('private/netbox.json') }}"
   vars:
+    # Override netbox_validate_certs in inventory, a vars file, or extra vars.
+    netbox_validate_certs_default: false
     hardware_command_path: "{{ '/opt/netbox-demo/bin:/usr/sbin:/usr/bin:/sbin:/bin' if hardware_simulation | default(false) | bool else '/usr/sbin:/usr/bin:/sbin:/bin' }}"
     unavailable_values: ['', unknown, 'not specified', 'not available', none, 'to be filled by o.e.m.']
     facts: "{{ hostvars[inventory_hostname].ansible_facts }}"
@@ -16,11 +19,11 @@
     netbox_auth: "{{ ('Bearer ' if netbox_token.startswith('nbt_') else 'Token ') ~ netbox_token }}"
   module_defaults:
     ansible.builtin.uri:
-      validate_certs: "{{ netbox_validate_certs | default(true) | bool }}"
+      validate_certs: "{{ netbox_validate_certs | default(netbox_validate_certs_default) | bool }}"
     group/netbox.netbox.netbox:
       netbox_url: "{{ netbox_url }}"
       netbox_token: "{{ netbox_token }}"
-      validate_certs: "{{ netbox_validate_certs | default(true) | bool }}"
+      validate_certs: "{{ netbox_validate_certs | default(netbox_validate_certs_default) | bool }}"
 
   tasks:
     - name: Discover standard facts over SSH

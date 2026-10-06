@@ -3,10 +3,13 @@
   hosts: localhost
   connection: local
   gather_facts: false
+  # Use your existing YAML/JSON/Vault vars files; these paths are demo defaults.
   vars_files:
     - "{{ netbox_credentials_file | default('private/netbox.json') }}"
     - "{{ redfish_credentials_file | default('private/redfish.yml') }}"
   vars:
+    # Override netbox_validate_certs in inventory, a vars file, or extra vars.
+    netbox_validate_certs_default: false
     bifrost_output: "{{ playbook_dir }}/private/baremetal.yml"
     bifrost_provisioning_tag: bifrost-provisioning
     allowed_extra: [uuid, properties, instance_info, ipv4_address, provisioning_ipv4_address, addressing_mode, node_network_data, ipa_kernel_url, ipa_ramdisk_url, boot_interface, deploy_interface, management_interface, power_interface, inspect_interface, automated_clean, host_groups]
@@ -35,7 +38,7 @@
         selected_types: >-
           {{ query('netbox.netbox.nb_lookup', 'device-types',
                    api_endpoint=netbox_url, token=netbox_token,
-                   validate_certs=netbox_validate_certs | default(false) | bool,
+                   validate_certs=netbox_validate_certs | default(netbox_validate_certs_default) | bool,
                    api_filter=('id=' ~ (bifrost_device_type | string)) if bifrost_device_type is number
                               else ('model=' ~ (bifrost_device_type | quote)), raw_data=true) }}
       no_log: true
@@ -52,7 +55,7 @@
         selected_devices: >-
           {{ query('netbox.netbox.nb_lookup', 'devices',
                    api_endpoint=netbox_url, token=netbox_token,
-                   validate_certs=netbox_validate_certs | default(false) | bool,
+                   validate_certs=netbox_validate_certs | default(netbox_validate_certs_default) | bool,
                    api_filter='device_type_id=' ~ (selected_types[0].id | string), raw_data=true) }}
       no_log: true
 
@@ -81,7 +84,7 @@
           {{ device_interfaces | default({}) | combine({item.id | string:
              query('netbox.netbox.nb_lookup', 'interfaces',
                    api_endpoint=netbox_url, token=netbox_token,
-                   validate_certs=netbox_validate_certs | default(false) | bool,
+                   validate_certs=netbox_validate_certs | default(netbox_validate_certs_default) | bool,
                    api_filter='device_id=' ~ (item.id | string), raw_data=true)}) }}
       loop: "{{ selected_devices }}"
       no_log: true

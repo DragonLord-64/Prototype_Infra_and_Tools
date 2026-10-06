@@ -57,7 +57,7 @@ servers, replace that IP list and use the real shared user/key/port settings.
 Private local files are ignored: `private/netbox.json` holds the NetBox URL,
 modern API token, administrator username and password; the directory is mode
 0700 and credentials/key are mode 0600. Supply your own equivalent JSON or
-replace `vars_files` with Ansible Vault or another secret source. Never commit
+replace `vars_files` with Ansible Vault or your existing vars-file paths. Never commit
 credentials. NetBox is locally reachable at http://127.0.0.1:8000.
 
 ## Ubuntu test target
@@ -193,10 +193,13 @@ missing fields preserve existing values. See [cards.example.yml](cards.example.y
 and [FPGA_EXTENSION.md](FPGA_EXTENSION.md). `--tags nic`/`--tags fpga` discover/map
 only; full apply and preview include these blocks.
 
-TLS validation defaults to enabled for both bootstrap URI reads and NetBox
-collection writes. Put `netbox_validate_certs: false` in the shared credentials
-YAML only for the existing self-signed setup, or trust the NetBox CA instead.
-Select the same YAML/JSON/Vault file as the exporter with
+TLS validation defaults to disabled for both bootstrap URI reads and NetBox
+collection writes in this development setup. Set `netbox_validate_certs: true`
+in your existing inventory or vars file to verify the NetBox certificate.
+Use your existing YAML/JSON/Vault file with
 `-e netbox_credentials_file=private/netbox.yml`; it supplies `netbox_url`,
 `netbox_token`, and optional `netbox_validate_certs`. The default file remains
-`private/netbox.json`. Certificate verification stays enabled unless overridden.
+`private/netbox.json`; this is a demo path, not a required directory.
+Both playbooks declare `netbox_validate_certs_default` near the top and honor
+your `netbox_validate_certs` override. Both default to disabled.
+No task sets certificate verification.
