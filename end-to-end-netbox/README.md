@@ -46,7 +46,8 @@ discovery only; add `--check` to a full run for a NetBox write-free preview.
 The device name is the discovered hostname; OS version is `os_version`.
 The generic type is a placeholder, not hardware identification. The test
 inventory includes loopback addresses; real-target defaults exclude loopback
-and link-local addresses. No management primary IP is inferred. Stale records
+and link-local addresses. Primary IPv4 uses the discovered default-route address, or explicit
+`bootstrap_primary_ipv4`; unavailable selections preserve the existing value. Stale records
 are preserved. Duplicate hostnames and IP/MAC ownership conflicts stop before
 writes; resolving moves is left to explicit review. Vendor SDK discovery and
 automatic hardware moves are not included.
@@ -134,8 +135,8 @@ BMC LAN channel and motherboard FRU ID default to 1 and 0 and are configurable.
 Motherboard identifiers describe the board, not a separate BMC chip identity.
 No BIOS/firmware or IP fields are invented for DDR5/NVMe components.
 
-The fixtures contain two DDR5 modules, an empty memory slot, and two NVMe
-drives. Unknown/missing identifiers are omitted; existing NetBox values are
+The fixtures contain six DDR5 modules, an empty memory slot, and four NVMe
+drives, including repeated bank labels and repeated Locator names across banks. Unknown/missing identifiers are omitted; existing NetBox values are
 preserved rather than overwritten with blanks. Failed/missing tools are
 reported. Stale components, addresses and MAC objects are not deleted.
 Synthetic devices/components are marked explicitly in NetBox.
@@ -164,3 +165,27 @@ References: [inventory items](https://docs.ansible.com/projects/ansible/latest/c
 [REAL_SERVER_RUN.md](REAL_SERVER_RUN.md) gives the one-server smoke-test flow
 and real-tool prerequisites. [FPGA_EXTENSION.md](FPGA_EXTENSION.md) supplies a
 small copyable discovery block without assuming a vendor SDK command.
+
+DIMM names use Locator, with Bank Locator or SMBIOS handle added only when a
+Locator repeats. Components are explicitly matched by device and name, and
+ambiguous names stop before writes. Memory parsing accepts CRLF and whitespace
+around headers. Previously overwritten serial/part data cannot be recovered
+without recollecting the actual server. NVMe JSON still requires the documented
+flat Devices schema; supply raw output if the CLI reports another schema.
+
+`bootstrap_primary_ipv4` accepts a plain discovered management IPv4 (no CIDR).
+Without an override, the default-route IPv4 is selected if it was discovered
+and included in the address list. It is assigned only after address creation;
+preview shows the selected value alongside the current device record. A NAT
+SSH address not actually present on a target must not be used as its primary.
+
+NICs and FPGA cards also use inventory items, not module/module-bay objects.
+The `nic` block uses Linux PCI-function identity and sysfs uevent metadata;
+standard metadata does not guarantee card part/serial or physical multi-function
+card grouping. A single verified interface can be associated with an item;
+multi-port functions are left unbound. The `fpga` block maps user-discovered
+`bootstrap_fpga_cards` records and executes no invented SDK command. Both card
+inputs accept stable name, available part/serial, and optional verified interface;
+missing fields preserve existing values. See [cards.example.yml](cards.example.yml)
+and [FPGA_EXTENSION.md](FPGA_EXTENSION.md). `--tags nic`/`--tags fpga` discover/map
+only; full apply and preview include these blocks.

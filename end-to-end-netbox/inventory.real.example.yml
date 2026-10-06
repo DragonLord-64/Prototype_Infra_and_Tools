@@ -9,6 +9,8 @@ all:
         netbox_include_local_addresses: false
         ansible_user: YOUR_SSH_USER
         ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+        # Optional: plain management IPv4 actually present on the target.
+        # bootstrap_primary_ipv4: 192.0.2.10
         bootstrap_site: YOUR_SITE
         bootstrap_role: Server
         bootstrap_manufacturer: Generic

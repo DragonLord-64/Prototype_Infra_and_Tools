@@ -1,6 +1,28 @@
 {
   "Devices": [
-    {"DevicePath": "/dev/nvme0n1", "ModelNumber": "MZQL23T8HCLS-00A07", "SerialNumber": "DEMO-NVME-0001", "PhysicalSize": 3840755982336},
-    {"DevicePath": "/dev/nvme1n1", "ModelNumber": "MZQL23T8HCLS-00A07", "SerialNumber": "DEMO-NVME-0002", "PhysicalSize": 3840755982336}
+    {
+      "DevicePath": "/dev/nvme0n1",
+      "ModelNumber": "MZQL23T8HCLS-00A07",
+      "SerialNumber": "DEMO-NVME-0001",
+      "PhysicalSize": 3840755982336
+    },
+    {
+      "DevicePath": "/dev/nvme1n1",
+      "ModelNumber": "MZQL23T8HCLS-00A07",
+      "SerialNumber": "DEMO-NVME-0002",
+      "PhysicalSize": 3840755982336
+    },
+    {
+      "DevicePath": "/dev/nvme2n1",
+      "ModelNumber": "MZQL23T8HCLS-00A07",
+      "SerialNumber": "DEMO-NVME-0003",
+      "PhysicalSize": 3840755982336
+    },
+    {
+      "DevicePath": "/dev/nvme3n1",
+      "ModelNumber": "MZQL23T8HCLS-00A07",
+      "SerialNumber": "DEMO-NVME-0004",
+      "PhysicalSize": 3840755982336
+    }
   ]
 }

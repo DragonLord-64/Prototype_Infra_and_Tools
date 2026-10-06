@@ -6,7 +6,7 @@ Handle 0x0040, DMI type 17, 92 bytes
 Memory Device
 	Size: 32768 MB
 	Locator: DIMM_A1
-	Bank Locator: P0_Node0_Channel0_Dimm0
+	Bank Locator: CPU0_BANK
 	Type: DDR5
 	Manufacturer: Samsung
 	Serial Number: DEMO-DDR5-0001
@@ -24,8 +24,48 @@ Handle 0x0042, DMI type 17, 92 bytes
 Memory Device
 	Size: 32768 MB
 	Locator: DIMM_B1
-	Bank Locator: P0_Node0_Channel1_Dimm0
+	Bank Locator: CPU0_BANK
 	Type: DDR5
 	Manufacturer: Samsung
 	Serial Number: DEMO-DDR5-0002
+	Part Number: M321R4GA0BB0-CQK
+
+Handle 0x0043, DMI type 17, 92 bytes
+Memory Device
+	Size: 32768 MB
+	Locator: DIMM_C1
+	Bank Locator: CPU0_BANK
+	Type: DDR5
+	Manufacturer: Samsung
+	Serial Number: DEMO-DDR5-0003
+	Part Number: M321R4GA0BB0-CQK
+
+Handle 0x0044, DMI type 17, 92 bytes
+Memory Device
+	Size: 32768 MB
+	Locator: DIMM_D1
+	Bank Locator: CPU0_BANK
+	Type: DDR5
+	Manufacturer: Samsung
+	Serial Number: DEMO-DDR5-0004
+	Part Number: M321R4GA0BB0-CQK
+
+Handle 0x0045, DMI type 17, 92 bytes
+Memory Device
+	Size: 32768 MB
+	Locator: DIMM_SHARED
+	Bank Locator: CPU0_BANK
+	Type: DDR5
+	Manufacturer: Samsung
+	Serial Number: DEMO-DDR5-0005
+	Part Number: M321R4GA0BB0-CQK
+
+Handle 0x0046, DMI type 17, 92 bytes
+Memory Device
+	Size: 32768 MB
+	Locator: DIMM_SHARED
+	Bank Locator: CPU1_BANK
+	Type: DDR5
+	Manufacturer: Samsung
+	Serial Number: DEMO-DDR5-0006
 	Part Number: M321R4GA0BB0-CQK

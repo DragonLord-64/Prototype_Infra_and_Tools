@@ -47,6 +47,9 @@
             discovered_interfaces: []
             hardware_fields: {}
             discovered_components: []
+            memory_records: []
+            discovered_nics: {}
+            selected_primary_ipv4: ''
             ip_ownership: []
             mac_ownership: []
 
@@ -175,26 +178,47 @@
         - name: Report unavailable memory information
           ansible.builtin.debug:
             msg: "Memory inventory unavailable; existing NetBox components preserved: {{ memory_probe.stderr | default(memory_probe.msg | default('No diagnostic returned'), true) }}"
-          when: memory_probe.rc != 0 or (memory_probe.stdout | default('')) | regex_findall('(?m)^Memory Device$') | length == 0
+          when: memory_probe.rc != 0 or (memory_probe.stdout | default('')) | regex_findall('(?m)^[ \\t]*Memory Device[ \\t\\r]*$') | length == 0
 
-        - name: Record populated DDR5 slots
+        - name: Parse populated DDR5 memory records
+          ansible.builtin.set_fact:
+            memory_records: "{{ memory_records + [memory_record] }}"
+          vars:
+            slot: "{{ memory_block | regex_findall('(?m)^\\s*Locator:\\s*(.+)$') | first | default('') | trim }}"
+            bank: "{{ memory_block | regex_findall('(?m)^\\s*Bank Locator:\\s*(.+)$') | first | default('') | trim }}"
+            dmi_handle: "{{ memory_block | regex_findall('(?m)^\\s*Handle\\s+(0x[0-9A-Fa-f]+),') | first | default('') }}"
+            memory_type: "{{ memory_block | regex_findall('(?m)^\\s*Type:\\s*(.+)$') | first | default('') | trim }}"
+            memory_size: "{{ memory_block | regex_findall('(?m)^\\s*Size:\\s*(.+)$') | first | default('') | trim }}"
+            part: "{{ memory_block | regex_findall('(?m)^\\s*Part Number:\\s*(.+)$') | first | default('') | trim }}"
+            component_serial: "{{ memory_block | regex_findall('(?m)^\\s*Serial Number:\\s*(.+)$') | first | default('') | trim }}"
+            memory_record:
+              slot: "{{ slot if slot | lower not in unavailable_values else 'DMI ' ~ dmi_handle }}"
+              bank: "{{ bank }}"
+              handle: "{{ dmi_handle }}"
+              part: "{{ part if part | lower not in unavailable_values else '' }}"
+              serial: "{{ component_serial if component_serial | lower not in unavailable_values else '' }}"
+          loop: "{{ (memory_probe.stdout | default('') | replace('\\r', '')) | regex_findall('(?ms)^(?:[ \\t]*Handle[^\\n]*\\n)?[ \\t]*Memory Device[ \\t]*\\n.*?(?=^[ \\t]*Handle|^[ \\t]*Memory Device[ \\t]*$|\\Z)') }}"
+          loop_control:
+            loop_var: memory_block
+            label: "{{ slot | default('unknown slot') }}"
+          when: memory_probe.rc == 0 and memory_type | upper == 'DDR5' and memory_size | lower not in ['no module installed', 'unknown', '']
+
+        - name: Keep every DDR5 slot distinct
           ansible.builtin.set_fact:
             discovered_components: "{{ discovered_components + [memory_component] }}"
           vars:
-            slot: "{{ item | regex_findall('(?m)^\\s*Locator:\\s*(.+)$') | first | default('') | trim }}"
-            memory_type: "{{ item | regex_findall('(?m)^\\s*Type:\\s*(.+)$') | first | default('') | trim }}"
-            memory_size: "{{ item | regex_findall('(?m)^\\s*Size:\\s*(.+)$') | first | default('') | trim }}"
-            part: "{{ item | regex_findall('(?m)^\\s*Part Number:\\s*(.+)$') | first | default('') | trim }}"
-            component_serial: "{{ item | regex_findall('(?m)^\\s*Serial Number:\\s*(.+)$') | first | default('') | trim }}"
+            same_slot: "{{ memory_records | selectattr('slot', 'equalto', dimm.slot) | list }}"
+            unique_bank: "{{ dimm.bank | lower not in unavailable_values and (same_slot | selectattr('bank', 'equalto', dimm.bank) | list | length == 1) }}"
+            suffix: "{{ dimm.bank if unique_bank else dimm.handle }}"
             memory_component:
-              name: "DDR5 {{ slot }}"
+              name: "DDR5 {{ dimm.slot }}{{ (' [' ~ suffix ~ ']') if same_slot | length > 1 else '' }}"
               kind: DDR5
-              part: "{{ part if part | lower not in unavailable_values else '' }}"
-              serial: "{{ component_serial if component_serial | lower not in unavailable_values else '' }}"
-          loop: "{{ (memory_probe.stdout | default('')) | regex_findall('(?ms)^Memory Device\\n(.*?)(?=^Handle |\\Z)') }}"
+              part: "{{ dimm.part }}"
+              serial: "{{ dimm.serial }}"
+          loop: "{{ memory_records }}"
           loop_control:
-            label: "{{ slot | default('unknown slot') }}"
-          when: memory_probe.rc == 0 and memory_type == 'DDR5' and memory_size | lower not in ['no module installed', 'unknown', ''] and slot | lower not in unavailable_values
+            loop_var: dimm
+            label: "{{ dimm.slot }}"
 
     - name: Discover NVMe drives
       tags: [nvme, compare, apply]
@@ -250,12 +274,150 @@
           loop_control:
             label: "{{ item.DevicePath }}"
 
+    - name: Discover NIC PCI inventory identities
+      tags: [nic, compare, apply]
+      become: false
+      environment:
+        LC_ALL: C
+      block:
+        - name: Group network ports by PCI function
+          ansible.builtin.set_fact:
+            discovered_nics: "{{ discovered_nics | combine({pci_address: {'interfaces': existing_ports + [interface_name]}}) }}"
+          vars:
+            pci_address: "{{ facts[interface_name].pciid }}"
+            existing_ports: "{{ discovered_nics[pci_address].interfaces | default([]) }}"
+          loop: "{{ facts.interfaces | sort }}"
+          loop_control:
+            loop_var: interface_name
+          when: bootstrap_collect_pci_nics | default(true) | bool and facts[interface_name].pciid is defined and facts[interface_name].pciid is match('^[0-9A-Fa-f]{4}:[0-9A-Fa-f]{2}:[0-9A-Fa-f]{2}\\.[0-7]$')
+
+        - name: Read standard PCI uevent identity
+          ansible.builtin.slurp:
+            src: "/sys/bus/pci/devices/{{ nic_function.key }}/uevent"
+          loop: "{{ discovered_nics | dict2items }}"
+          loop_control:
+            loop_var: nic_function
+          register: nic_identity_probes
+          failed_when: false
+
+        - name: Record PCI NIC inventory items without inventing part or serial numbers
+          ansible.builtin.set_fact:
+            discovered_components: "{{ discovered_components + [nic_component] }}"
+          vars:
+            identity_text: "{{ nic_probe.content | default('') | b64decode }}"
+            pci_id: "{{ identity_text | regex_findall('(?m)^PCI_ID=(.+)$') | first | default('unavailable') }}"
+            driver: "{{ identity_text | regex_findall('(?m)^DRIVER=(.+)$') | first | default('unavailable') }}"
+            ports: "{{ nic_probe.nic_function.value.interfaces }}"
+            nic_component:
+              name: "NIC {{ nic_probe.nic_function.key }}"
+              kind: NIC
+              part: ''
+              serial: ''
+              interface: "{{ ports | first if ports | length == 1 else '' }}"
+              details: "PCI function {{ nic_probe.nic_function.key }}; PCI ID {{ pci_id }}; driver {{ driver }}; ports {{ ports | join(', ') }}. Part/serial not exposed by standard uevent."
+          loop: "{{ nic_identity_probes.results }}"
+          loop_control:
+            loop_var: nic_probe
+            label: "{{ nic_probe.nic_function.key }}"
+
+        - name: Validate user-discovered NIC card records
+          ansible.builtin.assert:
+            that:
+              - nic_card.name is defined
+              - nic_card.name | string | length > 0
+              - nic_card.interface | default('') == '' or nic_card.interface in facts.interfaces
+            fail_msg: NIC cards need a stable name and any supplied interface must exist on this server.
+          loop: "{{ bootstrap_nic_cards | default([]) }}"
+          loop_control:
+            loop_var: nic_card
+
+        - name: Record supplied NIC inventory cards
+          ansible.builtin.set_fact:
+            discovered_components: "{{ discovered_components + [nic_component] }}"
+          vars:
+            nic_component:
+              name: "NIC {{ nic_card.name }}"
+              kind: NIC
+              part: "{{ nic_card.part | default('') | string | trim }}"
+              serial: "{{ nic_card.serial | default('') | string | trim }}"
+              interface: "{{ nic_card.interface | default('') }}"
+          loop: "{{ bootstrap_nic_cards | default([]) }}"
+          loop_control:
+            loop_var: nic_card
+
+        - name: Report whether standard NIC inventory is available
+          ansible.builtin.debug:
+            msg: "Found {{ discovered_nics | length }} PCI NIC functions. Vendor-specific part/serial discovery needs the user's read-only command/output; virtual container ports are not physical cards."
+
+    - name: Map user-discovered FPGA cards into inventory items
+      tags: [fpga, compare, apply]
+      become: false
+      block:
+        - name: Validate supplied FPGA card identities and optional interface
+          ansible.builtin.assert:
+            that:
+              - fpga_card.name is defined
+              - fpga_card.name | string | length > 0
+              - fpga_card.interface | default('') == '' or fpga_card.interface in facts.interfaces
+            fail_msg: FPGA records need a unique stable slot/name and any supplied interface must exist on this server.
+          loop: "{{ bootstrap_fpga_cards | default([]) }}"
+          loop_control:
+            loop_var: fpga_card
+
+        - name: Record supplied FPGA inventory cards
+          ansible.builtin.set_fact:
+            discovered_components: "{{ discovered_components + [fpga_component] }}"
+          vars:
+            fpga_component:
+              name: "FPGA {{ fpga_card.name }}"
+              kind: FPGA
+              part: "{{ fpga_card.part | default('') | string | trim }}"
+              serial: "{{ fpga_card.serial | default('') | string | trim }}"
+              interface: "{{ fpga_card.interface | default('') }}"
+          loop: "{{ bootstrap_fpga_cards | default([]) }}"
+          loop_control:
+            loop_var: fpga_card
+
+        - name: Report FPGA command integration status
+          ansible.builtin.debug:
+            msg: FPGA inventory mapping is ready; no SDK command is assumed. Supply parsed bootstrap_fpga_cards or add the reviewed SDK discovery block before this block.
+          when: bootstrap_fpga_cards | default([]) | length == 0
+
+    - name: Reject component names that would overwrite another discovered component
+      tags: [ddr, nvme, nic, fpga, compare, apply]
+      ansible.builtin.assert:
+        that:
+          - component_names | length == component_names | unique | length
+          - "'DDR5 DMI ' not in component_names"
+        fail_msg: Discovered component names collide; provide distinct slot/namespace identifiers before writing NetBox.
+      vars:
+        component_names: "{{ discovered_components | map(attribute='name') | list }}"
+
+    - name: Select discovered management primary IPv4
+      tags: [compare, apply]
+      block:
+        - name: Select the requested or default-route IPv4 only from discovered addresses
+          ansible.builtin.set_fact:
+            selected_primary_ipv4: "{{ primary_candidates | first | default({}) }}"
+          vars:
+            requested_primary: "{{ bootstrap_primary_ipv4 | default(facts.default_ipv4.address | default('')) }}"
+            primary_candidates: "{{ discovered_interfaces | map(attribute='addresses') | flatten | selectattr('address', 'equalto', requested_primary) | rejectattr('address', 'search', ':') | list }}"
+
+        - name: Report unavailable primary IPv4 selection
+          ansible.builtin.debug:
+            msg: Requested/default primary IPv4 was not discovered; existing NetBox primary IPv4 will be preserved.
+          when: selected_primary_ipv4.address is not defined
+
     - name: Show hardware discovery and omitted component fields
-      tags: [bios, bmc, ddr, nvme, compare, apply]
+      tags: [bios, bmc, ddr, nvme, nic, fpga, compare, apply]
       ansible.builtin.debug:
         msg:
           simulation: "{{ hardware_simulation | default(false) | bool }}"
           firmware_and_motherboard: "{{ hardware_fields }}"
+          ddr5_component_count: "{{ discovered_components | selectattr('kind', 'equalto', 'DDR5') | list | length }}"
+          nvme_component_count: "{{ discovered_components | selectattr('kind', 'equalto', 'NVMe') | list | length }}"
+          nic_component_count: "{{ discovered_components | selectattr('kind', 'equalto', 'NIC') | list | length }}"
+          fpga_component_count: "{{ discovered_components | selectattr('kind', 'equalto', 'FPGA') | list | length }}"
           components: "{{ discovered_components }}"
           missing_part_numbers: "{{ discovered_components | selectattr('part', 'equalto', '') | map(attribute='name') | list }}"
           missing_serial_numbers: "{{ discovered_components | selectattr('serial', 'equalto', '') | map(attribute='name') | list }}"
@@ -390,6 +552,8 @@
               desired_interfaces: "{{ discovered_interfaces }}"
               desired_hardware_fields: "{{ hardware_fields }}"
               desired_components: "{{ discovered_components }}"
+              current_primary_ipv4: "{{ (existing_device.json.results | first | default({})).primary_ip4.address | default('not set') }}"
+              desired_primary_ipv4: "{{ (selected_primary_ipv4.address ~ '/' ~ selected_primary_ipv4.prefix) if selected_primary_ipv4.address is defined else 'unavailable; preserve existing' }}"
               desired_bmc_address: "{{ bmc_address | default('unavailable; omit') }}"
               simulation: "{{ hardware_simulation | default(false) | bool }}"
               current_devices: "{{ existing_device.json.results }}"
@@ -524,15 +688,26 @@
           loop_control:
             label: "{{ item.0.name }}: {{ item.1.address }}"
 
-        - name: Ensure DDR5 and NVMe inventory components
+        - name: Assign discovered management primary IPv4 after address creation
+          netbox.netbox.netbox_device:
+            data:
+              name: "{{ facts.hostname }}"
+              primary_ip4:
+                address: "{{ selected_primary_ipv4.address }}/{{ selected_primary_ipv4.prefix }}"
+          when: selected_primary_ipv4.address is defined
+
+        - name: Ensure DDR5 NVMe NIC and FPGA inventory components
           netbox.netbox.netbox_inventory_item:
+            query_params: [device, name]
             data:
               device: "{{ facts.hostname }}"
               name: "{{ item.name }}"
+              component_type: "{{ 'dcim.interface' if item.interface | default('') | length > 0 else omit }}"
+              component: "{{ {'device': facts.hostname, 'name': item.interface} if item.interface | default('') | length > 0 else omit }}"
               tags: "{{ ['simulated-hardware'] if hardware_simulation | default(false) | bool else omit }}"
               part_id: "{{ item.part if item.part | lower not in unavailable_values else omit }}"
               serial: "{{ item.serial if item.serial | lower not in unavailable_values else omit }}"
-              description: "{{ ('SIMULATED fixture: ' if hardware_simulation | default(false) | bool else 'Discovered: ') ~ item.kind }}"
+              description: "{{ ('SIMULATED fixture: ' if hardware_simulation | default(false) | bool else 'Discovered: ') ~ item.kind ~ (': ' ~ item.details if item.details is defined else '') }}"
           loop: "{{ discovered_components }}"
           loop_control:
             label: "{{ item.name }}"

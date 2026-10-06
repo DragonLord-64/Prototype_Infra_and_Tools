@@ -1,0 +1,13 @@
+# Standard PCI NIC-function discovery is enabled; disable when supplying
+# your own verified physical-card grouping to avoid duplicate records.
+bootstrap_collect_pci_nics: true
+bootstrap_nic_cards: []
+# - name: verified-slot-or-PCI-address
+#   part: ''                # only a genuinely reported manufacturer part ID
+#   serial: ''              # omit when unavailable
+#   interface: eth0         # optional; must exist and belong to this card
+bootstrap_fpga_cards: []
+# - name: verified-FPGA-slot
+#   part: ''
+#   serial: ''
+#   interface: ''           # optional; never infer an association

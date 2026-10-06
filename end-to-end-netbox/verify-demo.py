@@ -41,8 +41,14 @@ assert device['oob_ip']['address'] == '192.0.2.50/32'
 expected_components = {
     'DDR5 DIMM_A1': ('M321R4GA0BB0-CQK', 'DEMO-DDR5-0001'),
     'DDR5 DIMM_B1': ('M321R4GA0BB0-CQK', 'DEMO-DDR5-0002'),
+    'DDR5 DIMM_C1': ('M321R4GA0BB0-CQK', 'DEMO-DDR5-0003'),
+    'DDR5 DIMM_D1': ('M321R4GA0BB0-CQK', 'DEMO-DDR5-0004'),
+    'DDR5 DIMM_SHARED [CPU0_BANK]': ('M321R4GA0BB0-CQK', 'DEMO-DDR5-0005'),
+    'DDR5 DIMM_SHARED [CPU1_BANK]': ('M321R4GA0BB0-CQK', 'DEMO-DDR5-0006'),
     'NVMe /dev/nvme0n1': ('MZQL23T8HCLS-00A07', 'DEMO-NVME-0001'),
     'NVMe /dev/nvme1n1': ('MZQL23T8HCLS-00A07', 'DEMO-NVME-0002'),
+    'NVMe /dev/nvme2n1': ('MZQL23T8HCLS-00A07', 'DEMO-NVME-0003'),
+    'NVMe /dev/nvme3n1': ('MZQL23T8HCLS-00A07', 'DEMO-NVME-0004'),
 }
 items = {item['name']: item for item in records('dcim/inventory-items', device=name)}
 assert set(items) == set(expected_components), 'Unexpected/empty memory slot component'
@@ -63,6 +69,7 @@ if not args.skip_runs:
     fact_result = subprocess.run([str(ROOT.parent / '.venv/bin/ansible'), '-i', 'inventory.yml', 'bootstrap_servers', '-m', 'ansible.builtin.setup', '--tree', str(fact_dir)], cwd=ROOT, capture_output=True, text=True)
     assert fact_result.returncode == 0, 'SSH fact gathering failed'
     facts = json.loads((fact_dir / '127.0.0.1').read_text())['ansible_facts']
+    assert device['primary_ip4']['address'].split('/')[0] == facts['ansible_default_ipv4']['address']
     assert device['name'] == facts['ansible_hostname']
     assert device['custom_fields']['os_version'] == facts['ansible_distribution'] + ' ' + facts['ansible_distribution_version']
     for interface_name in facts['ansible_interfaces']:
