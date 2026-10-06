@@ -203,3 +203,13 @@ Use your existing YAML/JSON/Vault file with
 Both playbooks declare `netbox_validate_certs_default` near the top and honor
 your `netbox_validate_certs` override. Both default to disabled.
 No task sets certificate verification.
+
+Measured resource fields are also stored in NetBox: `cpu_arch` is the reported
+architecture, `ram` is MiB, `cpus` is logical CPUs, and `disk_size` is whole GiB
+for an individual nonremovable disk above 900 GiB. Equal-size eligible disks
+share that measured capacity; differing/absent capacities are omitted and reported,
+never summed or replaced with a fixed default. The marked simulator uses its
+NVMe fixture sizes; container-visible host block facts are not treated as its disks.
+Existing custom-field definitions/types are preserved, and unavailable values
+preserve existing data. These informational fields are not included in Bifrost
+export and do not select or modify an installation disk.

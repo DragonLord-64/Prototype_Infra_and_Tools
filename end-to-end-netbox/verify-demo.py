@@ -70,6 +70,11 @@ if not args.skip_runs:
     assert fact_result.returncode == 0, 'SSH fact gathering failed'
     facts = json.loads((fact_dir / '127.0.0.1').read_text())['ansible_facts']
     assert device['primary_ip4']['address'].split('/')[0] == facts['ansible_eth0']['ipv4']['address']
+    assert device['custom_fields']['cpu_arch'] == facts['ansible_architecture']
+    assert int(device['custom_fields']['ram']) == facts['ansible_memtotal_mb']
+    assert int(device['custom_fields']['cpus']) == facts['ansible_processor_vcpus']
+    disk_fixture = json.loads((ROOT / 'test-target/fixtures/nvme.json').read_text())['Devices']
+    assert int(device['custom_fields']['disk_size']) == disk_fixture[0]['PhysicalSize'] // 1073741824
     assert device['name'] == facts['ansible_hostname']
     assert device['custom_fields']['os_version'] == facts['ansible_distribution'] + ' ' + facts['ansible_distribution_version']
     for interface_name in facts['ansible_interfaces']:
@@ -85,7 +90,7 @@ if not args.skip_runs:
     executable = str(ROOT.parent / '.venv/bin/ansible-playbook')
     modes = {'repeat-apply': [], 'preview': ['--check'], 'facts-only': ['--tags', 'facts'], 'compare-only': ['--tags', 'compare']}
     for label, flags in modes.items():
-        result = subprocess.run([executable, '-i', 'inventory.yml', 'bootstrap.yml', *flags], cwd=ROOT, capture_output=True, text=True)
+        result = subprocess.run([executable, '-i', 'inventory.yml', 'bootstrap.yml', '-e', 'netbox_credentials_file=' + str(ROOT / 'private/netbox.json'), *flags], cwd=ROOT, capture_output=True, text=True)
         (ROOT / 'private' / (label + '-verification.log')).write_text(result.stdout + result.stderr)
         assert result.returncode == 0, label + ' failed; inspect its private log'
         assert re.search(r'changed=0\s+unreachable=0\s+failed=0', result.stdout), label + ' was not clean'
