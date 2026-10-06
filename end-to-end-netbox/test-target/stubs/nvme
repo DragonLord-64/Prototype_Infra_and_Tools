@@ -1,0 +1,6 @@
+#!/bin/sh
+# Simulation only: standardized list JSON, no storage writes.
+case "$#:$*" in
+  '3:list -o json') cat /opt/netbox-demo/fixtures/nvme.json ;;
+  *) echo 'Simulation supports only: nvme list -o json' >&2; exit 64 ;;
+esac

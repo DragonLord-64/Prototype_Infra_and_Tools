@@ -1,0 +1,6 @@
+Set in Progress         : Set Complete
+IP Address Source       : Static Address
+IP Address              : 192.0.2.50
+Subnet Mask             : 255.255.255.0
+MAC Address             : 00:25:90:ab:cd:ef
+Default Gateway IP      : 192.0.2.1

@@ -1,0 +1,8 @@
+#!/bin/sh
+# Simulation only. No power/control command is implemented.
+case "$#:$*" in
+  '2:mc info') cat /opt/netbox-demo/fixtures/bmc-info.txt ;;
+  '3:lan print 1') cat /opt/netbox-demo/fixtures/bmc-lan.txt ;;
+  '3:fru print 0') cat /opt/netbox-demo/fixtures/motherboard-fru.txt ;;
+  *) echo 'Simulation supports only: ipmitool mc info|lan print 1|fru print 0' >&2; exit 64 ;;
+esac

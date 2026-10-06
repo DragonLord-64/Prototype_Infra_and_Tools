@@ -1,0 +1,9 @@
+Device ID                 : 32
+Device Revision           : 1
+Firmware Revision         : 1.74
+IPMI Version              : 2.0
+Manufacturer ID           : 10876
+Manufacturer Name         : Supermicro
+Product ID                : 12345
+Device Available          : yes
+Provides Device SDRs      : no

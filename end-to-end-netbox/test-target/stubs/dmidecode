@@ -1,0 +1,7 @@
+#!/bin/sh
+# Simulation only: installed outside the system command path.
+case "$#:$*" in
+  '2:--type bios') cat /opt/netbox-demo/fixtures/bios.txt ;;
+  '2:--type memory') cat /opt/netbox-demo/fixtures/memory.txt ;;
+  *) echo 'Simulation supports only: dmidecode --type bios|memory' >&2; exit 64 ;;
+esac

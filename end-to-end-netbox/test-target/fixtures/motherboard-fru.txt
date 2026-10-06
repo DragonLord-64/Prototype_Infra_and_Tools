@@ -1,0 +1,9 @@
+FRU Device Description : Builtin FRU Device (ID 0)
+ Board Mfg Date        : Mon Jun 10 12:00:00 2024
+ Board Mfg             : Supermicro
+ Board Product         : X13DEI
+ Board Serial          : DEMO-MB-0001
+ Board Part Number     : MBD-X13DEI-B
+ Product Manufacturer  : Supermicro
+ Product Name          : SYS-221H-TNR
+ Product Serial        : DEMO-SERVER-0001

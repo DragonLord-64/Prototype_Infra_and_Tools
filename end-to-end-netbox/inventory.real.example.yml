@@ -1,0 +1,17 @@
+all:
+  children:
+    bootstrap_servers:
+      hosts:
+        192.0.2.10:
+        192.0.2.11:
+      vars:
+        hardware_simulation: false
+        netbox_include_local_addresses: false
+        ansible_user: YOUR_SSH_USER
+        ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+        bootstrap_site: YOUR_SITE
+        bootstrap_role: Server
+        bootstrap_manufacturer: Generic
+        bootstrap_device_type: Discovered Linux server
+        bmc_lan_channel: "1"
+        motherboard_fru_id: "0"

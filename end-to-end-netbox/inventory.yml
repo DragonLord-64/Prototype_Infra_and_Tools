@@ -4,6 +4,8 @@ all:
       hosts:
         127.0.0.1:
       vars:
+        hardware_simulation: true
+        netbox_include_local_addresses: true
         ansible_port: 2222
         ansible_user: ansible
         ansible_ssh_private_key_file: private/test_ed25519
