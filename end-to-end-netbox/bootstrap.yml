@@ -13,8 +13,8 @@
     resource_field_definitions: {cpu_arch: text, ram: integer, cpus: integer, disk_size: integer}
     unavailable_values: ['', unknown, 'not specified', 'not available', none, 'to be filled by o.e.m.']
     facts: "{{ hostvars[inventory_hostname].ansible_facts }}"
-    netbox_site: "{{ bootstrap_site | default('Bootstrap Lab') }}"
-    netbox_role: "{{ bootstrap_role | default('Server') }}"
+    netbox_site: "{{ server_info.site | default(bootstrap_site | default('Bootstrap Lab')) }}"
+    netbox_role: "{{ server_info.role | default(bootstrap_role | default('Server')) }}"
     netbox_manufacturer: "{{ bootstrap_manufacturer | default('Generic') }}"
     netbox_device_type: "{{ bootstrap_device_type | default('Discovered Linux server') }}"
     netbox_auth: "{{ ('Bearer ' if netbox_token.startswith('nbt_') else 'Token ') ~ netbox_token }}"
@@ -84,6 +84,53 @@
         - name: Show discovered server
           ansible.builtin.debug:
             msg: "{{ facts.hostname }}: {{ facts.distribution }} {{ facts.distribution_version }}"
+
+    - name: Read provisioning metadata from the server
+      tags: [always, facts]
+      become: false
+      block:
+        - name: Check for server metadata
+          ansible.builtin.stat:
+            path: /etc/server-info.yaml
+          register: server_info_file
+
+        - name: Initialize optional server metadata
+          ansible.builtin.set_fact:
+            server_info: {}
+
+        - name: Read server metadata without modifying it
+          ansible.builtin.slurp:
+            src: /etc/server-info.yaml
+          register: server_info_contents
+          when: server_info_file.stat.exists
+
+        - name: Parse server metadata
+          ansible.builtin.set_fact:
+            server_info: "{{ server_info_contents.content | b64decode | from_yaml }}"
+          when: server_info_file.stat.exists
+
+        - name: Validate provisioning metadata before NetBox writes
+          ansible.builtin.assert:
+            that:
+              - server_info is mapping
+              - server_info.keys() | difference(['site', 'role', 'rack', 'location']) | length == 0
+              - server_info.site is defined and server_info.role is defined
+              - server_info.rack is defined and server_info.location is defined
+            fail_msg: /etc/server-info.yaml must contain site, role, rack and location as nonempty strings.
+          when: server_info_file.stat.exists
+
+        - name: Validate metadata values
+          ansible.builtin.assert:
+            that:
+              - item.value is string
+              - item.value | trim | length > 0
+            fail_msg: Server metadata values must be nonempty strings.
+          loop: "{{ server_info | dict2items }}"
+
+        - name: Normalize metadata whitespace
+          ansible.builtin.set_fact:
+            server_info: "{{ server_info | combine({item.key: item.value | trim}) }}"
+          loop: "{{ server_info | dict2items }}"
 
     - name: Gather measured CPU architecture RAM and logical CPU count
       tags: [always, facts]
@@ -662,6 +709,8 @@
               desired_os_version: "{{ facts.distribution }} {{ facts.distribution_version }}"
               desired_site: "{{ netbox_site }}"
               desired_role: "{{ netbox_role }}"
+              desired_rack: "{{ server_info.rack | default('unavailable; preserve existing') }}"
+              desired_rack_location: "{{ server_info.location | default('unavailable; preserve existing') }}"
               desired_device_type: "{{ netbox_device_type }}"
               desired_interfaces: "{{ discovered_interfaces }}"
               desired_resource_fields: "{{ netbox_resource_fields }}"
@@ -675,10 +724,20 @@
               current_network: "{{ existing_network.results | default([]) | selectattr('json', 'defined') | map(attribute='json.results') | list }}"
           when: ansible_check_mode or 'compare' in ansible_run_tags
 
+    - name: Reject conflicting locations for a shared rack before NetBox writes
+      tags: [always, facts]
+      ansible.builtin.assert:
+        that:
+          - matching_rack_metadata | map(attribute='location') | unique | length == 1
+        fail_msg: Servers assign conflicting locations to the same rack within a site; correct their server-info.yaml files before applying.
+      vars:
+        matching_rack_metadata: "{{ ansible_play_hosts | map('extract', hostvars, 'server_info') | selectattr('site', 'defined') | selectattr('site', 'equalto', server_info.site) | selectattr('rack', 'equalto', server_info.rack) | list }}"
+      when: server_info.rack is defined
+
     - name: Ensure minimal NetBox prerequisites
       tags: [apply]
       when: not ansible_check_mode
-      run_once: true
+      throttle: 1
       delegate_to: localhost
       connection: local
       become: false
@@ -690,6 +749,25 @@
             data:
               name: "{{ netbox_site }}"
               slug: "{{ netbox_site | lower | regex_replace('[^a-z0-9]+', '-') | trim('-') }}"
+
+        - name: Ensure rack location within the site
+          netbox.netbox.netbox_location:
+            data:
+              name: "{{ server_info.location }}"
+              site: "{{ netbox_site }}"
+            query_params: [name, site]
+          register: ensured_location
+          when: server_info.location is defined
+
+        - name: Ensure rack within the site and location
+          netbox.netbox.netbox_rack:
+            data:
+              name: "{{ server_info.rack }}"
+              site: "{{ netbox_site }}"
+              location: "{{ ensured_location.location.id }}"
+            query_params: [name, site]
+          register: ensured_rack
+          when: server_info.rack is defined
 
         - name: Ensure server role
           netbox.netbox.netbox_device_role:
@@ -761,6 +839,8 @@
             data:
               name: "{{ facts.hostname }}"
               site: "{{ netbox_site }}"
+              rack: "{{ ensured_rack.rack.id if server_info.rack is defined else omit }}"
+              location: "{{ ensured_location.location.id if server_info.location is defined else omit }}"
               device_role: "{{ netbox_role }}"
               device_type: "{{ netbox_device_type }}"
               status: active

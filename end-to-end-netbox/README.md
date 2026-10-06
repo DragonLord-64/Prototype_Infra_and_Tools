@@ -213,3 +213,31 @@ NVMe fixture sizes; container-visible host block facts are not treated as its di
 Existing custom-field definitions/types are preserved, and unavailable values
 preserve existing data. These informational fields are not included in Bifrost
 export and do not select or modify an installation disk.
+
+## Provisioning metadata on each server
+
+Provisioning may install `/etc/server-info.yaml`, owned by root with mode
+`0644` (readable by everyone; writable only by root). See
+`server-info.example.yaml` for the four required, nonempty string fields:
+`site`, `role`, `rack`, and `location`. Recreate it on fresh OS installation.
+The bootstrap playbook only reads this file; it never writes it.
+
+When present, this file supplies the device site and role, creates or updates
+the location within that site and the rack within that site, associates the
+rack with that location, and assigns the device to the rack and location.
+Rack names are matched within their site; location names within their site.
+Use unique location names within each site (nested locations are not described
+by this flat format). Metadata is authoritative, so changing a shared rack's
+location changes that rack in NetBox.
+
+Missing files retain the existing site/role defaults and omit rack/location
+updates. Invalid files or conflicting locations for a shared rack stop before
+NetBox writes. Facts, comparison, and check modes read and validate metadata without applying NetBox updates.
+Prerequisites are now reconciled per host, serially, to support different
+sites, roles and racks across the inventory.
+
+Run the isolated metadata regression checks from this directory with
+`../.venv/bin/python -m unittest discover -s tests -v`. These exercise the
+actual Ansible reader and validation tasks with temporary local files,
+including check mode and multi-host rack conflicts; no NetBox or SSH
+connection is made.
