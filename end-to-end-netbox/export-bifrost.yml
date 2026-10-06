@@ -3,96 +3,215 @@
   hosts: localhost
   connection: local
   gather_facts: false
+  vars_files:
+    - "{{ netbox_credentials_file | default('private/netbox.json') }}"
+    - "{{ redfish_credentials_file | default('private/redfish.yml') }}"
   vars:
     netbox_auth: "{{ ('Bearer ' if netbox_token.startswith('nbt_') else 'Token ') ~ netbox_token }}"
     bifrost_output: "{{ playbook_dir }}/private/baremetal.yml"
+    bifrost_provisioning_tag: bifrost-provisioning
+    allowed_extra: [uuid, properties, instance_info, ipv4_address, provisioning_ipv4_address, addressing_mode, node_network_data, ipa_kernel_url, ipa_ramdisk_url, boot_interface, deploy_interface, management_interface, power_interface, inspect_interface, automated_clean, host_groups]
   tasks:
     - name: Require deliberate selection and private output location
       ansible.builtin.assert:
         that:
-          - bifrost_nodes is defined
-          - bifrost_nodes | length > 0
-          - bifrost_nodes | map(attribute='name') | unique | length == bifrost_nodes | length
+          - bifrost_device_type is defined
+          - bifrost_device_type | string | length > 0
+          - bifrost_provisioning_tag | length > 0
           - bifrost_output.startswith(playbook_dir ~ '/private/')
           - "'..' not in bifrost_output.split('/')"
-        fail_msg: Select unique server names in bifrost_nodes and write beneath this demo's ignored private directory.
+        fail_msg: Choose a NetBox device type and nonempty provisioning-interface tag and write beneath this demo's ignored private directory.
 
-    - name: Read selected devices from NetBox
+    - name: Resolve the selected NetBox device type
       ansible.builtin.uri:
-        url: "{{ netbox_url | regex_replace('/$', '') }}/api/dcim/devices/?name={{ item.name | urlencode }}"
+        url: "{{ netbox_url | regex_replace('/$', '') }}/api/dcim/device-types/?{{ 'id' if bifrost_device_type is number else 'model' }}={{ bifrost_device_type | string | urlencode }}"
         headers:
           Authorization: "{{ netbox_auth }}"
         validate_certs: "{{ netbox_validate_certs | default(true) }}"
         return_content: true
-      loop: "{{ bifrost_nodes }}"
+      register: device_type
+      no_log: true
+      check_mode: false
+
+    - name: Require an unambiguous device type
+      ansible.builtin.assert:
+        that:
+          - device_type.json.count == 1
+        fail_msg: Device type is absent or ambiguous; use the numeric NetBox device-type ID for ambiguous model names.
+      no_log: true
+
+    - name: Read the first page of servers of that device type
+      ansible.builtin.uri:
+        url: "{{ netbox_url | regex_replace('/$', '') }}/api/dcim/devices/?device_type_id={{ device_type.json.results[0].id }}&limit=1000"
+        headers:
+          Authorization: "{{ netbox_auth }}"
+        validate_certs: "{{ netbox_validate_certs | default(true) }}"
+        return_content: true
       register: devices
       no_log: true
       check_mode: false
 
-    - name: Require exactly one real device per selection
+    - name: Require at least one server of the selected type
       ansible.builtin.assert:
         that:
-          - item.json.count == 1
-          - "'simulated-hardware' not in (item.json.results[0].tags | map(attribute='name') | list)"
-        fail_msg: Selected device is absent, ambiguous, or marked simulated-hardware; no export was written.
-      loop: "{{ devices.results }}"
+          - devices.json.results | length > 0
+        fail_msg: No devices of the selected type were found.
       no_log: true
 
-    - name: Read explicitly selected provisioning interfaces
+    - name: Read all remaining pages of selected servers
       ansible.builtin.uri:
-        url: "{{ netbox_url | regex_replace('/$', '') }}/api/dcim/interfaces/?device_id={{ item.json.results[0].id }}&limit=1000"
+        url: "{{ netbox_url | regex_replace('/$', '') }}/api/dcim/devices/?device_type_id={{ device_type.json.results[0].id }}&limit={{ devices.json.results | length }}&offset={{ item }}"
         headers:
           Authorization: "{{ netbox_auth }}"
         validate_certs: "{{ netbox_validate_certs | default(true) }}"
         return_content: true
-      loop: "{{ devices.results }}"
+      loop: "{{ range(devices.json.results | length, devices.json.count, devices.json.results | length) | list }}"
+      register: device_pages
+      no_log: true
+      check_mode: false
+
+    - name: Combine all selected server pages
+      ansible.builtin.set_fact:
+        selected_devices: "{{ devices.json.results + (device_pages.results | map(attribute='json.results') | flatten) }}"
+      no_log: true
+
+    - name: Require complete unique server records of the requested type
+      ansible.builtin.assert:
+        that:
+          - selected_devices | length == devices.json.count
+          - selected_devices | map(attribute='id') | unique | length == selected_devices | length
+          - selected_devices | map(attribute='name') | unique | length == selected_devices | length
+          - selected_devices | rejectattr('device_type.id', 'equalto', device_type.json.results[0].id) | list | length == 0
+        fail_msg: Inventory changed during pagination or device names/types are ambiguous; retry after reviewing NetBox.
+      no_log: true
+
+    - name: Require real named devices
+      ansible.builtin.assert:
+        that:
+          - item.name | default('') | length > 0
+          - "'simulated-hardware' not in (item.tags | map(attribute='name') | list)"
+        fail_msg: Selected device is unnamed or marked simulated-hardware; no export was written.
+      loop: "{{ selected_devices }}"
+      no_log: true
+
+    - name: Read each server's interfaces from NetBox
+      ansible.builtin.uri:
+        url: "{{ netbox_url | regex_replace('/$', '') }}/api/dcim/interfaces/?device_id={{ item.id }}&limit=1000"
+        headers:
+          Authorization: "{{ netbox_auth }}"
+        validate_certs: "{{ netbox_validate_certs | default(true) }}"
+        return_content: true
+      loop: "{{ selected_devices }}"
       register: interfaces
       no_log: true
       check_mode: false
 
-    - name: Validate enrollment mappings before rendering
-      ansible.builtin.assert:
-        that:
-          - item.json.next == none
-          - selection.provisioning_interfaces | default([]) | length > 0
-          - selection.provisioning_interfaces | unique | length == selection.provisioning_interfaces | length
-          - selected_ports | length == selection.provisioning_interfaces | length
-          - selected_ports | selectattr('mgmt_only', 'equalto', true) | list | length == 0
-          - selected_ports | selectattr('enabled', 'equalto', false) | list | length == 0
-          - selection.redfish_address | default('') is match('^https://[^/]+/?$')
-          - bifrost_credentials[selection.name].redfish_username | default('') | length > 0
-          - bifrost_credentials[selection.name].redfish_password | default('') | length > 0
-          - selection.extra | default({}) is mapping
-          - selection.extra | default({}) | list | difference(allowed_extra) | length == 0
-        fail_msg: Required BMC credentials, HTTPS endpoint, or provisioning interfaces are missing/invalid; no export was written.
+    - name: Prepare remaining interface-page requests
+      ansible.builtin.set_fact:
+        interface_page_requests: "{{ interface_page_requests | default([]) + (requests | from_json) }}"
+        device_interfaces: "{{ device_interfaces | default({}) | combine({item.item.id | string: item.json.results}) }}"
       vars:
-        selection: "{{ item.item.item }}"
-        selected_ports: "{{ item.json.results | selectattr('name', 'in', selection.provisioning_interfaces | default([])) | list }}"
-        allowed_extra: [uuid, properties, instance_info, ipv4_address, provisioning_ipv4_address, addressing_mode, node_network_data, ipa_kernel_url, ipa_ramdisk_url, boot_interface, deploy_interface, management_interface, power_interface, inspect_interface, automated_clean, host_groups]
+        requests: >-
+          {% set pages = [] %}
+          {% set size = item.json.results | length %}
+          {% if size > 0 %}
+          {% for offset in range(size, item.json.count, size) %}
+          {% set _ = pages.append({'device_id': item.item.id, 'offset': offset, 'size': size}) %}
+          {% endfor %}
+          {% endif %}
+          {{ pages | to_json }}
       loop: "{{ interfaces.results }}"
       no_log: true
 
-    - name: Build the Bifrost node mapping
+    - name: Read remaining interface pages
+      ansible.builtin.uri:
+        url: "{{ netbox_url | regex_replace('/$', '') }}/api/dcim/interfaces/?device_id={{ item.device_id }}&limit={{ item.size }}&offset={{ item.offset }}"
+        headers:
+          Authorization: "{{ netbox_auth }}"
+        validate_certs: "{{ netbox_validate_certs | default(true) }}"
+        return_content: true
+      loop: "{{ interface_page_requests }}"
+      register: interface_pages
+      no_log: true
+      check_mode: false
+
+    - name: Combine interface pages by device
       ansible.builtin.set_fact:
-        bifrost_inventory: "{{ bifrost_inventory | default({}) | combine({selection.name: node | from_json}) }}"
+        device_interfaces: "{{ device_interfaces | combine({item.item.device_id | string: device_interfaces[item.item.device_id | string] + item.json.results}) }}"
+      loop: "{{ interface_pages.results }}"
+      no_log: true
+
+    - name: Require complete unique interface records
+      ansible.builtin.assert:
+        that:
+          - device_interfaces[item.item.id | string] | length == item.json.count
+          - device_interfaces[item.item.id | string] | map(attribute='id') | unique | length == item.json.count
+      loop: "{{ interfaces.results }}"
+      no_log: true
+
+    - name: Assemble source mappings entirely from NetBox records
+      ansible.builtin.set_fact:
+        export_nodes: "{{ export_nodes | default([]) + [node | from_json] }}"
       vars:
-        selection: "{{ item.item.item }}"
-        selected_ports: "{{ item.json.results | selectattr('name', 'in', selection.provisioning_interfaces) | list }}"
+        device: "{{ item.item }}"
+        fields: "{{ device.custom_fields | default({}) }}"
         node: >-
           {% set nics = [] %}
-          {% for port in selected_ports %}
+          {% for port in device_interfaces[device.id | string] %}
+          {% if bifrost_provisioning_tag in (port.tags | default([]) | map(attribute='slug') | list) %}
           {% set mac = (port.primary_mac_address | default({}, true)).get('mac_address', port.mac_address | default('', true)) %}
-          {% set _ = nics.append({'mac': mac | lower}) %}
+          {% set _ = nics.append({'mac': mac | lower, 'mgmt_only': port.mgmt_only, 'enabled': port.enabled}) %}
+          {% endif %}
           {% endfor %}
-          {{ selection.extra | default({}) | combine({
-            'name': selection.name,
-            'driver': 'redfish',
-            'driver_info': {'redfish_address': selection.redfish_address,
-                            'redfish_verify_ca': selection.redfish_verify_ca | default(true)}
-                           | combine(bifrost_credentials[selection.name])
-                           | combine({'redfish_system_id': selection.redfish_system_id} if selection.redfish_system_id is defined else {}),
-            'nics': nics}) | to_json }}
+          {% set bmc = (device.oob_ip | default({}, true)).get('address', '') | regex_replace('/.*$', '') %}
+          {% set endpoint = fields.redfish_address | default('', true) %}
+          {% if not endpoint and bmc and fields.redfish_enabled | default(false) | bool %}
+          {% set endpoint = 'https://' ~ ('[' ~ bmc ~ ']' if ':' in bmc else bmc) %}
+          {% endif %}
+          {{ {'name': device.name, 'nics': nics, 'truncated': false,
+              'redfish_address': endpoint,
+              'redfish_system_id': fields.redfish_system_id | default('', true),
+              'redfish_verify_ca': fields.redfish_verify_ca | default(true, true),
+              'extra': fields.bifrost | default({}, true)} | to_json }}
       loop: "{{ interfaces.results }}"
+      no_log: true
+
+    - name: Validate NetBox fields and separately supplied authentication
+      ansible.builtin.assert:
+        that:
+          - not item.truncated
+          - item.nics | length > 0
+          - item.nics | selectattr('mgmt_only', 'equalto', true) | list | length == 0
+          - item.nics | selectattr('enabled', 'equalto', false) | list | length == 0
+          - item.redfish_address is match('^https://[^/]+/?$')
+          - credentials.redfish_username | default('') | length > 0
+          - credentials.redfish_password | default('') | length > 0
+          - credentials | list | difference(['redfish_username', 'redfish_password', 'redfish_auth_type']) | length == 0
+          - item.extra is mapping
+          - item.extra | list | difference(allowed_extra) | length == 0
+        fail_msg: Review NetBox Redfish metadata, provisioning-port tags, and separate credentials; no export was written.
+      vars:
+        credentials: "{{ redfish_credentials.defaults | default({}) | combine((redfish_credentials.devices | default({})).get(item.name, {})) }}"
+      loop: "{{ export_nodes }}"
+      no_log: true
+
+    - name: Build the Bifrost inventory with secrets kept out of logs
+      ansible.builtin.set_fact:
+        bifrost_inventory: "{{ bifrost_inventory | default({}) | combine({item.name: node | from_json}) }}"
+      vars:
+        credentials: "{{ redfish_credentials.defaults | default({}) | combine((redfish_credentials.devices | default({})).get(item.name, {})) }}"
+        node: >-
+          {% set nics = [] %}
+          {% for port in item.nics %}
+          {% set _ = nics.append({'mac': port.mac}) %}
+          {% endfor %}
+          {{ item.extra | combine({'name': item.name, 'driver': 'redfish',
+            'driver_info': {'redfish_address': item.redfish_address,
+                            'redfish_verify_ca': item.redfish_verify_ca}
+                           | combine(credentials)
+                           | combine({'redfish_system_id': item.redfish_system_id} if item.redfish_system_id else {}),
+            'nics': nics}) | to_json }}
+      loop: "{{ export_nodes }}"
       no_log: true
 
     - name: Require nonzero valid and unambiguous provisioning MAC addresses

@@ -1,22 +1,42 @@
 # NetBox → Bifrost YAML export
 
-`export-bifrost.yml` reads only explicitly selected NetBox devices and interfaces. It writes a node-name-keyed Bifrost inventory with `driver: redfish`, `driver_info`, and `nics: [{mac: ...}]`. It does not enroll, deploy, install Bifrost, change power, or write to NetBox.
+`export-bifrost.yml` reads inventory from NetBox and generates Bifrost's node-name-keyed YAML. There is no second hand-maintained Bifrost inventory. `bifrost-export.example.yml` contains optional shared selector/file-path settings only; copying it is not required. The generated `private/baremetal.yml` is the inventory output, not an input settings file.
 
-Copy `bifrost-export.example.yml` to `private/bifrost-export.yml`, replace placeholders, and supply a separate private/Vault file containing `bifrost_credentials`, keyed by the same device names. Existing `private/netbox.json` supplies `netbox_url` and `netbox_token`. From this folder:
+## Authentication and invocation
 
-```bash
-../.venv/bin/ansible-playbook -i localhost, export-bifrost.yml -e @private/netbox.json -e @private/bifrost-export.yml -e @private/bifrost-credentials.yml --check
-../.venv/bin/ansible-playbook -i localhost, export-bifrost.yml -e @private/netbox.json -e @private/bifrost-export.yml -e @private/bifrost-credentials.yml
+The exporter loads the same `private/netbox.json` vars file as the bootstrap by default. Choose your existing YAML/JSON/Vault file with `netbox_credentials_file`; it must define `netbox_url` and `netbox_token`. Supply Redfish credentials separately in ignored `private/redfish.yml` (or another chosen Vault file):
+
+```yaml
+redfish_credentials:
+  defaults:
+    redfish_username: YOUR_USER
+    redfish_password: YOUR_SECRET
+  devices: {}  # Optional per-NetBox-name overrides of username/password/auth_type.
 ```
 
-Add `--ask-vault-pass` for encrypted credentials. Output defaults to ignored `private/baremetal.yml` (directory 0700, file 0600); it contains BMC credentials. Check mode reads/validates but writes no inventory; task output and diffs suppress secrets. Refresh the export while NetBox is reachable and protect any off-machine copy.
+From this folder, preview then export:
 
-Select provisioning ports explicitly; management-only and disabled ports are rejected. Missing/invalid/duplicate MACs, absent devices, and devices tagged `simulated-hardware` fail before writing. The existing Ubuntu hardware simulator therefore cannot generate deployable inventory. Endpoint and credentials are explicit inputs: a discovered BMC IP alone cannot establish Redfish support or a ComputerSystem resource. HTTPS verification defaults on; CA paths must exist on the eventual Ironic conductor.
+```bash
+../.venv/bin/ansible-playbook -i localhost, export-bifrost.yml -e bifrost_device_type=YOUR_MODEL --check
+../.venv/bin/ansible-playbook -i localhost, export-bifrost.yml -e bifrost_device_type=YOUR_MODEL
+# For your existing login YAML and a separate encrypted Redfish secrets file:
+../.venv/bin/ansible-playbook -i localhost, export-bifrost.yml -e bifrost_device_type=YOUR_MODEL -e netbox_credentials_file=private/netbox.yml -e redfish_credentials_file=private/redfish.vault.yml --ask-vault-pass
+```
 
-Name is the stable lookup key: keep it unchanged, and preserve an existing Ironic UUID in `extra.uuid` when available. Renaming a device requires updating this mapping. Without a supplied UUID, Ironic assigns one on enrollment. Hardware serial numbers are not treated as Ironic UUIDs. Optional `extra` properties, root-device hints, image/boot/network settings pass through explicitly; we never infer a boot disk from all discovered NVMe drives. Configure these before actual deployment. `automated_clean: false` is an explicit example setting, not a promise that downstream workflows cannot erase disks.
+## NetBox is the inventory owner
 
-Bifrost consumes this file through `BIFROST_INVENTORY_SOURCE` and its inventory adapter, rather than as a standard `-i baremetal.yml` Ansible inventory. Enrollment and reimaging remain separate, deliberate workflows.
+- Select the NetBox **device type** (hardware model) with `bifrost_device_type`. Every server of that type is exported. A string is the exact model name; a YAML integer is the type ID, e.g. `-e '{"bifrost_device_type":42}'`. Ambiguous model names fail; use an ID in that case. This is a device type, not a role, tag or module type.
+- Tag only provisioning interfaces with slug `bifrost-provisioning` (override `bifrost_provisioning_tag`). Names and MACs come from those NetBox interfaces. Management-only and disabled ports are rejected.
+- Store the HTTPS endpoint in device custom field `redfish_address`. Alternatively set boolean custom field `redfish_enabled: true` and the exporter derives HTTPS from the native `oob_ip`, which bootstrap already populates for the motherboard BMC. An IP alone does not prove Redfish support.
+- Optional device custom field `redfish_system_id` holds the actual ComputerSystem path when needed; no `/Systems/1` assumption. Optional `redfish_verify_ca` holds a trusted CA path (on the eventual conductor); verification defaults on.
+- Optional JSON custom field `bifrost` holds explicitly managed Bifrost settings such as `uuid`, `properties` (including `root_device`), `instance_info` (image), boot/interface choices and network settings. These are absent from ordinary discovered hardware facts; populate them in NetBox if deployment needs them. Do not put passwords in this field. The exporter validates allowed top-level fields and does not guess a boot disk from all NVMe drives.
 
-Compatibility: researched upstream Bifrost master inventory parser/example and current Ironic Redfish docs; your installed Bifrost version is unknown. Confirm its enrollment role, enabled drivers/interfaces, network/image requirements, and field support before consuming the file. Export validation checks data shape, not BMC connectivity or image bootability.
+Only the chosen type, provisioning-port tag and file-path settings live in repository YAML; server names, endpoints, ports, properties and intended image settings come from NetBox. Redfish auth secrets live in Ansible/Vault. Keep names stable; preserve an existing Ironic UUID in `bifrost.uuid` when available. Without one, Ironic assigns a UUID on enrollment; hardware serials are not Ironic UUIDs. This exporter does not create custom fields or update NetBox.
 
-Sources: [Bifrost example](https://github.com/openstack/bifrost/blob/master/playbooks/inventory/baremetal.yml.example), [inventory parser](https://github.com/openstack/bifrost/blob/master/bifrost/inventory.py), [Redfish driver contract](https://docs.openstack.org/ironic/latest/admin/drivers/redfish.html).
+Output is ignored `private/baremetal.yml` (directory 0700, file 0600) and contains credentials. Preview reads/validates but writes no inventory; task output and diffs suppress secrets. Missing/invalid/duplicate MACs, unnamed or simulated devices, and incomplete/ambiguous API records fail before writing. All device and interface pages are fetched, respecting the server’s returned page size; inconsistent counts or duplicate records fail before writing. The Ubuntu simulator cannot generate deployable inventory.
+
+Bifrost consumes this file through `BIFROST_INVENTORY_SOURCE` and its inventory adapter, not directly as standard Ansible YAML inventory. Export never installs Bifrost, enrolls, deploys, changes power or writes NetBox. Enrollment/reimaging remain deliberate separate actions; this file by itself cannot prevent a downstream enrollment workflow from cleaning disks.
+
+Compatibility: validated against upstream Bifrost master inventory parser and current Ironic Redfish contract. Your installed version is unknown; confirm its enabled drivers/interfaces and enrollment/network/image field support. Validation checks shape, not BMC connectivity or image bootability.
+
+Sources: [Bifrost example](https://github.com/openstack/bifrost/blob/master/playbooks/inventory/baremetal.yml.example), [inventory parser](https://github.com/openstack/bifrost/blob/master/bifrost/inventory.py), [Redfish contract](https://docs.openstack.org/ironic/latest/admin/drivers/redfish.html).
