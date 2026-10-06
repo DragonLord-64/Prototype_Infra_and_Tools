@@ -1,6 +1,6 @@
 ---
 - name: Discover servers and bootstrap NetBox directly
-  hosts: bootstrap_servers
+  hosts: all
   gather_facts: false
   any_errors_fatal: true
   vars_files:
