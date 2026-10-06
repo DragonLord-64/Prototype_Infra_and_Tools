@@ -6,7 +6,7 @@
 
 Reuse your existing bootstrap `vars_files` arrangement: the exporter needs the same `netbox_url` and `netbox_token` variables. No new shared credentials file or wrapper format is required. The configurable filenames below are demo defaults; replace them with your existing vars files or edit `vars_files` to match your playbook. Keep Redfish authentication in your own separate secrets/Vault vars.
 
-Validation now reports the selected device name and actionable missing/invalid field labels without printing raw records or secret values. A discovered BMC IP still needs confirmed Redfish capability (`redfish_enabled`) or an explicit `redfish_address`; provisioning ports must carry the chosen tag, and username/password must be present in the secrets variables.
+Validation now reports the selected device name and actionable missing/invalid field labels without printing raw records or secret values. The native NetBox out-of-band IP supplies the controller address automatically; provisioning ports must carry the chosen tag, and username/password must be present in the secrets variables.
 
 All three lookup calls receive `netbox_validate_certs | default(true) | bool` directly. Lookup plugins do not inherit Ansible module defaults. Set `netbox_validate_certs: false` in your shared NetBox login file for an explicitly trusted self-signed development instance. This controls NetBox HTTPS, separately from the BMC’s `redfish_verify_ca`.
 
@@ -33,7 +33,7 @@ From this folder, preview then export:
 
 - Select the NetBox **device type** (hardware model) with `bifrost_device_type`. Every server of that type is exported. A string is the exact model name; a YAML integer is the type ID, e.g. `-e '{"bifrost_device_type":42}'`. Ambiguous model names fail; use an ID in that case. This is a device type, not a role, tag or module type.
 - Tag only provisioning interfaces with slug `bifrost-provisioning` (override `bifrost_provisioning_tag`). Names and MACs come from those NetBox interfaces. Management-only and disabled ports are rejected.
-- Store the HTTPS endpoint in device custom field `redfish_address`. Alternatively set boolean custom field `redfish_enabled: true` and the exporter derives HTTPS from the native `oob_ip`, which bootstrap already populates for the motherboard BMC. An IP alone does not prove Redfish support.
+- The controller address is automatically `http://` plus native device `oob_ip`, which bootstrap populates for the motherboard BMC. CIDR suffixes are removed and IPv6 addresses are bracketed. No custom endpoint or Redfish-enabled field is needed. This matches your BMC HTTP convention; the exporter does not test connectivity. Ironic expects the controller base URL, without a `/v1/redfish` suffix; the usual Redfish service root is `/redfish/v1`.
 - Optional device custom field `redfish_system_id` holds the actual ComputerSystem path when needed; no `/Systems/1` assumption. Optional `redfish_verify_ca` holds a trusted CA path (on the eventual conductor); verification defaults on.
 - Optional JSON custom field `bifrost` holds explicitly managed Bifrost settings such as `uuid`, `properties` (including `root_device`), `instance_info` (image), boot/interface choices and network settings. These are absent from ordinary discovered hardware facts; populate them in NetBox if deployment needs them. Do not put passwords in this field. The exporter validates allowed top-level fields and does not guess a boot disk from all NVMe drives.
 
