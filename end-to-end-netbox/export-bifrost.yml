@@ -11,6 +11,7 @@
     # Override netbox_validate_certs in inventory, a vars file, or extra vars.
     netbox_validate_certs_default: false
     bifrost_output: "{{ playbook_dir }}/private/baremetal.yml"
+    bifrost_device_type: "FPGA host server"
     bifrost_provisioning_tag: bifrost-provisioning
     allowed_extra: [uuid, properties, instance_info, ipv4_address, provisioning_ipv4_address, addressing_mode, node_network_data, ipa_kernel_url, ipa_ramdisk_url, boot_interface, deploy_interface, management_interface, power_interface, inspect_interface, automated_clean, host_groups]
   tasks:
