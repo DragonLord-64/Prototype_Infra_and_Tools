@@ -154,25 +154,19 @@
       loop_control:
         pause: '{{ netbox_api_loop_pause }}'
     - name: Ensure reported module types
-      netbox.netbox.netbox_module_type:
-        data:
-          manufacturer: '{{ nexus_manufacturers.manufacturers[item.manufacturer] }}'
-          model: '{{ item.model }}'
-          part_number: '{{ item.part }}'
-        query_params:
-        - manufacturer
-        - model
-      loop: '{{ switch.modules | fhs_unique_module_types }}'
-      loop_control:
-        label: '{{ item.model }}'
-        pause: '{{ netbox_api_loop_pause }}'
       register: nexus_module_types
       until: nexus_module_types is succeeded or not (nexus_module_types | fhs_netbox_transient)
       retries: '{{ netbox_api_retries }}'
       delay: '{{ netbox_api_retry_delay }}'
+      fhs_module_types:
+        netbox_url: '{{ netbox_url }}'
+        netbox_token: '{{ netbox_token }}'
+        validate_certs: '{{ netbox_validate_certs | default(netbox_validate_certs_default) | bool }}'
+        types: '{{ switch.modules | fhs_unique_module_types }}'
+        manufacturers: '{{ nexus_manufacturers.manufacturers }}'
     - name: Keep module-type IDs scoped by reported vendor and part
       ansible.builtin.set_fact:
-        nexus_module_type_ids: '{{ nexus_module_types.results | fhs_module_type_ids }}'
+        nexus_module_type_ids: '{{ nexus_module_types.module_types }}'
     - name: Ensure installed modules by device and bay
       netbox.netbox.netbox_module:
         query_params:

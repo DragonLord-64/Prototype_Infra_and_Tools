@@ -69,6 +69,11 @@ class TestPlaybook(unittest.TestCase):
                         child.pop('fhs_manufacturers')
                         for key in ['register','until','retries','delay']:child.pop(key,None)
                         child['ansible.builtin.set_fact']={'nexus_manufacturers':{'manufacturers':{'Cisco':1,'Vendor':2,'Finisar Corp':3}}}
+                    if 'fhs_module_types' in child:
+                        child.pop('fhs_module_types')
+                        for key in ['register','until','retries','delay']:child.pop(key,None)
+                        child['ansible.builtin.set_fact']={'nexus_module_types':{'module_types':{'["Cisco", "DEMO-PSU"]':101,'["Cisco", "DEMO-FAN"]':102,'["Finisar Corp", "DEMO-QSFP"]':103,'["Vendor", "DEMO-DAC"]':104}}}
+
             path = root/'play.yml'
             path.write_text(yaml.safe_dump(play, sort_keys=False))
             records = root/'records.json'

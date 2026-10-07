@@ -68,3 +68,5 @@ Review it before copying to the compose consumer's
 explicitly. It validates inventory only; it does not enroll or deploy machines.
 Set a unique root-device hint in NetBox if multiple disks match the default size
 criterion. Keep generated inventories outside Git.
+
+Nexus module types use the explicit `manufacturer_id` lookup filter with numeric manufacturer IDs in creation payloads. The collection's generic `manufacturer` query parameter expects a slug and must not receive an ID. Installed modules use the collection's default ID filters for device, bay and type. Regression tests exercise the installed collection query builder and a strict isolated HTTP contract; earlier recording-module tests did not cover that query behavior.

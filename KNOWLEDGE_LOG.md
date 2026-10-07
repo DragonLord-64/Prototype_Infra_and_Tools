@@ -77,3 +77,7 @@ Updated [both portable imports](end-to-end-netbox/development/README.md) to ensu
 ## 2026-10-06 — First implementation run guide
 
 Shortened the [portable FHS bundle guide](end-to-end-netbox/development/README.md) to real-environment setup and execution: whole-directory copying including shared module utilities, Bifrost credential paths, inventory overrides, scoped imports and export handoff. Removed explanatory code comments and outdated task labels without changing functionality. Python syntax-tree equivalence and YAML equivalence apart from task labels verified behavior preservation; published implementation tests remain intact. The operator confirmed FPGA/NIC import on one server; fleet and cluster validation remain separate.
+
+## 2026-10-06 — Nexus manufacturer query contract
+
+Corrected [Nexus module-type lookup](end-to-end-netbox/development/README.md): numeric manufacturer IDs use the manufacturer_id filter, while manufacturer is a slug filter. Restored native installed-module ID filter defaults to avoid the same override problem for module bays. Added real installed-collection builder and strict isolated request/copy-layout regressions; no live cluster actions or manufacturer deletion.
