@@ -1,0 +1,135 @@
+# Current FHS NetBox playbooks
+
+This directory is the current, self-contained bundle adapted from the public
+[SKA FHS development branch](https://gitlab.com/ska-telescope/sdi/ska-mid-cbf-fhs-baremetal/-/tree/development/playbooks/development).
+Copy its contents into that repository's `playbooks/development/` directory.
+Keep `tasks/`, `filter_plugins/`, and `library/` beside the entrypoint playbooks;
+no Prototype Infra checkout or absolute development-machine path is required.
+Do not copy generated `output/` files or private credentials into Git.
+
+## Setup and entrypoints
+
+Use the existing provisioning container/controller environment and inventory.
+From the SKA repository root install these additional collections in its existing
+collection path, then install controller dependencies in its controller venv:
+
+```sh
+ansible-galaxy collection install -r playbooks/development/requirements.yml -p collections
+python -m pip install -r playbooks/development/requirements.txt
+ansible-playbook -i inventory/dev_env playbooks/development/netbox_import.yml --check --diff
+ansible-playbook -i inventory/dev_env playbooks/development/netbox_import.yml
+ansible-playbook -i inventory/dev_env playbooks/development/netbox_import_nexus.yml --check
+ansible-playbook -i inventory/dev_env playbooks/development/bifrost_export.yml --check
+```
+
+Default credential vars files remain `/provision/files.d/credentials/netbox.yml`
+and `/provision/files.d/credentials/redfish.yml`. Override `netbox_credentials_file`
+and `redfish_credentials_file` outside the container. These files supply the
+existing `netbox_url`, `netbox_token`, and `redfish_credentials` schema; never put
+actual credentials in this bundle. Run server discovery only against Linux hosts
+(use an inventory/limit); the Nexus playbook targets the `nexus` group and needs
+network CLI access. The existing SKA root `ansible.cfg` can remain unchanged.
+Ansible discovers adjacent library/filter directories automatically.
+
+Working server defaults are retained: MDA, FPGA_HOST_SERVER, BittWare,
+TeraBox1501b, `/opt/venvs/fhs`, `/usr/share/bittware-sdk`, and
+`bw_card_list -v -i USB`. `BWSDK_ROOT` and venv PATH are supplied per SDK command;
+no activate shell or SDK installation is needed. Fleet values and commands are
+ordinary play/inventory overrides. The actual output patterns are top-level vars
+and are used by the parser, with missing fields rejected within each card block.
+
+## FPGA modules and ports
+
+Each discovered card has one module bay (`FPGA CARD <actual index>`), a BittWare
+module type using the reported part number, a serial, board/BMC versions and
+optional PCI endpoint JSON. Three module-type interface templates generate the
+source's names `C<index>-QSFP0`, `C<index>-QSFP1`, `C<index>-QSFP2`; the source's
+400G QSFP-DD interface type is retained and configurable with
+`bootstrap_fpga_interface_type`. Indices are actual USB indices, not list order.
+**FPGA QSFP transceivers are not automatically imported.** Nexus retains its
+separate PSU/fan/transceiver inventory behavior.
+
+Set `bootstrap_bittware_pci_map` when the card-to-BDF mapping is known. Empty
+mapping omits observations and preserves existing PCI data; product names alone
+cannot establish a card's serial association. For example (replace addresses):
+
+```yaml
+bootstrap_bittware_pci_map:
+  0:
+    - {address: '0000:01:00.0', function: Arkville}
+    - {address: '0000:02:00.0', function: Altera}
+```
+
+Existing server interfaces are adopted without changing their IDs, cables, IPs,
+enabled flags, or existing type. An interface already owned by another module
+blocks the operation. Legacy FPGA inventory items are neither deleted nor
+migrated automatically. Other legacy DDR/NVMe/NIC inventory discovery remains.
+
+NetBox 4.3/4.4 REST APIs lack the UI module adoption switches. The small local
+`fhs_fpga_sync` Ansible module therefore creates new cards with a shared,
+**template-free staging type**, attaches the three interfaces in place, and
+updates to the reported module type. The real type keeps all three templates.
+The staging type must stay empty; failed runs can be safely rerun. No object is
+deleted. This narrowly scoped helper uses the same mapping and reconciliation
+for check mode and normal apply.
+
+## Preview, scopes, and host changes
+
+Read-only SDK/VPD probes run during check mode, with `changed_when: false`.
+FPGA synchronization reads NetBox, computes creates/updates, and returns a plan
+and `--diff` without POST/PATCH in check mode or `--tags compare`.
+`--tags fpga` applies only the FPGA module portion to an already imported server;
+use `--check --tags fpga` to preview it. A missing server is represented in a
+check plan; actual apply requires the parent device. `--tags apply` runs the full
+original prerequisite/discovery/apply pipeline. Tags `nic`, `resources`, `bios`,
+`bmc`, `ddr`, `nvme`, and `facts` retain their discovery scope. Resource discovery
+no longer unintentionally includes SDK/NIC work.
+
+For non-FPGA server objects and Nexus, check mode still displays desired/current
+records and skips NetBox writes. This is **not** a complete module-native diff for
+those objects, especially when parent site/device/type objects do not exist.
+Their mapping isn't duplicated into a separate check playbook. Missing optional
+hardware observations preserve existing values. Manual edits to fields managed
+by import (site/role/type/primary IP) can be overwritten on apply; choose field
+ownership before using this as an automatic refresh service.
+
+The user-approved nvme-cli apt setup remains in discovery: a normal NVMe or
+compare run may install it on a Debian-family target. Check mode runs apt's
+preview and does not install packages; it may report that installation is needed.
+This pipeline must not be described as entirely free of host changes on normal
+runs. BittWare is enabled by the fleet default; disable explicitly on non-FPGA
+hosts with `bootstrap_bittware_enabled: false`.
+
+## Bifrost handoff
+
+The export selects TeraBox1501b by default (same as import), validates provisioning
+interface tags, out-of-band IP and Redfish credentials, and writes private YAML
+to `playbooks/development/output/baremetal.yml` (mode 0600). This directory is
+ignored. Check mode validates without writing. Existing enrollment schema, explicit
+root disk criteria and default UEFI capability are retained. The source default
+`size: '> 900'` is only a criterion and may match more than one disk; define a
+unique root-device hint in NetBox before deployment if the server has multiple
+eligible disks. The playbook does not enroll, deploy, reboot or select disks itself.
+
+The SKA compose consumer mounts `bifrost-infra/inventory/terabox1501b_inventory.yaml`
+into Bifrost. Export does not automatically replace that active inventory. Either
+review/copy the generated file to the intended consumer or explicitly override
+`bifrost_output` to that destination when ready. Credentials in the generated
+inventory must remain outside Git.
+
+## Verification
+
+`tests/` contains parser boundary/missing-field tests, per-function VPD enrichment,
+FPGA check/apply/idempotence/interface-adoption tests, and Nexus parser/task tests.
+The portability test copies this directory into SKA's exact `playbooks/development`
+topology and runs actual FPGA discovery/helper tasks against synthetic SDK output
+and a temporary loopback API, without live credentials. Run in the controller venv:
+
+```sh
+python -m unittest discover -s playbooks/development/tests -v
+```
+
+Synthetic tests do not certify the physical fleet or exact installed NetBox
+permissions/version. A physical read-only smoke test and reviewed check plan
+remain necessary before live application. No live systems were changed while
+building this bundle.

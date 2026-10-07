@@ -1,0 +1,462 @@
+- name: Gather measured CPU architecture RAM and logical CPU count
+  tags:
+  - always
+  - facts
+  become: false
+  block:
+  - name: Record available architecture
+    ansible.builtin.set_fact:
+      resource_fields: '{{ resource_fields | combine({''cpu_arch'': facts.architecture}) }}'
+    when: facts.architecture | default('') | lower not in unavailable_values
+  - name: Record available RAM in MiB
+    ansible.builtin.set_fact:
+      resource_fields: '{{ resource_fields | combine({''ram'': facts.memtotal_mb | int}) }}'
+    when: facts.memtotal_mb | default(0) | int > 0
+  - name: Read logical CPU count only if the fact is unavailable
+    ansible.builtin.command:
+      argv:
+      - nproc
+    register: cpu_count_probe
+    changed_when: false
+    failed_when: false
+    check_mode: false
+    when: facts.processor_vcpus | default(0) | int <= 0
+  - name: Record available logical CPU count
+    ansible.builtin.set_fact:
+      resource_fields: '{{ resource_fields | combine({''cpus'': logical_cpus | int}) }}'
+    vars:
+      logical_cpus: '{{ facts.processor_vcpus | default(0) if facts.processor_vcpus | default(0) | int > 0 else cpu_count_probe.stdout | default(0) }}'
+    when: logical_cpus | int > 0
+- name: Discover server BIOS
+  tags:
+  - bios
+  - compare
+  - apply
+  become: '{{ not (hardware_simulation | default(false) | bool) }}'
+  environment:
+    PATH: '{{ hardware_command_path }}'
+    LC_ALL: C
+    LANG: C
+  block:
+  - name: Read BIOS information
+    ansible.builtin.command:
+      argv:
+      - dmidecode
+      - --type
+      - bios
+    register: bios_probe
+    changed_when: false
+    failed_when: false
+    check_mode: false
+  - name: Report unavailable BIOS information
+    ansible.builtin.debug:
+      msg: 'BIOS unavailable; existing NetBox values will be preserved: {{ bios_probe.stderr | default(bios_probe.msg | default(''No diagnostic returned''),
+        true) }}'
+    when: bios_probe.rc != 0 or ((bios_probe.stdout | default('')) | regex_findall('(?m)^\\s*Version:\\s*(.+)$') | first | default('') | trim | lower in
+      unavailable_values)
+  - name: Record available BIOS version
+    ansible.builtin.set_fact:
+      hardware_fields: '{{ hardware_fields | combine({''bios_version'': bios_version}) }}'
+    vars:
+      bios_version: '{{ (bios_probe.stdout | default('''')) | regex_findall(''(?m)^\s*Version:\s*(.+)$'') | first | default('''') | trim }}'
+    when: bios_probe.rc == 0 and bios_version | lower not in unavailable_values
+- name: Discover motherboard and BMC
+  tags:
+  - bmc
+  - compare
+  - apply
+  become: '{{ not (hardware_simulation | default(false) | bool) }}'
+  environment:
+    PATH: '{{ hardware_command_path }}'
+    LC_ALL: C
+    LANG: C
+  block:
+  - name: Read BMC firmware information
+    ansible.builtin.command:
+      argv:
+      - ipmitool
+      - mc
+      - info
+    register: bmc_info_probe
+    changed_when: false
+    failed_when: false
+    check_mode: false
+  - name: Read BMC management LAN channel
+    ansible.builtin.command:
+      argv:
+      - ipmitool
+      - lan
+      - print
+      - '{{ bmc_lan_channel | default(''1'') }}'
+    register: bmc_lan_probe
+    changed_when: false
+    failed_when: false
+    check_mode: false
+  - name: Read motherboard FRU information
+    ansible.builtin.command:
+      argv:
+      - ipmitool
+      - fru
+      - print
+      - '{{ motherboard_fru_id | default(''0'') }}'
+    register: motherboard_probe
+    changed_when: false
+    failed_when: false
+    check_mode: false
+  - name: Record available motherboard and BMC fields
+    ansible.builtin.set_fact:
+      hardware_fields: '{{ hardware_fields | combine({item.key: item.value}) }}'
+    vars:
+      available_fields:
+        bmc_firmware: '{{ (bmc_info_probe.stdout | default('''')) | regex_findall(''(?m)^Firmware Revision\s*:\s*(.+)$'') | first | default('''') | trim
+          }}'
+        motherboard_part_number: '{{ (motherboard_probe.stdout | default('''')) | regex_findall(''(?m)^\s*Board Part Number\s*:\s*(.+)$'') | first | default('''')
+          | trim }}'
+        motherboard_serial: '{{ (motherboard_probe.stdout | default('''')) | regex_findall(''(?m)^\s*Board Serial\s*:\s*(.+)$'') | first | default('''')
+          | trim }}'
+    loop: '{{ available_fields | dict2items }}'
+    when: item.value | lower not in unavailable_values and ((item.key == 'bmc_firmware' and bmc_info_probe.rc == 0) or (item.key != 'bmc_firmware' and motherboard_probe.rc
+      == 0))
+  - name: Record available BMC address
+    ansible.builtin.set_fact:
+      bmc_address: '{{ discovered_bmc_address }}'
+    vars:
+      discovered_bmc_address: '{{ (bmc_lan_probe.stdout | default('''')) | regex_findall(''(?m)^IP Address\s*:\s*([0-9.]+)\s*$'') | first | default('''')
+        }}'
+    when: bmc_lan_probe.rc == 0 and discovered_bmc_address | length > 0 and discovered_bmc_address != '0.0.0.0'
+  - name: Show BMC discovery and explicitly report unavailable fields
+    ansible.builtin.debug:
+      msg:
+        simulation: '{{ hardware_simulation | default(false) | bool }}'
+        motherboard_and_firmware: '{{ hardware_fields }}'
+        bmc_address: '{{ bmc_address | default(''unavailable; existing value preserved'') }}'
+        unavailable_probes: '{{ [bmc_info_probe, bmc_lan_probe, motherboard_probe] | rejectattr(''rc'', ''equalto'', 0) | map(attribute=''msg'', default=''IPMI
+          read failed'') | list }}'
+        unavailable_fields: '{{ [''bmc_firmware'', ''motherboard_part_number'', ''motherboard_serial''] | difference(hardware_fields.keys() | list) }}'
+- name: Discover DDR5 modules
+  tags:
+  - ddr
+  - compare
+  - apply
+  become: '{{ not (hardware_simulation | default(false) | bool) }}'
+  environment:
+    PATH: '{{ hardware_command_path }}'
+    LC_ALL: C
+    LANG: C
+  block:
+  - name: Read memory device information
+    ansible.builtin.command:
+      argv:
+      - dmidecode
+      - --type
+      - memory
+    register: memory_probe
+    changed_when: false
+    failed_when: false
+    check_mode: false
+  - name: Report unavailable memory information
+    ansible.builtin.debug:
+      msg: 'Memory inventory unavailable; existing NetBox components preserved: {{ memory_probe.stderr | default(memory_probe.msg | default(''No diagnostic
+        returned''), true) }}'
+    when: memory_probe.rc != 0 or (memory_probe.stdout | default('')) | regex_findall('(?m)^[ \\t]*Memory Device[ \\t\\r]*$') | length == 0
+  - name: Parse populated DDR5 memory records
+    ansible.builtin.set_fact:
+      memory_records: '{{ memory_records + [memory_record] }}'
+    vars:
+      slot: '{{ memory_block | regex_findall(''(?m)^\s*Locator:\s*(.+)$'') | first | default('''') | trim }}'
+      bank: '{{ memory_block | regex_findall(''(?m)^\s*Bank Locator:\s*(.+)$'') | first | default('''') | trim }}'
+      dmi_handle: '{{ memory_block | regex_findall(''(?m)^\s*Handle\s+(0x[0-9A-Fa-f]+),'') | first | default('''') }}'
+      memory_type: '{{ memory_block | regex_findall(''(?m)^\s*Type:\s*(.+)$'') | first | default('''') | trim }}'
+      memory_size: '{{ memory_block | regex_findall(''(?m)^\s*Size:\s*(.+)$'') | first | default('''') | trim }}'
+      part: '{{ memory_block | regex_findall(''(?m)^\s*Part Number:\s*(.+)$'') | first | default('''') | trim }}'
+      component_serial: '{{ memory_block | regex_findall(''(?m)^\s*Serial Number:\s*(.+)$'') | first | default('''') | trim }}'
+      memory_record:
+        slot: '{{ slot if slot | lower not in unavailable_values else ''DMI '' ~ dmi_handle }}'
+        bank: '{{ bank }}'
+        handle: '{{ dmi_handle }}'
+        part: '{{ part if part | lower not in unavailable_values else '''' }}'
+        serial: '{{ component_serial if component_serial | lower not in unavailable_values else '''' }}'
+    loop: '{{ (memory_probe.stdout | default('''') | replace(''\r'', '''')) | regex_findall(''(?ms)^(?:[ \t]*Handle[^\n]*\n)?[ \t]*Memory Device[ \t]*\n.*?(?=^[
+      \t]*Handle|^[ \t]*Memory Device[ \t]*$|\Z)'') }}'
+    loop_control:
+      loop_var: memory_block
+      label: '{{ slot | default(''unknown slot'') }}'
+    when: memory_probe.rc == 0 and memory_type | upper == 'DDR5' and memory_size | lower not in ['no module installed', 'unknown', '']
+  - name: Keep every DDR5 slot distinct
+    ansible.builtin.set_fact:
+      discovered_components: '{{ discovered_components + [memory_component] }}'
+    vars:
+      same_slot: '{{ memory_records | selectattr(''slot'', ''equalto'', dimm.slot) | list }}'
+      unique_bank: '{{ dimm.bank | lower not in unavailable_values and (same_slot | selectattr(''bank'', ''equalto'', dimm.bank) | list | length == 1) }}'
+      suffix: '{{ dimm.bank if unique_bank else dimm.handle }}'
+      memory_component:
+        name: DDR5 {{ dimm.slot }}{{ (' [' ~ suffix ~ ']') if same_slot | length > 1 else '' }}
+        kind: DDR5
+        part: '{{ dimm.part }}'
+        serial: '{{ dimm.serial }}'
+    loop: '{{ memory_records }}'
+    loop_control:
+      loop_var: dimm
+      label: '{{ dimm.slot }}'
+- name: Discover NVMe drives
+  tags:
+  - nvme
+  - compare
+  - apply
+  become: '{{ not (hardware_simulation | default(false) | bool) }}'
+  environment:
+    PATH: '{{ hardware_command_path }}'
+    LC_ALL: C
+    LANG: C
+  block:
+  - name: Ensure nvme-cli tool is installed on host
+    ansible.builtin.apt:
+      name: nvme-cli
+      state: present
+      update_cache: false
+    become: true
+    when: not (hardware_simulation | default(false) | bool)
+  - name: Read NVMe drive list as JSON
+    ansible.builtin.command:
+      argv:
+      - nvme
+      - list
+      - -o
+      - json
+    register: nvme_probe
+    changed_when: false
+    failed_when: false
+    check_mode: false
+  - name: Report unavailable NVMe information
+    ansible.builtin.debug:
+      msg: 'NVMe inventory unavailable; existing NetBox components preserved: {{ nvme_probe.stderr | default(nvme_probe.msg | default(''No diagnostic returned''),
+        true) }}'
+    when: nvme_probe.rc != 0
+  - name: Validate NVMe JSON contract before mapping
+    ansible.builtin.assert:
+      that:
+      - (nvme_probe.stdout | from_json).Devices is defined
+      - (nvme_probe.stdout | from_json).Devices is sequence
+      fail_msg: Expected non-verbose nvme list JSON with a Devices array; review this nvme-cli version before applying.
+    when: nvme_probe.rc == 0
+  - name: Validate NVMe namespace identifiers
+    ansible.builtin.assert:
+      that:
+      - item.DevicePath is defined
+      - item.DevicePath is match('^/dev/nvme[0-9]+n[0-9]+$')
+      fail_msg: NVMe JSON schema or namespace path is unsupported; review raw output before applying.
+    loop: '{{ (nvme_probe.stdout | from_json).Devices if nvme_probe.rc == 0 else [] }}'
+    loop_control:
+      label: '{{ item.DevicePath | default(''unsupported record'') }}'
+  - name: Record discovered NVMe drives
+    ansible.builtin.set_fact:
+      discovered_components: '{{ discovered_components + [drive_component] }}'
+    vars:
+      part: '{{ item.ModelNumber | default('''') | trim }}'
+      component_serial: '{{ item.SerialNumber | default('''') | trim }}'
+      drive_component:
+        name: NVMe {{ item.DevicePath }}
+        kind: NVMe
+        part: '{{ part if part | lower not in unavailable_values else '''' }}'
+        serial: '{{ component_serial if component_serial | lower not in unavailable_values else '''' }}'
+    loop: '{{ ((nvme_probe.stdout | default('''')) | from_json).Devices if nvme_probe.rc == 0 else [] }}'
+    loop_control:
+      label: '{{ item.DevicePath }}'
+- name: Gather individual eligible disk capacities without summing disks
+  tags:
+  - resources
+  - compare
+  - apply
+  become: false
+  block:
+  - name: Record measured nonremovable whole-disk capacities from Linux facts
+    ansible.builtin.set_fact:
+      disk_candidates: '{{ disk_candidates + [{''name'': ''/dev/'' ~ disk_fact.key, ''bytes'': disk_bytes | int}] }}'
+    vars:
+      disk_bytes: '{{ (disk_fact.value.sectors | default(0) | int) * (disk_fact.value.sectorsize | default(512) | int) }}'
+    loop: '{{ facts.devices | default({}) | dict2items | sort(attribute=''key'') }}'
+    loop_control:
+      loop_var: disk_fact
+      label: '{{ disk_fact.key }}'
+    when: not (hardware_simulation | default(false) | bool) and facts.virtualization_type | default('') not in ['docker', 'lxc', 'container'] and disk_fact.key
+      is match('^(sd[a-z]+|vd[a-z]+|xvd[a-z]+|nvme[0-9]+n[0-9]+|mmcblk[0-9]+)$') and disk_fact.value.removable | default('0') | string != '1' and (disk_bytes
+      | int // 1073741824) > 900
+  - name: Record simulated disk capacities only from the marked test fixture
+    ansible.builtin.set_fact:
+      disk_candidates: '{{ disk_candidates + [{''name'': disk_fixture.DevicePath, ''bytes'': disk_fixture.PhysicalSize | int}] }}'
+    loop: '{{ (nvme_probe.stdout | from_json).Devices if nvme_probe is defined and nvme_probe.rc == 0 else [] }}'
+    loop_control:
+      loop_var: disk_fixture
+      label: '{{ disk_fixture.DevicePath }}'
+    when: hardware_simulation | default(false) | bool and (disk_fixture.PhysicalSize | default(0) | int // 1073741824) > 900
+  - name: Record actual common eligible capacity in whole GiB
+    ansible.builtin.set_fact:
+      resource_fields: '{{ resource_fields | combine({''disk_size'': (disk_candidates | first).bytes | int // 1073741824}) }}'
+    when: disk_candidates | length > 0 and (disk_candidates | map(attribute='bytes') | unique | list | length == 1)
+  - name: Report disk capacity selection without blocking inventory
+    ansible.builtin.debug:
+      msg:
+        eligible_disks: '{{ disk_candidates }}'
+        disk_size_gib: '{{ resource_fields.disk_size | default(''unavailable or differing capacities; existing value preserved'') }}'
+        policy: Individual nonremovable whole disks above 900 GiB; equal capacities are interchangeable for this informational field. No install target
+          is chosen or disk written.
+- name: Discover NIC PCI inventory identities
+  tags:
+  - nic
+  - compare
+  - apply
+  become: false
+  environment:
+    LC_ALL: C
+  block:
+  - name: Group network ports by PCI function
+    ansible.builtin.set_fact:
+      discovered_nics: '{{ discovered_nics | combine({pci_address: {''interfaces'': existing_ports + [interface_name]}}) }}'
+    vars:
+      pci_address: '{{ facts[interface_name].pciid }}'
+      existing_ports: '{{ discovered_nics[pci_address].interfaces | default([]) }}'
+    loop: '{{ facts.interfaces | sort }}'
+    loop_control:
+      loop_var: interface_name
+    when:
+    - bootstrap_collect_pci_nics | default(true) | bool
+    - facts[interface_name].pciid is defined
+    - facts[interface_name].pciid is match('^[0-9A-Fa-f]{4}:[0-9A-Fa-f]{2}:[0-9A-Fa-f]{2}\\.[0-7]$')
+  - name: Read standard PCI uevent identity
+    ansible.builtin.slurp:
+      src: /sys/bus/pci/devices/{{ nic_function.key }}/uevent
+    loop: '{{ discovered_nics | dict2items }}'
+    loop_control:
+      loop_var: nic_function
+    register: nic_identity_probes
+    failed_when: false
+  - name: Record PCI NIC inventory items without inventing part or serial numbers
+    ansible.builtin.set_fact:
+      discovered_components: '{{ discovered_components | default([]) + [nic_component] }}'
+    vars:
+      identity_text: '{{ nic_probe.content | default('''') | b64decode }}'
+      pci_id: '{{ identity_text | regex_findall(''(?m)^PCI_ID=(.+)$'') | first | default(''unavailable'') }}'
+      driver: '{{ identity_text | regex_findall(''(?m)^DRIVER=(.+)$'') | first | default(''unavailable'') }}'
+      ports: '{{ nic_probe.nic_function.value.interfaces }}'
+      nic_component:
+        name: NIC {{ nic_probe.nic_function.key }}
+        kind: NIC
+        part: ''
+        serial: ''
+        interface: '{{ ports | first if ports | length == 1 else '''' }}'
+        driver: '{{ driver }}'
+        details: PCI function {{ nic_probe.nic_function.key }}; PCI ID {{ pci_id }}; driver {{ driver }}; ports {{ ports | join(', ') }}. Part/serial not
+          exposed by standard uevent.
+    loop: '{{ nic_identity_probes.results }}'
+    loop_control:
+      loop_var: nic_probe
+      label: '{{ nic_probe.nic_function.key }}'
+  - name: Probe physical serial and part numbers from PCI Vital Product Data
+    tags:
+    - nic
+    - compare
+    - apply
+    become: true
+    ansible.builtin.command:
+      argv:
+      - lspci
+      - -vv
+      - -s
+      - '{{ nic_item.name | regex_replace(''^NIC '', '''') }}'
+    loop: '{{ discovered_components | default([]) }}'
+    loop_control:
+      loop_var: nic_item
+      label: '{{ nic_item.name }}'
+    when:
+    - bootstrap_collect_pci_nics | default(true) | bool
+    - nic_item.kind | default('') == 'NIC'
+    - nic_item.driver | default('') == 'mlx5_core'
+    register: pci_vpd_probes
+    changed_when: false
+    check_mode: false
+    failed_when: false
+  - name: Enrich every discovered Mellanox PCI function from its own VPD
+    ansible.builtin.set_fact:
+      discovered_components: '{{ discovered_components | fhs_nic_vpd(pci_vpd_probes.results) }}'
+  - name: Validate user-discovered NIC card records
+    ansible.builtin.assert:
+      that:
+      - nic_card.name is defined
+      - nic_card.name | string | length > 0
+      - nic_card.interface | default('') == '' or nic_card.interface in facts.interfaces
+      fail_msg: NIC cards need a stable name and any supplied interface must exist on this server.
+    loop: '{{ bootstrap_nic_cards | default([]) }}'
+    loop_control:
+      loop_var: nic_card
+  - name: Record supplied NIC inventory cards
+    ansible.builtin.set_fact:
+      discovered_components: '{{ discovered_components + [nic_component] }}'
+    vars:
+      nic_component:
+        name: NIC {{ nic_card.name }}
+        kind: NIC
+        part: '{{ nic_card.part | default('''') | string | trim }}'
+        serial: '{{ nic_card.serial | default('''') | string | trim }}'
+        interface: '{{ nic_card.interface | default('''') }}'
+    loop: '{{ bootstrap_nic_cards | default([]) }}'
+    loop_control:
+      loop_var: nic_card
+  - name: Report whether standard NIC inventory is available
+    ansible.builtin.debug:
+      msg: Found {{ discovered_nics | length }} PCI NIC functions. Vendor-specific part/serial discovery needs the user's read-only command/output; virtual
+        container ports are not physical cards.
+- name: Reject component names that would overwrite another discovered component
+  tags:
+  - ddr
+  - nvme
+  - nic
+  - fpga
+  - compare
+  - apply
+  ansible.builtin.assert:
+    that:
+    - component_names | length == component_names | unique | length
+    - '''DDR5 DMI '' not in component_names'
+    fail_msg: Discovered component names collide; provide distinct slot/namespace identifiers before writing NetBox.
+  vars:
+    component_names: '{{ discovered_components | map(attribute=''name'') | list }}'
+- name: Select discovered management primary IPv4
+  tags:
+  - compare
+  - apply
+  block:
+  - name: Select requested IPv4 or the first eligible LAN IPv4 without requiring a default route
+    ansible.builtin.set_fact:
+      selected_primary_ipv4: '{{ primary_candidates | first | default({}) }}'
+    vars:
+      all_ipv4: '{{ discovered_interfaces | rejectattr(''management_only'') | map(attribute=''addresses'') | flatten | rejectattr(''address'', ''search'',
+        '':'') | rejectattr(''address'', ''match'', ''^(127\.|169\.254\.|0\.)'') | list }}'
+      lan_ipv4: '{{ discovered_interfaces | selectattr(''lan_eligible'') | map(attribute=''addresses'') | flatten | rejectattr(''address'', ''search'',
+        '':'') | rejectattr(''address'', ''match'', ''^(127\.|169\.254\.|0\.)'') | list }}'
+      primary_candidates: '{{ (all_ipv4 | selectattr(''address'', ''equalto'', bootstrap_primary_ipv4) | list) if bootstrap_primary_ipv4 is defined else
+        lan_ipv4 }}'
+  - name: Report unavailable primary IPv4 selection
+    ansible.builtin.debug:
+      msg: Requested/first-LAN primary IPv4 was not discovered; existing NetBox primary IPv4 will be preserved.
+    when: selected_primary_ipv4.address is not defined
+- name: Show hardware discovery and omitted component fields
+  tags:
+  - bios
+  - bmc
+  - ddr
+  - nvme
+  - nic
+  - fpga
+  - compare
+  - apply
+  ansible.builtin.debug:
+    msg:
+      simulation: '{{ hardware_simulation | default(false) | bool }}'
+      firmware_and_motherboard: '{{ hardware_fields }}'
+      ddr5_component_count: '{{ discovered_components | selectattr(''kind'', ''equalto'', ''DDR5'') | list | length }}'
+      nvme_component_count: '{{ discovered_components | selectattr(''kind'', ''equalto'', ''NVMe'') | list | length }}'
+      nic_component_count: '{{ discovered_components | selectattr(''kind'', ''equalto'', ''NIC'') | list | length }}'
+      fpga_component_count: '{{ discovered_components | selectattr(''kind'', ''equalto'', ''FPGA'') | list | length }}'
+      components: '{{ discovered_components }}'
+      missing_part_numbers: '{{ discovered_components | selectattr(''part'', ''equalto'', '''') | map(attribute=''name'') | list }}'
+      missing_serial_numbers: '{{ discovered_components | selectattr(''serial'', ''equalto'', '''') | map(attribute=''name'') | list }}'

@@ -1,0 +1,192 @@
+- name: Export selected NetBox servers to Bifrost inventory (no enrollment)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+  - '{{ netbox_credentials_file | default(''/provision/files.d/credentials/netbox.yml'') }}'
+  - '{{ redfish_credentials_file | default(''/provision/files.d/credentials/redfish.yml'') }}'
+  vars:
+    netbox_validate_certs_default: false
+    bifrost_output: '{{ playbook_dir }}/output/baremetal.yml'
+    bifrost_device_type: '{{ bootstrap_device_type | default(''TeraBox1501b'') }}'
+    bifrost_provisioning_tag: provisioning-interface
+    bifrost_root_device:
+      size: '> 900'
+    bifrost_capabilities: boot_mode:uefi
+    allowed_extra:
+    - uuid
+    - properties
+    - instance_info
+    - ipv4_address
+    - provisioning_ipv4_address
+    - addressing_mode
+    - node_network_data
+    - ipa_kernel_url
+    - ipa_ramdisk_url
+    - boot_interface
+    - deploy_interface
+    - management_interface
+    - power_interface
+    - inspect_interface
+    - automated_clean
+    - host_groups
+  tasks:
+  - name: Require a device type and provisioning-interface selector
+    ansible.builtin.assert:
+      that:
+      - bifrost_device_type is defined
+      - bifrost_device_type | string | length > 0
+      - bifrost_provisioning_tag | length > 0
+      fail_msg: Set bifrost_device_type and a nonempty bifrost_provisioning_tag.
+  - name: Require a nonempty output file path
+    ansible.builtin.assert:
+      that:
+      - bifrost_output is string
+      - bifrost_output | trim | length > 0
+      fail_msg: Set bifrost_output to the desired YAML file path (absolute or relative to this playbook).
+  - name: Resolve the configured output path
+    ansible.builtin.set_fact:
+      bifrost_output_path: '{{ ((bifrost_output | expanduser) if (bifrost_output | expanduser).startswith(''/'') else playbook_dir ~ ''/'' ~ bifrost_output)
+        | normpath }}'
+  - name: Resolve the selected device type with the NetBox lookup plugin
+    ansible.builtin.set_fact:
+      selected_types: "{{ query('netbox.netbox.nb_lookup', 'device-types',\n         api_endpoint=netbox_url, token=netbox_token,\n         validate_certs=netbox_validate_certs\
+        \ | default(netbox_validate_certs_default) | bool,\n         api_filter=('id=' ~ (bifrost_device_type | string)) if bifrost_device_type is number\n\
+        \                    else ('model=' ~ (bifrost_device_type | quote)), raw_data=true) }}"
+    no_log: true
+  - name: Require an unambiguous device type
+    ansible.builtin.assert:
+      that:
+      - selected_types | length == 1
+      fail_msg: Device type is absent or ambiguous; use the numeric NetBox device-type ID for ambiguous model names.
+    no_log: true
+  - name: Read every matching server using the NetBox lookup plugin
+    ansible.builtin.set_fact:
+      selected_devices: "{{ query('netbox.netbox.nb_lookup', 'devices',\n         api_endpoint=netbox_url, token=netbox_token,\n         validate_certs=netbox_validate_certs\
+        \ | default(netbox_validate_certs_default) | bool,\n         api_filter='device_type_id=' ~ (selected_types[0].id | string), raw_data=true) }}"
+    no_log: true
+  - name: Require unique server records of the requested type
+    ansible.builtin.assert:
+      that:
+      - selected_devices | length > 0
+      - selected_devices | map(attribute='id') | unique | length == selected_devices | length
+      - selected_devices | map(attribute='name') | unique | length == selected_devices | length
+      - selected_devices | rejectattr('device_type.id', 'equalto', selected_types[0].id) | list | length == 0
+      fail_msg: No devices of the selected type, or device names/types are ambiguous; review NetBox.
+    no_log: true
+  - name: Require real named devices
+    ansible.builtin.assert:
+      that:
+      - item.name | default('') | length > 0
+      - '''simulated-hardware'' not in (item.tags | map(attribute=''name'') | list)'
+      fail_msg: Selected device is unnamed or marked simulated-hardware; no export was written.
+    loop: '{{ selected_devices }}'
+    no_log: true
+  - name: Read every server interface using the NetBox lookup plugin
+    ansible.builtin.set_fact:
+      device_interfaces: "{{ device_interfaces | default({}) | combine({item.id | string:\n   query('netbox.netbox.nb_lookup', 'interfaces',\n         api_endpoint=netbox_url,\
+        \ token=netbox_token,\n         validate_certs=netbox_validate_certs | default(netbox_validate_certs_default) | bool,\n         api_filter='device_id='\
+        \ ~ (item.id | string), raw_data=true)}) }}"
+    loop: '{{ selected_devices }}'
+    no_log: true
+  - name: Require unambiguous interface records
+    ansible.builtin.assert:
+      that:
+      - device_interfaces[item.id | string] | map(attribute='id') | unique | length == device_interfaces[item.id | string] | length
+    loop: '{{ selected_devices }}'
+    no_log: true
+  - name: Assemble source mappings entirely from NetBox records
+    ansible.builtin.set_fact:
+      export_nodes: '{{ export_nodes | default([]) + [node | from_json] }}'
+    vars:
+      device: '{{ item }}'
+      fields: '{{ device.custom_fields | default({}) }}'
+      node: "{% set nics = [] %} {% for port in device_interfaces[device.id | string] %} {% if bifrost_provisioning_tag in (port.tags | default([]) | map(attribute='slug')\
+        \ | list) %} {% set mac = (port.primary_mac_address | default({}, true)).get('mac_address', port.mac_address | default('', true)) %} {% set _ =\
+        \ nics.append({'mac': mac | lower, 'mgmt_only': port.mgmt_only, 'enabled': port.enabled}) %} {% endif %} {% endfor %} {% set bmc = (device.oob_ip\
+        \ | default({}, true)).get('address', '') | regex_replace('/.*$', '') %} {% set endpoint = 'https://'  ~ ('[' ~ bmc ~ ']' if ':' in bmc else bmc)\
+        \ if bmc else '' %} {% set extra = fields.bifrost | default({}, true) %} {% set properties = {'root_device': bifrost_root_device, 'capabilities':\
+        \ bifrost_capabilities} %} {% for key in ['capabilities', 'root_device'] %} {% if fields.get(key) not in [none, ''] %}{% set _ = properties.update({key:\
+        \ fields[key]}) %}{% endif %} {% endfor %} {% set additional = extra.get('properties', {}) if extra is mapping else {} %} {% set additional = additional\
+        \ | dict2items | rejectattr('key', 'in', ['cpu_arch', 'ram', 'disk_size', 'cpus']) | list | items2dict %} {% set properties = properties | combine(additional)\
+        \ %} {% set uuid = extra.get('uuid', fields.ironic_uuid | default('', true)) if extra is mapping else '' %} {% set lan_ip = (device.primary_ip4\
+        \ | default({}, true)).get('address', '') | regex_replace('/.*$', '') %} {{ {'name': device.name, 'nics': nics, 'redfish_address': endpoint,\n \
+        \   'redfish_system_id': fields.redfish_system_id | default('', true),\n    'redfish_verify_ca': fields.redfish_verify_ca | default(false, true),\n\
+        \    'raw_extra': extra,\n    'extra': (extra if extra is mapping else {}) | combine({'properties': properties}) | combine({'uuid': uuid} if uuid\
+        \ else {}) | combine({'ipv4_address': lan_ip} if lan_ip else {})} | to_json }}"
+    loop: '{{ selected_devices }}'
+    no_log: true
+  - name: Collect sanitized enrollment diagnostics without exposing raw records
+    ansible.builtin.set_fact:
+      enrollment_diagnostics: '{{ enrollment_diagnostics | default([]) + [diagnostic | from_json] }}'
+    vars:
+      credentials: '{{ (redfish_credentials | default({})).get(''defaults'', {}) | combine((redfish_credentials | default({})).get(''devices'', {}).get(item.name,
+        {})) }}'
+      diagnostic: '{% set issues = [] %} {% if not item.nics %}{% set _ = issues.append(''No provisioning interfaces: tag the intended NetBox port with
+        '' ~ bifrost_provisioning_tag) %}{% endif %} {% if item.nics | selectattr(''mgmt_only'', ''equalto'', true) | list %}{% set _ = issues.append(''A
+        tagged provisioning interface is management-only in NetBox'') %}{% endif %} {% if item.nics | selectattr(''enabled'', ''equalto'', false) | list
+        %}{% set _ = issues.append(''A tagged provisioning interface is disabled in NetBox'') %}{% endif %} {% if not item.redfish_address is match(''^https://[^/]+/?$'')
+        %}{% set _ = issues.append(''Missing/invalid native NetBox oob_ip: set the device out-of-band IP address'') %}{% endif %} {% if not credentials.redfish_username
+        | default('''', true) is string or not credentials.redfish_username | default('''', true) | length %}{% set _ = issues.append(''Missing redfish_credentials
+        username: set defaults.redfish_username or devices[device-name].redfish_username in your secrets vars'') %}{% endif %} {% if not credentials.redfish_password
+        | default('''', true) is string or not credentials.redfish_password | default('''', true) | length %}{% set _ = issues.append(''Missing redfish_credentials
+        password: set defaults.redfish_password or devices[device-name].redfish_password in your secrets vars'') %}{% endif %} {% if credentials | list
+        | difference([''redfish_username'', ''redfish_password'', ''redfish_auth_type'']) %}{% set _ = issues.append(''Authentication has unsupported keys;
+        only username/password/auth_type Redfish keys are allowed'') %}{% endif %} {% if not item.raw_extra is mapping %}{% set _ = issues.append(''NetBox
+        custom bifrost field must be a JSON object'') %} {% elif item.raw_extra | list | difference(allowed_extra) %}{% set _ = issues.append(''NetBox custom
+        bifrost field contains unsupported top-level settings'') %}{% endif %} {% if not item.extra.get(''ipv4_address'', '''') is match(''^([0-9]{1,3}\.){3}[0-9]{1,3}$'')
+        %}{% set _ = issues.append(''Missing primary LAN IPv4: set native NetBox primary_ip4'') %}{% endif %} {% if not item.extra.properties.get(''root_device'')
+        is mapping or not item.extra.properties.get(''root_device'') %}{% set _ = issues.append(''Missing root disk criteria: set NetBox root_device JSON
+        or bifrost.properties.root_device'') %}{% endif %} {{ {''name'': item.name, ''issues'': issues} | to_json }}'
+    loop: '{{ export_nodes }}'
+    no_log: true
+  - name: Report missing enrollment fields using sanitized diagnostics
+    ansible.builtin.assert:
+      that:
+      - item.issues | length == 0
+      fail_msg: '{{ item.name }}: {{ item.issues | join(''; '') }}'
+      quiet: true
+    loop: '{{ enrollment_diagnostics }}'
+    loop_control:
+      label: '{{ item.name }}'
+  - name: Build the Bifrost inventory with secrets kept out of logs
+    ansible.builtin.set_fact:
+      bifrost_inventory: '{{ bifrost_inventory | default({}) | combine({item.name: node | from_json}) }}'
+    vars:
+      credentials: '{{ redfish_credentials.defaults | default({}) | combine((redfish_credentials.devices | default({})).get(item.name, {})) }}'
+      node: "{% set nics = [] %} {% for port in item.nics %} {% set _ = nics.append({'mac': port.mac}) %} {% endfor %} {{ item.extra | combine({'name':\
+        \ item.name, 'driver': 'redfish',\n  'driver_info': {'redfish_address': item.redfish_address,\n                  'redfish_verify_ca': item.redfish_verify_ca}\n\
+        \                 | combine(credentials)\n                 | combine({'redfish_system_id': item.redfish_system_id} if item.redfish_system_id else\
+        \ {}),\n  'nics': nics}) | to_json }}"
+    loop: '{{ export_nodes }}'
+    no_log: true
+  - name: Require nonzero valid and unambiguous provisioning MAC addresses
+    ansible.builtin.assert:
+      that:
+      - all_macs | length == all_macs | unique | length
+      - all_macs | reject('match', '^([0-9a-f]{2}:){5}[0-9a-f]{2}$') | list | length == 0
+      - '''00:00:00:00:00:00'' not in all_macs'
+    vars:
+      all_macs: '{{ bifrost_inventory.values() | map(attribute=''nics'') | flatten | map(attribute=''mac'') | list }}'
+    no_log: true
+  - name: Inspect the output directory without changing its permissions
+    ansible.builtin.stat:
+      path: '{{ bifrost_output_path | dirname }}'
+    register: export_directory
+  - name: Create a missing export directory with private permissions
+    ansible.builtin.file:
+      path: '{{ bifrost_output_path | dirname }}'
+      state: directory
+      mode: '0700'
+    when: not export_directory.stat.exists
+  - name: Write private Bifrost-compatible YAML
+    ansible.builtin.copy:
+      dest: '{{ bifrost_output_path }}'
+      content: '{{ bifrost_inventory | to_nice_yaml(indent=2, sort_keys=false) }}'
+      mode: '0600'
+    no_log: true
+    diff: false
+  - name: Report export count without exposing credentials
+    ansible.builtin.debug:
+      msg: '{{ bifrost_inventory | length }} selected server(s) validated{{ ''; check mode wrote no inventory'' if ansible_check_mode else '' and exported''
+        }}. No enrollment, deployment, or NetBox changes performed.'

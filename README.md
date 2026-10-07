@@ -1,39 +1,16 @@
 # Infrastructure prototypes and tools
 
-This repository contains the small-cluster platform, deployable services,
-host automation, and operator tools used by the lab.
+[Knowledge-base change log](KNOWLEDGE_LOG.md) · [Knowledge-base index](AGENTS.md)
 
-## Layout
+The active work is the portable Ansible/NetBox inventory pipeline and the monitoring design for the SKA FHS bare-metal repository.
 
-| Path | Purpose |
+| Area | Purpose |
 | --- | --- |
-| [`platform/`](platform/) | Create and manage the local Kubernetes platform |
-| [`deployments/`](deployments/) | Kubernetes, Helm, and Compose workloads |
-| [`automation/`](automation/) | Ansible playbooks, roles, inventories, and variables |
-| [`tools/`](tools/) | NetBox data utilities and other standalone tools |
+| [NetBox pipeline](end-to-end-netbox/README.md) | Existing discovery, simulators, and local NetBox/test-container setup |
+| [Portable development bundle](end-to-end-netbox/development/README.md) | Latest reviewed imports, role layout, and offline tests to copy to FHS Baremetal |
+| [Monitoring](monitoring/README.md) | Storage/deployment design and Grafana Slack alert template; no deployed chart yet |
+| [Historical archive](archive/README.md) | Previous platform, workloads, host automation, utilities, and default environment |
 
-Start with [`platform/minikube/`](platform/minikube/) to create the mini
-cluster, then choose a workload under [`deployments/`](deployments/). NetBox
-CSV tooling lives under [`tools/netbox/`](tools/netbox/).
+Only source and wiki documents were relocated. Ignored credentials, environments, generated output, and runtime data remain at their original paths. No running service was restarted or redeployed. Some historical directory names may therefore still exist locally.
 
-## Default test environment
-
-`./default-environment/up.sh` reconciles the complete lab. It creates the
-`monitoring` Minikube profile; deploys Git, APT, and pip proxies, Grafana, and
-NetBox there; starts host-local Elasticsearch and Kibana; and creates one
-Docker test server with proxy settings, Filebeat, Prometheus, and
-node_exporter. Set `PROTOTYPING_REPO` if `ska-mid-cbf-prototyping` is not a
-sibling checkout. Docker, Helm, Python 3, curl, and OpenSSL are prerequisites.
-
-| Part | Location / access |
-| --- | --- |
-| Minikube workloads | `deployments/{package-proxies,grafana,netbox}/` |
-| Elasticsearch and Kibana | `automation/ansible/`; `127.0.0.1:9200` / `:5601` |
-| Test server | `automation/ansible/tests/`; stable Minikube-network IP `192.168.49.3` |
-| Prometheus / node_exporter | Test server ports `9090` / `9100`; Grafana reads Prometheus |
-| Grafana | `http://$(minikube -p monitoring ip):30300` |
-| NetBox | `kubectl -n netbox port-forward service/netbox 8000:80` |
-
-Generated NetBox credentials are kept in the ignored file
-`default-environment/default-environment.env`. Run
-`./default-environment/status.sh` for a short health and endpoint summary.
+For the latest inventory work, start with the portable bundle README. The existing end-to-end entrypoints and fixtures remain available for regression testing. Archive scripts are retained for reference; read the archive usage limitations before running them.

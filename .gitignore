@@ -23,3 +23,17 @@ tools/prometheus-rule-tables/__pycache__/
 # Direct NetBox bootstrap development environment
 /.venv/
 /.ansible/
+
+# Historical copies retain private/runtime exclusions.
+archive/deployments/air-gapped-mirror/sync-job/.venv/
+archive/deployments/air-gapped-mirror/sync-job/**/__pycache__/
+archive/deployments/air-gapped-mirror/sync-job/.pytest_cache/
+archive/deployments/air-gapped-mirror/test/keys/
+archive/deployments/monitoring/k8s/grafana-admin-secret.yaml
+archive/automation/ansible/.venv/
+archive/tools/netbox/csv-import/.venv/
+archive/tools/netbox/csv-import/**/__pycache__/
+archive/tools/netbox/csv-import/.pytest_cache/
+archive/tools/netbox/inventory-collector/output/
+archive/tools/netbox/inventory-collector/**/__pycache__/
+archive/tools/prometheus-rule-tables/__pycache__/

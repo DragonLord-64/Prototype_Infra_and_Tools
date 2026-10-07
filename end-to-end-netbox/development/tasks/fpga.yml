@@ -1,0 +1,39 @@
+- name: Discover optional BittWare SDK FPGA cards
+  tags:
+  - fpga
+  - fpga_qsfp
+  - compare
+  - apply
+  become: false
+  when: bootstrap_bittware_enabled | default(false) | bool
+  block:
+  - name: Read FPGA serials, part numbers and firmware over USB
+    ansible.builtin.command:
+      argv: '{{ bootstrap_bittware_card_list_argv }}'
+    environment:
+      BWSDK_ROOT: '{{ bootstrap_bittware_sdk_root }}'
+      PATH: '{{ bootstrap_bittware_venv }}/../bin:{{ bootstrap_bittware_venv }}/bin:{{ hardware_command_path }}'
+      LC_ALL: C
+    register: _bittware_raw
+    changed_when: false
+    check_mode: false
+  - name: Normalize actual card output and explicit PCI mappings
+    ansible.builtin.set_fact:
+      discovered_bittware: '{{ _bittware_raw.stdout | fhs_fpga_cards(bootstrap_bittware_index_pattern, bootstrap_bittware_serial_pattern, bootstrap_bittware_part_pattern,
+        bootstrap_bittware_version_pattern, bootstrap_bittware_bmc_firmware_pattern, bootstrap_bittware_pci_map) }}'
+  - name: Require usable card output
+    ansible.builtin.assert:
+      that:
+      - discovered_bittware.cards | length > 0
+      fail_msg: No complete FPGA cards parsed; check SDK output and configured patterns.
+- name: Normalize FPGA cards for module discovery
+  tags:
+  - fpga
+  - compare
+  - apply
+  become: false
+  block:
+  - name: Build FPGA module records with three fixed interfaces
+    ansible.builtin.set_fact:
+      desired_fpga_cards: '{{ (bootstrap_fpga_cards | default([]) + discovered_bittware.cards | default([])) | fhs_fpga_modules(bootstrap_fpga_interface_type)
+        }}'

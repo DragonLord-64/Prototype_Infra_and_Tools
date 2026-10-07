@@ -1,0 +1,14 @@
+# Merge into the existing standalone Grafana chart values.
+# For kube-prometheus-stack nest these keys under grafana: instead.
+# Requires the Secret and ConfigMap described in README.md in Grafana's namespace.
+envValueFrom:
+  SLACK_WEBHOOK_URL:
+    secretKeyRef:
+      name: grafana-slack
+      key: webhook-url
+extraConfigmapMounts:
+  - name: node-exporter-alerting
+    configMap: grafana-node-exporter-alerting
+    mountPath: /etc/grafana/provisioning/alerting/node-exporter-slack.yaml
+    subPath: node-exporter-slack.yaml
+    readOnly: true

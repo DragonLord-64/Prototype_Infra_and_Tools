@@ -1,0 +1,65 @@
+- name: Discover servers and bootstrap NetBox directly
+  hosts: all
+  gather_facts: false
+  any_errors_fatal: true
+  vars_files:
+  - '{{ netbox_credentials_file | default(''/provision/files.d/credentials/netbox.yml'') }}'
+  vars:
+    netbox_validate_certs_default: false
+    hardware_command_path: '{{ ''/opt/netbox-demo/bin:/usr/sbin:/usr/bin:/sbin:/bin'' if hardware_simulation | default(false) | bool else ''/usr/sbin:/usr/bin:/sbin:/bin''
+      }}'
+    bootstrap_bittware_enabled: true
+    bootstrap_bittware_venv: /opt/venvs/fhs
+    bootstrap_bittware_sdk_root: /usr/share/bittware-sdk
+    bootstrap_bittware_card_list_argv:
+    - bw_card_list
+    - -v
+    - -i
+    - USB
+    bootstrap_bittware_serial_pattern: ^IA-860M (\d+)$
+    bootstrap_bittware_part_pattern: ^  Part Number\s+:\s+(.+)$
+    bootstrap_bittware_version_pattern: ^  Version\s+:\s+(.+)$
+    bootstrap_bittware_bmc_firmware_pattern: ^  BMC Version\s+:\s+(.+)$
+    bootstrap_bittware_index_pattern: ^\s*Index\s*:\s*(\d+)$
+    resource_field_definitions:
+      cpu_arch: text
+      ram: integer
+      cpus: integer
+      disk_size: integer
+    unavailable_values:
+    - ''
+    - unknown
+    - not specified
+    - not available
+    - none
+    - to be filled by o.e.m.
+    facts: '{{ hostvars[inventory_hostname].ansible_facts }}'
+    netbox_site: '{{ server_info.site | default(bootstrap_site | default(''MDA'')) }}'
+    netbox_role: '{{ server_info.role | default(bootstrap_role | default(''FPGA_HOST_SERVER'')) }}'
+    netbox_manufacturer: '{{ bootstrap_manufacturer | default(''BittWare'') }}'
+    netbox_device_type: '{{ bootstrap_device_type | default(''TeraBox1501b'') }}'
+    netbox_auth: '{{ (''Bearer '' if netbox_token.startswith(''nbt_'') else ''Token '') ~ netbox_token }}'
+    bootstrap_bittware_pci_list_argv:
+    - lspci
+    - -D
+    - -nn
+    bootstrap_bittware_pci_map: {}
+    bootstrap_fpga_interface_type: 400gbase-x-qsfpdd
+  module_defaults:
+    ansible.builtin.uri:
+      validate_certs: '{{ netbox_validate_certs | default(netbox_validate_certs_default) | bool }}'
+    group/netbox.netbox.netbox:
+      netbox_url: '{{ netbox_url }}'
+      netbox_token: '{{ netbox_token }}'
+      validate_certs: '{{ netbox_validate_certs | default(netbox_validate_certs_default) | bool }}'
+  tasks:
+  - name: Load system tasks
+    ansible.builtin.import_tasks: tasks/system.yml
+  - name: Load components tasks
+    ansible.builtin.import_tasks: tasks/components.yml
+  - name: Load fpga tasks
+    ansible.builtin.import_tasks: tasks/fpga.yml
+  - name: Load compare tasks
+    ansible.builtin.import_tasks: tasks/compare.yml
+  - name: Load apply tasks
+    ansible.builtin.import_tasks: tasks/apply.yml

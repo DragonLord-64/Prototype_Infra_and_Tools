@@ -1,0 +1,24 @@
+# End-to-end NetBox knowledge
+
+[Knowledge-base change log](../KNOWLEDGE_LOG.md) · [Top-level index](../AGENTS.md)
+
+Follow [the repository workflow](../AGENTS.md) for ingest, query, and lint.
+This file is the directory’s knowledge-base index.
+
+Keep discovery, metadata mapping, and export knowledge here. Distinguish simulated-container tests from real hardware verification; never ingest private credentials or inventories.
+
+## Index
+
+- [Current portable FHS playbook bundle](development/README.md)
+
+- [Pipeline and server metadata](README.md)
+- [Real-server run guide](REAL_SERVER_RUN.md)
+- [Inventory snapshots](INVENTORY_SNAPSHOT.md)
+- [Bifrost export](BIFROST_EXPORT.md)
+- [FPGA extension](FPGA_EXTENSION.md)
+- [Nexus switch inventory](NEXUS.md)
+- [Local NetBox deployment](netbox/README.md)
+- [Server metadata example](server-info.example.yaml)
+
+For knowledge changes, update relevant topic pages and this index, then append
+to [the knowledge-base log](../KNOWLEDGE_LOG.md).
