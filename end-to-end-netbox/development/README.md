@@ -36,7 +36,7 @@ TeraBox1501b, `/opt/venvs/fhs`, `/usr/share/bittware-sdk`, and
 `bw_card_list -v -i USB`. `BWSDK_ROOT` and venv PATH are supplied per SDK command;
 no activate shell or SDK installation is needed. Fleet values and commands are
 ordinary play/inventory overrides. The actual output patterns are top-level vars
-and are used by the parser, with missing fields rejected within each card block.
+and are used by the parser. Default patterns accept the working source grammar: variable indentation, index-line suffixes, and complete alphanumeric serial identifiers. Missing required fields are reported by name within each card block, without dumping command output.
 
 ## FPGA modules and ports
 
@@ -128,6 +128,8 @@ and a temporary loopback API, without live credentials. Run in the controller ve
 ```sh
 python -m unittest discover -s playbooks/development/tests -v
 ```
+
+The published SDK/QSFP samples were inspected: card metadata uses four-space indentation and alphanumeric serials; QSFP output has three ports including an empty port. The published sample repeats a serial across distinct USB indices; that relationship is retained in fixtures and reported as a caveat, while module identity stays device-plus-bay. Sanitized fixtures preserve those shapes. FPGA optic modules remain disabled.
 
 Synthetic tests do not certify the physical fleet or exact installed NetBox
 permissions/version. A physical read-only smoke test and reviewed check plan

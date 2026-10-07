@@ -17,8 +17,9 @@ def cards(text, index_pattern, serial_pattern, part_pattern, version_pattern, fi
         index = first(block, index_pattern)
         part = first(block, part_pattern)
         firmware = first(block, firmware_pattern)
-        if not index.isdigit() or not part or not firmware:
-            raise AnsibleFilterError('Incomplete FPGA card record; review SDK output and patterns')
+        missing = [name for name, valid in [('Index', index.isdigit()), ('Part Number', bool(part)), ('BMC Version', bool(firmware))] if not valid]
+        if missing:
+            raise AnsibleFilterError('Incomplete FPGA card record '+str(pos + 1)+'; missing or unmatched fields: '+', '.join(missing)+'; check configured output patterns')
         endpoints = pci_map.get(index, pci_map.get(int(index), []))
         for endpoint in endpoints:
             if not re.fullmatch(r'[0-9a-fA-F]{4}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}\.[0-7]', endpoint.get('address', '')):
@@ -26,9 +27,10 @@ def cards(text, index_pattern, serial_pattern, part_pattern, version_pattern, fi
         result.append(dict(name='CARD '+index, serial=heading.group(1).strip(), card_index=int(index),
                            part=part, version=first(block, version_pattern), bmc_firmware=firmware,
                            pci_endpoints=endpoints))
-    if len({c['card_index'] for c in result}) != len(result) or len({c['serial'] for c in result}) != len(result):
-        raise AnsibleFilterError('Duplicate FPGA card index or serial')
-    return {'cards': result}
+    if len({c['card_index'] for c in result}) != len(result):
+        raise AnsibleFilterError('Duplicate FPGA card index')
+    warnings = ['SDK reports repeated serials for distinct card indices; preserving reported values and using module bays for identity'] if len({c['serial'] for c in result}) != len(result) else []
+    return {'cards': result, 'warnings': warnings}
 
 
 def modules(records, interface_type):

@@ -1,0 +1,43 @@
+IA-860M 900AAAA
+  Interface(s)
+   USB
+     Index               : 0
+     Vendor ID           : 9512
+     Device ID           : 7
+     Location            : 3-2.2.1
+  Manufacturing Info
+    Manufacture Date    : 2024-12-12 2:20:10
+    Part Number         : IA-860m-S-F391E2C-0-S0-X-30-2U-0-E-9
+    Version             : 3.2.0.0.0
+    Asset Tag           : 900001001
+  Firmware Version Info
+    CPLD Version        : Not implemented
+    BMC Version Full    : 1.1.2-3
+    BMC Version         : 1.1.2-3
+  Card Status
+    Power               : On
+    Last Error          : <BMC3: Use the get bw_bmc_get_logs utility>
+    Reset Cause         : Power on reset
+    FPGA State          : Configured Normal
+IA-860M 900AAAA
+  Interface(s)
+   USB
+     Index               : 1
+     Vendor ID           : 9512
+     Device ID           : 7
+     Location            : 3-2.1.1
+  Manufacturing Info
+    Manufacture Date    : 2024-12-11 19:18:52
+    Part Number         : IA-860m-S-F391E2C-0-S0-X-30-2U-0-E-9
+    Version             : 3.2.0.0.0
+    Asset Tag           : 900001001
+  Firmware Version Info
+    CPLD Version        : Not implemented
+    BMC Version Full    : 1.1.2-3
+    BMC Version         : 1.1.2-3
+  Card Status
+    Power               : On
+    Last Error          : <BMC3: Use the get bw_bmc_get_logs utility>
+    Reset Cause         : Power on reset
+    FPGA State          : Configured Normal 
+

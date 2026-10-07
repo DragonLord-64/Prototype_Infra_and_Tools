@@ -45,3 +45,11 @@ Moved older tracked platform, deployments, automation, utilities, and default-en
 ## 2026-10-06 — Grafana node-exporter Slack template
 
 Added the [alert provisioning template](monitoring/node-exporter-slack.yaml), [Helm mount/Secret example](monitoring/grafana-helm-values.example.yaml), and [usage guide](monitoring/README.md). Evidence: current Grafana documentation/provisioning schema and FHS Baremetal node job template. Failed scrapes alert after two minutes; missing inventory targets remain a separate coverage requirement. YAML/schema checks are isolated; no cluster deployment or Slack message was performed.
+
+## 2026-10-06 — FPGA SDK parser formatting compatibility
+
+Aligned [portable FHS SDK parser defaults](end-to-end-netbox/development/README.md) with the known-working source grammar (variable indentation and index suffixes). Added field-name-only diagnostics and a regression test using packaged defaults; physical output confirmation remains pending.
+
+## 2026-10-06 — Published SDK sample validation
+
+Validated the [FHS parser](end-to-end-netbox/development/README.md) against the newly published public SDK/QSFP sample. Corrected full alphanumeric serial matching and retained variable indentation. Added sanitized output-shape fixtures and copied-layout tests using them; FPGA optics remain unimported. No live hardware commands were run.

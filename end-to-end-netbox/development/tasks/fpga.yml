@@ -26,6 +26,10 @@
       that:
       - discovered_bittware.cards | length > 0
       fail_msg: No complete FPGA cards parsed; check SDK output and configured patterns.
+  - name: Report SDK identity caveats without exposing identifiers
+    ansible.builtin.debug:
+      msg: '{{ discovered_bittware.warnings }}'
+    when: discovered_bittware.warnings | default([]) | length > 0
 - name: Normalize FPGA cards for module discovery
   tags:
   - fpga

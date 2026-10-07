@@ -1,6 +1,7 @@
 import importlib.util
 from pathlib import Path
 import copy
+import yaml
 import unittest
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
@@ -56,6 +57,28 @@ class Tests(unittest.TestCase):
         cards=self.cards();self.assertEqual(cards[0]['interfaces'][0]['name'],'C2-QSFP0');self.assertEqual(cards[1]['interfaces'][2]['name'],'C4-QSFP2')
         self.assertEqual(cards[0]['pci_endpoints'][0]['address'],'0000:01:00.0')
         with self.assertRaises(Exception):filters.cards(TEXT.replace('  BMC Version : 2.5\n',''),*PATTERNS,{})
+    def test_packaged_patterns_match_working_source_whitespace(self):
+        variables=yaml.safe_load((ROOT/'netbox_import.yml').read_text())[0]['vars']
+        patterns=[variables['bootstrap_bittware_'+name+'_pattern'] for name in ['index','serial','part','version','bmc_firmware']]
+        text=TEXT.replace('  ', '    ').replace('Index : 2', 'Index : 2   (USB)').replace('Index : 4', 'Index : 4   ')
+        records=filters.cards(text,*patterns,{})['cards']
+        self.assertEqual([record['card_index'] for record in records],[2,4])
+        self.assertEqual(records[0]['bmc_firmware'],'2.5')
+        with self.assertRaisesRegex(Exception,'missing or unmatched fields: BMC Version'):
+            filters.cards(text.replace('    BMC Version : 2.5\n',''),*patterns,{})
+
+    def test_actual_sample_shape_preserves_full_alphanumeric_serial(self):
+        variables=yaml.safe_load((ROOT/'netbox_import.yml').read_text())[0]['vars']
+        patterns=[variables['bootstrap_bittware_'+name+'_pattern'] for name in ['index','serial','part','version','bmc_firmware']]
+        text=(ROOT/'tests/fixtures/bw_card_list.txt').read_text()
+        parsed=filters.cards(text,*patterns,{})
+        self.assertTrue(parsed['warnings'])
+        records=parsed['cards']
+        self.assertEqual([record['serial'] for record in records],['900AAAA','900AAAA'])
+        self.assertEqual([record['card_index'] for record in records],[0,1])
+        self.assertEqual([record['bmc_firmware'] for record in records],['1.1.2-3','1.1.2-3'])
+        self.assertEqual(len(filters.modules(records,'400gbase-x-qsfpdd')[0]['interfaces']),3)
+
     def test_vpd_multiple_functions_preserves_missing(self):
         records=[{'name':'NIC a','part':'existing','serial':'old'},{'name':'NIC b','part':'','serial':''}]
         probes=[{'nic_item':records[0],'stdout':'[SN] Serial number: A'}, {'nic_item':records[1],'stdout':'[PN] Part number: B\n[SN] Serial number: BB'}]

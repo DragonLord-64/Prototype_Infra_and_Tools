@@ -14,7 +14,7 @@ from test_fhs import API,TEXT
 ROOT=Path(__file__).resolve().parents[1]
 class TestPortability(unittest.TestCase):
  def test_same_ska_topology_check_apply_repeat(self):
-  api=API()
+  api=API();api.data['dcim/interfaces/'][0]['name']='C0-QSFP0'
   class Handler(BaseHTTPRequestHandler):
    def log_message(self,*args):pass
    def serve(self):
@@ -28,7 +28,7 @@ class TestPortability(unittest.TestCase):
   try:
    with tempfile.TemporaryDirectory(prefix='fhs-copy-') as temp:
     root=Path(temp);bundle=root/'ska-mid-cbf-fhs-baremetal/playbooks/development';shutil.copytree(ROOT,bundle)
-    sdk=root/'synthetic-sdk.py';sdk.write_text('print('+repr(TEXT)+')')
+    sdk=root/'synthetic-sdk.py';sdk.write_text('print('+repr((ROOT/'tests/fixtures/bw_card_list.txt').read_text())+')')
     # Keep adjacent filter/library discovery, relative includes and all working defaults.
     primary=yaml.safe_load((bundle/'netbox_import.yml').read_text())[0]
     primary['hosts']='localhost';primary['connection']='local';primary.pop('vars_files')

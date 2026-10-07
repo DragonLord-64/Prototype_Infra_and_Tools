@@ -16,11 +16,11 @@
     - -v
     - -i
     - USB
-    bootstrap_bittware_serial_pattern: ^IA-860M (\d+)$
-    bootstrap_bittware_part_pattern: ^  Part Number\s+:\s+(.+)$
-    bootstrap_bittware_version_pattern: ^  Version\s+:\s+(.+)$
-    bootstrap_bittware_bmc_firmware_pattern: ^  BMC Version\s+:\s+(.+)$
-    bootstrap_bittware_index_pattern: ^\s*Index\s*:\s*(\d+)$
+    bootstrap_bittware_serial_pattern: ^IA-860M\s+(\S+)\s*$
+    bootstrap_bittware_part_pattern: ^\s*Part Number\s*:\s*(.+)$
+    bootstrap_bittware_version_pattern: ^\s*Version\s*:\s*(.+)$
+    bootstrap_bittware_bmc_firmware_pattern: ^\s*BMC Version\s*:\s*(.+)$
+    bootstrap_bittware_index_pattern: ^\s*Index\s*:\s*(\d+)\b
     resource_field_definitions:
       cpu_arch: text
       ram: integer
