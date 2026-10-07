@@ -1,0 +1,84 @@
+{{- if and .Values.kibana.enabled (ne .Values.elasticsearch.image.tag .Values.kibana.image.tag) }}
+{{- fail "Elasticsearch and Kibana tags must match for this fresh-install chart" }}
+{{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "elastic-small.name" . }}-config
+data:
+  elasticsearch.yml: |
+    cluster.name: {{ include "elastic-small.name" . }}
+    network.host: 0.0.0.0
+    discovery.type: single-node
+    xpack.security.enabled: true
+    xpack.security.autoconfiguration.enabled: false
+    xpack.security.http.ssl.enabled: false
+    xpack.security.transport.ssl.enabled: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "elastic-small.name" . }}
+spec:
+  type: ClusterIP
+  selector: {app: {{ include "elastic-small.name" . }}}
+  ports: [{name: http, port: 9200, targetPort: http}]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "elastic-small.name" . }}
+spec:
+  replicas: 1
+  serviceName: {{ include "elastic-small.name" . }}
+  selector:
+    matchLabels: {app: {{ include "elastic-small.name" . }}}
+  template:
+    metadata:
+      labels: {app: {{ include "elastic-small.name" . }}}
+      annotations:
+        checksum/config: {{ printf "%s-%s" (include "elastic-small.name" .) .Values.elasticsearch.heap | sha256sum }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext: {runAsUser: 1000, runAsGroup: 0, fsGroup: 1000}
+      containers:
+        - name: elasticsearch
+          image: {{ include "elastic-small.esImage" . | quote }}
+          ports: [{name: http, containerPort: 9200}]
+          env:
+            - name: ELASTIC_PASSWORD
+              valueFrom:
+                secretKeyRef: {name: {{ required "Set existingSecret" .Values.existingSecret }}, key: elastic-password}
+            - {name: ES_JAVA_OPTS, value: "-Xms{{ .Values.elasticsearch.heap }} -Xmx{{ .Values.elasticsearch.heap }}"}
+          resources:
+            {{- toYaml .Values.elasticsearch.resources | nindent 12 }}
+          startupProbe:
+            tcpSocket: {port: http}
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -ec
+                - 'curl --fail --silent --max-time 3 --user "elastic:${ELASTIC_PASSWORD}" "http://127.0.0.1:9200/_cluster/health?wait_for_status=yellow&timeout=1s" >/dev/null'
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            tcpSocket: {port: http}
+            periodSeconds: 20
+          volumeMounts:
+            - {name: data, mountPath: /usr/share/elasticsearch/data}
+            - {name: config, mountPath: /usr/share/elasticsearch/config/elasticsearch.yml, subPath: elasticsearch.yml, readOnly: true}
+      volumes:
+        - name: config
+          configMap: {name: {{ include "elastic-small.name" . }}-config}
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec:
+        accessModes: [ReadWriteOnce]
+        {{- if .Values.elasticsearch.persistence.storageClass }}
+        storageClassName: {{ .Values.elasticsearch.persistence.storageClass | quote }}
+        {{- end }}
+        resources:
+          requests: {storage: {{ .Values.elasticsearch.persistence.size | quote }}}

@@ -8,3 +8,8 @@ Follow the repository ingest/query/lint workflow. Keep deployment design grounde
 - [Cluster-management design](DESIGN.md)
 - [Grafana alert provisioning template](node-exporter-slack.yaml)
 - [Grafana Helm mount/environment example](grafana-helm-values.example.yaml)
+
+- [Latest upstream switch monitoring source](upstream-switch/README.md)
+
+- [Prometheus persistence configuration](PERSISTENCE.md)
+- [Elasticsearch/Kibana Helm chart](elastic-small/README.md)

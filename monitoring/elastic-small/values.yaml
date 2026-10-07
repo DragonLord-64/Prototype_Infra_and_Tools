@@ -1,0 +1,24 @@
+# Fresh install only. Do not attach an older Elasticsearch data volume to 9.x.
+existingSecret: elastic-credentials
+elasticsearch:
+  image:
+    repository: docker.io/library/elasticsearch
+    tag: "9.5.5"
+    digest: sha256:320bef0140dcaa30527babaae9d7a41c0ccc001e97ab87c08171d867b89e8f4f
+  persistence:
+    # Empty selects the cluster's default class; choose a tested block-backed class.
+    storageClass: ""
+    size: 20Gi
+  heap: 1g
+  resources:
+    requests: {cpu: 500m, memory: 2Gi}
+    limits: {cpu: "2", memory: 4Gi}
+kibana:
+  enabled: true
+  image:
+    repository: docker.io/library/kibana
+    tag: "9.5.5"
+    digest: sha256:2302bf43b02d7497f54961cdf1308a51d2f00a9c94d4dc30a6cf1540fcc16476
+  resources:
+    requests: {cpu: 250m, memory: 1Gi}
+    limits: {cpu: "1", memory: 2Gi}

@@ -61,3 +61,11 @@ Added [SDK debugging instructions](end-to-end-netbox/development/README.md), gat
 ## 2026-10-06 — Physical NIC module discovery
 
 Extended [the portable FHS bundle](end-to-end-netbox/development/README.md) with sample-grounded ethtool driver/firmware/PCI/link parsing and existing PCI VPD card identity. Documented verified serial+part grouping, explicit virtual-port exclusions, safe interface adoption and partial-data preservation. No automatic optics/DAC/cable imports or destructive legacy migration. Synthetic parser, multiport and copied-layout check/apply/idempotence tests cover the change; physical NIC smoke verification remains pending.
+
+## 2026-10-06 — Latest John switch setup
+
+Fetched the public SKA prototyping repository and selected John So's monitoring branch. Copied its current [switch monitoring inputs](monitoring/upstream-switch/README.md), preserving source identity and unchanged values/dashboard. No cluster deployment or persistence change was performed.
+
+## 2026-10-06 — Persistent monitoring configuration and Elastic chart
+
+Added [Prometheus persistence values](monitoring/PERSISTENCE.md) with a 50G requested PVC, editable nfss1 candidate class, retention headroom, and a single writer. Storage backend is unverified; Prometheus NFS incompatibility is explicit. Added a [fresh-install Elastic Helm chart](monitoring/elastic-small/README.md), matching Docker Hub Elasticsearch/Kibana9.5.5 digests, existing Secret references, and bounded Kibana service-user setup. Helm lint/render/schema and isolated resource checks passed. No cluster deployment, existing-data upgrade, volume migration, or log delivery test occurred.

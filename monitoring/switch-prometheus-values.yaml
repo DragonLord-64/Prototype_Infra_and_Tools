@@ -1,0 +1,57 @@
+# Adapted SKA Observatory source: license retained at upstream-switch/LICENSE.SKAPROTOTYPING.
+# REVIEW CANDIDATE: confirm nfss1 backend. Prometheus local TSDB does not support NFS.
+# Adapted from John So's upstream values. Storage backend must be checked before deployment.
+# 50G = 50,000,000,000 bytes. Prometheus 37GB is approximately 39.7 decimal GB.
+server:
+  persistentVolume:
+    enabled: true
+    storageClass: nfss1
+    size: 50G
+    accessModes:
+    - ReadWriteOnce
+  retention: 15d
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 500m
+    limits:
+      memory: 4Gi
+      cpu: '2'
+  service:
+    enabled: true
+    type: LoadBalancer
+    servicePort: 9090
+  global:
+    scrape_interval: 30s
+    scrape_timeout: 10s
+  retentionSize: 37GB
+  strategy:
+    type: Recreate
+serverFiles:
+  recording_rules.yml:
+    groups:
+    - name: data_rates
+      interval: 30s
+      rules:
+      - record: instance:nexus_vlans_inBcastOctets:rate1m
+        expr: rate(nexus_vlans_inBcastOctets[1m])
+      - record: instance:nexus_vlans_inBcastPkts:rate1m
+        expr: rate(nexus_vlans_inBcastPkts[1m])
+      - record: instance:nexus_interfaces_broadcastPkts:rate1m
+        expr: rate(nexus_interfaces_broadcastPkts[1m])
+  prometheus.yml:
+    scrape_configs:
+    - job_name: switch-telegraf
+      static_configs:
+      - targets:
+        - switch-telegraf:9273
+    rule_files:
+    - /etc/config/recording_rules.yml
+alertmanager:
+  enabled: false
+prometheus-pushgateway:
+  enabled: false
+kube-state-metrics:
+  enabled: false
+prometheus-node-exporter:
+  enabled: false

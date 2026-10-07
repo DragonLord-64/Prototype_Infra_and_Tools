@@ -2,7 +2,7 @@
 
 [Repository index](../AGENTS.md) · [Design](DESIGN.md)
 
-The [design](DESIGN.md) describes reusing current switch monitoring, adding persistent storage, and minimal Elasticsearch/Kibana/Filebeat logging. This folder is documentation plus an alert template; it is not yet a complete monitoring Helm chart.
+The [design](DESIGN.md) describes reusing current switch monitoring, adding persistent storage, and minimal Elasticsearch/Kibana/Filebeat logging. This folder includes switch-monitoring values, a small Elasticsearch/Kibana Helm chart, the alert template, and design notes. It is not yet one umbrella monitoring release.
 
 ## What the alert does
 
@@ -44,3 +44,12 @@ Validation performed: YAML parsing and isolated structural/condition checks, plu
 - [Grafana contact point schema](https://github.com/grafana/grafana/blob/main/pkg/services/provisioning/alerting/contact_point_types.go)
 - [Grafana Helm chart values](https://github.com/grafana-community/helm-charts/blob/main/charts/grafana/values.yaml)
 - [Prometheus jobs, instances, and up](https://prometheus.io/docs/concepts/jobs_instances/)
+
+## Current switch source
+
+[Latest upstream switch monitoring setup](upstream-switch/README.md) contains John So's current Telegraf/Prometheus values, recording rules, and Grafana dashboard as unchanged reference inputs.
+
+## Deployable configuration additions
+
+- [Persistent switch Prometheus values and storage decision](PERSISTENCE.md): fifty-decimal-gigabyte requested PVC, nfss1 candidate class, retention and single-writer settings. Backend support must be checked before deployment.
+- [Small Elasticsearch/Kibana Helm chart](elastic-small/README.md): fresh single-node installation, matching Docker Hub images, existing Secret references; no live upgrade performed.

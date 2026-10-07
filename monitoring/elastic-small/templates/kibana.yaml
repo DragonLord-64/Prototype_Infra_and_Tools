@@ -1,0 +1,101 @@
+{{- if .Values.kibana.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "elastic-small.name" . }}-kibana
+spec:
+  type: ClusterIP
+  selector: {app: {{ include "elastic-small.name" . }}-kibana}
+  ports: [{name: http, port: 5601, targetPort: http}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "elastic-small.name" . }}-kibana
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: {{ include "elastic-small.name" . }}-kibana}
+  template:
+    metadata:
+      labels: {app: {{ include "elastic-small.name" . }}-kibana}
+    spec:
+      automountServiceAccountToken: false
+      securityContext: {runAsUser: 1000, runAsGroup: 0}
+      containers:
+        - name: kibana
+          image: {{ include "elastic-small.kibanaImage" . | quote }}
+          ports: [{name: http, containerPort: 5601}]
+          env:
+            - {name: SERVER_HOST, value: "0.0.0.0"}
+            - {name: ELASTICSEARCH_HOSTS, value: '["http://{{ include "elastic-small.name" . }}:9200"]'}
+            - {name: ELASTICSEARCH_USERNAME, value: kibana_system}
+            - name: ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef: {name: {{ .Values.existingSecret }}, key: kibana-password}
+            - {name: STATUS_ALLOWANONYMOUS, value: "true"}
+            - name: XPACK_SECURITY_ENCRYPTIONKEY
+              valueFrom:
+                secretKeyRef: {name: {{ .Values.existingSecret }}, key: kibana-encryption-key}
+            - name: XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY
+              valueFrom:
+                secretKeyRef: {name: {{ .Values.existingSecret }}, key: kibana-encryption-key}
+            - name: XPACK_REPORTING_ENCRYPTIONKEY
+              valueFrom:
+                secretKeyRef: {name: {{ .Values.existingSecret }}, key: kibana-encryption-key}
+          resources:
+            {{- toYaml .Values.kibana.resources | nindent 12 }}
+          startupProbe:
+            httpGet: {path: /api/status, port: http}
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            httpGet: {path: /api/status, port: http}
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket: {port: http}
+            periodSeconds: 20
+---
+# A normal bounded Job, not a post-install hook (which would deadlock --wait).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "elastic-small.name" . }}-setup-{{ .Release.Revision }}
+spec:
+  activeDeadlineSeconds: 600
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      securityContext: {runAsUser: 1000, runAsGroup: 0}
+      containers:
+        - name: setup-kibana-user
+          image: {{ include "elastic-small.esImage" . | quote }}
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {cpu: 250m, memory: 256Mi}
+          env:
+            - name: ELASTIC_PASSWORD
+              valueFrom:
+                secretKeyRef: {name: {{ .Values.existingSecret }}, key: elastic-password}
+            - name: KIBANA_PASSWORD
+              valueFrom:
+                secretKeyRef: {name: {{ .Values.existingSecret }}, key: kibana-password}
+          command: [/bin/bash, -ec]
+          args:
+            - |
+              # Hex passwords avoid JSON quoting ambiguity; never log credentials.
+              [[ "$KIBANA_PASSWORD" =~ ^[a-fA-F0-9]{32,}$ ]] || { echo "kibana-password must be at least 32 hexadecimal characters"; exit 1; }
+              for attempt in $(seq 1 90); do
+                if curl --fail --silent --max-time 5 --user "elastic:${ELASTIC_PASSWORD}" \
+                  --header 'Content-Type: application/json' \
+                  --data "{\"password\":\"${KIBANA_PASSWORD}\"}" \
+                  'http://{{ include "elastic-small.name" . }}:9200/_security/user/kibana_system/_password' >/dev/null; then
+                  echo "Kibana service user configured"; exit 0
+                fi
+                sleep 5
+              done
+              echo "Elasticsearch did not accept Kibana service-user setup"; exit 1
+{{- end }}

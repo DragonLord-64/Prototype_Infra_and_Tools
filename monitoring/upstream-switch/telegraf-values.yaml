@@ -1,0 +1,55 @@
+config:
+  agent:
+    interval: "10s"
+    round_interval: true
+    metric_batch_size: 1000
+    metric_buffer_limit: 10000
+    flush_interval: "10s"
+    
+  inputs:
+    - cisco_telemetry_mdt:
+        transport: "grpc"
+        service_address: ":57000"
+        aliases:
+          nexus_interfaces: "sys/intf"
+          nexus_vlans: "sys/bd"
+          nexus_ch: "sys/ch"
+        fielddrop: ["clearTs", "modTs", "subscription"]
+
+  processors:
+    - regex:
+        namepass: ["nexus_interfaces_*"]
+        # Use explicit object definitions so the chart converts them to TOML tables
+        tags:
+          - key: "dn"
+            pattern: 'phys-\[(?P<interface>[^\]]+)\]'
+            replacement: "${interface}"
+            result_key: "interface"
+          - key: "dn"
+            pattern: 'dbgIf(?P<direction>In|Out)'
+            replacement: "${direction}"
+            result_key: "direction"
+
+  outputs:
+    - prometheus_client:
+        listen: ":9273"
+        metric_version: 2
+        path: "/metrics"
+
+service:
+  enabled: true
+  type: LoadBalancer
+  port: 57000
+  additionalPorts:
+    - name: metrics
+      port: 9273
+      targetPort: 9273
+      protocol: TCP
+
+containerPorts:
+  - name: nxos
+    containerPort: 57000
+    protocol: TCP
+  - name: metrics
+    containerPort: 9273
+    protocol: TCP
