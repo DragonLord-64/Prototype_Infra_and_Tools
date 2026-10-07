@@ -69,7 +69,7 @@ bootstrap_bittware_pci_map:
 Existing server interfaces are adopted without changing their IDs, cables, IPs,
 enabled flags, or existing type. An interface already owned by another module
 blocks the operation. Legacy FPGA inventory items are neither deleted nor
-migrated automatically. Other legacy DDR/NVMe/NIC inventory discovery remains.
+migrated automatically. DDR/NVMe legacy inventory discovery remains. Existing legacy NIC inventory items are retained; newly discovered supported NICs use modules.
 
 NetBox 4.3/4.4 REST APIs lack the UI module adoption switches. The small local
 `fhs_fpga_sync` Ansible module therefore creates new cards with a shared,
@@ -79,10 +79,53 @@ The staging type must stay empty; failed runs can be safely rerun. No object is
 deleted. This narrowly scoped helper uses the same mapping and reconciliation
 for check mode and normal apply.
 
+## NIC modules
+
+NIC discovery now combines `ethtool -i <interface>` with the working source's
+`lspci -vv -s <BDF>` VPD command. It records physical card part/serial from VPD,
+and driver, driver version, firmware and exact PCI address from ethtool. Plain
+ethtool adds observed speed, duplex and link state to per-function metadata.
+Those observations do not change interface enablement, link settings or type.
+The firmware PSID in ethtool is retained as metadata, not guessed to be a part
+number. `ethtool -m` describes a plugged optic/DAC and is deliberately not called.
+
+Top-level variables are `bootstrap_nic_enabled`, `bootstrap_nic_manufacturer`
+(default Mellanox), `bootstrap_nic_drivers` (default mlx5_core),
+`bootstrap_nic_ethtool_argv`, `bootstrap_nic_vpd_argv`,
+`bootstrap_nic_collect_link` and the VPD part/serial patterns. Install ethtool and
+pciutils through the existing provisioning setup; a missing command/identity is
+reported and existing NIC data is preserved. Commands are read-only and run in
+check mode. A normal `--tags nic` applies the NIC module portion to an already
+imported server; `--check --diff --tags nic` previews it. Copy the whole bundle,
+including the new `tasks/nic.yml`, shared library and filter, before running.
+
+Only PCI-backed host interfaces are candidates. An explicit sysfs `physfn` parent
+excludes SR-IOV VFs; known VF/SF representor physical-port names (including the port-prefixed convention) are excluded too. See the [Linux representor identification reference](https://docs.kernel.org/networking/representors.html#how-are-representors-identified).
+If ethtool's BDF disagrees with host facts, the port is not imported. Unknown or
+unsupported drivers and absent card part/serial produce diagnostics rather than
+invented physical cards. Virtual/representor detection is limited to those explicit
+sysfs signals; unusual drivers or naming schemes need verified samples before
+expanding scope.
+
+Ports are grouped only when VPD reports the same part AND serial. Adjacent PCI
+functions or similar Linux names do not prove one physical NIC. The new module
+bay starts with its lowest observed BDF; a later partial observation reuses an
+existing uniquely matched NIC module's bay. Existing interface IDs, IPs, cables,
+enablement and types are preserved. No unseen ports or port types are invented.
+Unlike the fixed FPGA three-port layout, NIC interfaces use actual Linux names
+and are attached explicitly; no per-host-name module-type templates are created.
+
+Module fields `nic_driver`, `nic_firmware`, `nic_functions` and `pci_endpoints`
+retain card-level and per-interface/function metadata. Partial discovery merges
+known function fields and endpoints, preserving missing observations and existing
+ports. It does not delete removed hardware or migrate old inventory items. The
+same reconciler supplies check plans and normal apply, including safe staging-type
+adoption. Hardware replacements/moves and pruning require separate review.
+
 ## Preview, scopes, and host changes
 
 Read-only SDK/VPD probes run during check mode, with `changed_when: false`.
-FPGA synchronization reads NetBox, computes creates/updates, and returns a plan
+FPGA/NIC synchronization reads NetBox, computes creates/updates, and returns a plan
 and `--diff` without POST/PATCH in check mode or `--tags compare`.
 `--tags fpga` applies only the FPGA module portion to an already imported server;
 use `--check --tags fpga` to preview it. A missing server is represented in a
@@ -91,7 +134,7 @@ original prerequisite/discovery/apply pipeline. Tags `nic`, `resources`, `bios`,
 `bmc`, `ddr`, `nvme`, and `facts` retain their discovery scope. Resource discovery
 no longer unintentionally includes SDK/NIC work.
 
-For non-FPGA server objects and Nexus, check mode still displays desired/current
+For other server objects and Nexus, check mode still displays desired/current
 records and skips NetBox writes. This is **not** a complete module-native diff for
 those objects, especially when parent site/device/type objects do not exist.
 Their mapping isn't duplicated into a separate check playbook. Missing optional
@@ -126,9 +169,9 @@ inventory must remain outside Git.
 ## Verification
 
 `tests/` contains parser boundary/missing-field tests, per-function VPD enrichment,
-FPGA check/apply/idempotence/interface-adoption tests, and Nexus parser/task tests.
+FPGA/NIC check/apply/idempotence/interface-adoption tests, and Nexus parser/task tests.
 The portability test copies this directory into SKA's exact `playbooks/development`
-topology and runs actual FPGA discovery/helper tasks against synthetic SDK output
+topology and runs actual FPGA and NIC discovery/helper tasks against synthetic SDK output
 and a temporary loopback API, without live credentials. Run in the controller venv:
 
 ```sh

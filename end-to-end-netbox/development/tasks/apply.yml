@@ -240,3 +240,31 @@
   - apply
   ansible.builtin.debug:
     var: fpga_plan.plan
+- name: Preview or apply physical NIC modules with adopted server interfaces
+  tags:
+  - nic
+  - compare
+  - apply
+  delegate_to: localhost
+  connection: local
+  become: false
+  throttle: 1
+  vars:
+    ansible_python_interpreter: '{{ ansible_playbook_python }}'
+  fhs_fpga_sync:
+    netbox_url: '{{ netbox_url }}'
+    netbox_token: '{{ netbox_token }}'
+    validate_certs: '{{ netbox_validate_certs | default(netbox_validate_certs_default) | bool }}'
+    device: '{{ facts.hostname }}'
+    cards: '{{ desired_nic_cards | default([]) }}'
+    kind: NIC
+    manufacturer: '{{ bootstrap_nic_manufacturer }}'
+    preview: '{{ ansible_check_mode or ''compare'' in ansible_run_tags or ''facts'' in ansible_run_tags }}'
+  register: nic_plan
+- name: Show physical NIC module plan
+  tags:
+  - nic
+  - compare
+  - apply
+  ansible.builtin.debug:
+    var: nic_plan.plan

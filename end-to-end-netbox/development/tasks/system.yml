@@ -37,6 +37,8 @@
       desired_fpga_cards: []
       discovered_bittware:
         cards: []
+      desired_nic_cards: []
+      nic_discovery_warnings: []
   - name: Normalize each interface and its addresses
     ansible.builtin.set_fact:
       discovered_interfaces: '{{ discovered_interfaces + [discovered_interface] }}'

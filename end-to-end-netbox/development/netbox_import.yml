@@ -46,6 +46,19 @@
     bootstrap_bittware_pci_map: {}
     bootstrap_fpga_interface_type: 400gbase-x-qsfpdd
     bootstrap_bittware_debug: false
+    bootstrap_nic_enabled: true
+    bootstrap_nic_manufacturer: Mellanox
+    bootstrap_nic_drivers:
+    - mlx5_core
+    bootstrap_nic_ethtool_argv:
+    - ethtool
+    bootstrap_nic_vpd_argv:
+    - lspci
+    - -vv
+    - -s
+    bootstrap_nic_collect_link: true
+    bootstrap_nic_part_pattern: \[PN\]\s+Part number:\s*(\S+)
+    bootstrap_nic_serial_pattern: \[SN\]\s+Serial number:\s*(\S+)
   module_defaults:
     ansible.builtin.uri:
       validate_certs: '{{ netbox_validate_certs | default(netbox_validate_certs_default) | bool }}'

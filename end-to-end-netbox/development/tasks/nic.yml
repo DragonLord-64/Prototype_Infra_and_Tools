@@ -1,0 +1,73 @@
+- name: Discover physical NIC identity without optical modules
+  when: bootstrap_nic_enabled | default(true) | bool and bootstrap_collect_pci_nics | default(true) | bool
+  become: false
+  environment:
+    LC_ALL: C
+    PATH: '{{ hardware_command_path }}:{{ ansible_facts.env.PATH | default('''') }}'
+  block:
+  - name: Initialize NIC candidate ports
+    ansible.builtin.set_fact:
+      nic_port_candidates: []
+  - name: Collect PCI-backed host interfaces
+    ansible.builtin.set_fact:
+      nic_port_candidates: '{{ nic_port_candidates + [{''interface'': interface_name, ''address'': facts[interface_name].pciid | lower}] }}'
+    loop: '{{ facts.interfaces | sort }}'
+    loop_control:
+      loop_var: interface_name
+    when:
+    - facts[interface_name].pciid is defined
+    - facts[interface_name].pciid is match('^[0-9A-Fa-f]{4}:[0-9A-Fa-f]{2}:[0-9A-Fa-f]{2}\.[0-7]$')
+  - name: Check explicit SR-IOV virtual-function parent
+    ansible.builtin.stat:
+      path: /sys/bus/pci/devices/{{ item.address }}/physfn
+      follow: false
+    loop: '{{ nic_port_candidates }}'
+    register: nic_vf_probes
+  - name: Read physical-port names to exclude known representors
+    ansible.builtin.slurp:
+      src: /sys/class/net/{{ item.interface }}/phys_port_name
+    loop: '{{ nic_port_candidates }}'
+    register: nic_port_name_probes
+    failed_when: false
+  - name: Keep physical candidate ports only
+    ansible.builtin.set_fact:
+      nic_ports: '{{ nic_port_candidates | fhs_nic_candidates(nic_vf_probes.results, nic_port_name_probes.results) }}'
+  - name: Read NIC driver firmware and exact PCI function
+    ansible.builtin.command:
+      argv: '{{ bootstrap_nic_ethtool_argv + [''-i'', item.interface] }}'
+    loop: '{{ nic_ports }}'
+    register: nic_driver_probes
+    check_mode: false
+    changed_when: false
+    failed_when: false
+  - name: Read current link attributes as observations only
+    ansible.builtin.command:
+      argv: '{{ bootstrap_nic_ethtool_argv + [item.interface] }}'
+    loop: '{{ nic_ports }}'
+    when: bootstrap_nic_collect_link | default(true) | bool
+    register: nic_link_probes
+    check_mode: false
+    changed_when: false
+    failed_when: false
+  - name: Read physical card serial and part from PCI VPD
+    become: true
+    ansible.builtin.command:
+      argv: '{{ bootstrap_nic_vpd_argv + [item.address] }}'
+    loop: '{{ nic_ports | unique(attribute=''address'') }}'
+    register: nic_card_identity_probes
+    check_mode: false
+    changed_when: false
+    failed_when: false
+  - name: Group only ports with verified matching card serial and part
+    ansible.builtin.set_fact:
+      nic_discovery: '{{ nic_ports | fhs_nic_cards(nic_driver_probes.results, nic_link_probes.results | default([]), nic_card_identity_probes.results, bootstrap_nic_drivers,
+        bootstrap_nic_part_pattern, bootstrap_nic_serial_pattern) }}'
+  - name: Keep NIC module records separate from legacy inventory
+    ansible.builtin.set_fact:
+      desired_nic_cards: '{{ nic_discovery.cards }}'
+      nic_discovery_warnings: '{{ nic_discovery.warnings }}'
+  - name: Report skipped or uncertain NIC discovery
+    ansible.builtin.debug:
+      msg:
+        module_count: '{{ desired_nic_cards | length }}'
+        warnings: '{{ nic_discovery_warnings }}'

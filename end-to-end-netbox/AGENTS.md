@@ -9,7 +9,7 @@ Keep discovery, metadata mapping, and export knowledge here. Distinguish simulat
 
 ## Index
 
-- [Current portable FHS playbook bundle](development/README.md)
+- [Current portable FHS playbook bundle, FPGA/NIC modules](development/README.md)
 
 - [Pipeline and server metadata](README.md)
 - [Real-server run guide](REAL_SERVER_RUN.md)

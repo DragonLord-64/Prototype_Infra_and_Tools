@@ -1,0 +1,10 @@
+driver: mlx5_core
+version: 6.8.0-139-generic
+firmware-version: 20.31.1014 (MT_0000000223)
+expansion-rom-version: 
+bus-info: 0000:01:00.0
+supports-statistics: yes
+supports-test: yes
+supports-eeprom-access: no
+supports-register-dump: no
+supports-priv-flags: yes

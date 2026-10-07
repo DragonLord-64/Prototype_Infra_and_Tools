@@ -1,0 +1,2 @@
+[PN] Part number: SAMPLE-NIC-PN
+[SN] Serial number: SAMPLE-CARD01

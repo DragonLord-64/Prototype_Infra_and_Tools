@@ -57,3 +57,7 @@ Validated the [FHS parser](end-to-end-netbox/development/README.md) against the 
 ## 2026-10-06 — Opt-in SDK discovery debugging
 
 Added [SDK debugging instructions](end-to-end-netbox/development/README.md), gated command-output diagnostics before normalization, and explicit failed-exit validation. Restored the source target PATH after venv prefixes and documented how old generic error wording identifies a stale filter copy. Synthetic tests cover debug output and stopping before parse/API changes on SDK failure.
+
+## 2026-10-06 — Physical NIC module discovery
+
+Extended [the portable FHS bundle](end-to-end-netbox/development/README.md) with sample-grounded ethtool driver/firmware/PCI/link parsing and existing PCI VPD card identity. Documented verified serial+part grouping, explicit virtual-port exclusions, safe interface adoption and partial-data preservation. No automatic optics/DAC/cable imports or destructive legacy migration. Synthetic parser, multiport and copied-layout check/apply/idempotence tests cover the change; physical NIC smoke verification remains pending.

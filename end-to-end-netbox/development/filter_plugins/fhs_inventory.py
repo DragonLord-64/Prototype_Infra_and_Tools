@@ -60,7 +60,52 @@ def vpd(components, probes):
         result.append(item)
     return result
 
+def nic_candidates(candidates, vf_probes, name_probes):
+    import base64
+    virtual={p['item']['interface'] for p in vf_probes if p.get('stat',{}).get('exists')}
+    names={p['item']['interface']:base64.b64decode(p.get('content','')).decode('utf-8',errors='replace').strip() for p in name_probes}
+    return [dict(p,physical_port_name=names.get(p['interface'],'')) for p in candidates
+            if p['interface'] not in virtual and not re.match(r'^(?:p\d+)?(?:pf\d+)?(?:vf|sf)\d+',names.get(p['interface'],''))]
+
+
+def nic_cards(ports, driver_probes, link_probes, identity_probes, drivers, part_pattern, serial_pattern):
+    def observations(probes,key):
+        return {p['item'][key]:p.get('stdout','') for p in probes if not p.get('skipped') and p.get('rc',1)==0}
+    driver_texts=observations(driver_probes,'interface')
+    links=observations(link_probes,'interface')
+    identities=observations(identity_probes,'address')
+    groups={};warnings=[]
+    missing={'','unknown','none','n/a','unavailable','not','not_specified','000000','00000000'}
+    for port in ports:
+        interface=port['interface'];address=port['address'].lower();text=driver_texts.get(interface,'')
+        values={key:value.strip() for key,value in re.findall(r'^([^:\n]+):[ \t]*(.*)$',text,re.MULTILINE)}
+        driver=values.get('driver','')
+        if not driver or drivers and driver not in drivers:
+            warnings.append(interface+': driver unavailable or outside selected NIC drivers; existing data preserved');continue
+        if values.get('bus-info','').lower()!=address:
+            warnings.append(interface+': ethtool PCI address does not match host facts; not imported');continue
+        identity=identities.get(address,'');part=first(identity,part_pattern);serial=first(identity,serial_pattern)
+        if part.lower() in missing or serial.lower() in missing:
+            warnings.append(interface+': physical card part/serial unavailable from VPD; no physical grouping invented');continue
+        group=groups.setdefault((part,serial),dict(part=part,serial=serial,interfaces=[],functions=[]))
+        group['interfaces'].append(dict(name=interface,type='other'))
+        link=links.get(interface,'')
+        function=dict(address=address,interface=interface,driver=driver,driver_version=values.get('version',''),firmware=values.get('firmware-version',''),physical_port_name=port.get('physical_port_name',''))
+        for name,pattern in [('speed',r'^\s*Speed:\s*(.+)$'),('duplex',r'^\s*Duplex:\s*(.+)$'),('link_detected',r'^\s*Link detected:\s*(.+)$')]:
+            observed=first(link,pattern)
+            if observed:function[name]=observed
+        group['functions'].append(function)
+    cards=[]
+    for group in groups.values():
+        group['interfaces'].sort(key=lambda p:p['name']);group['functions'].sort(key=lambda p:(p['address'],p['interface']))
+        addresses=sorted({f['address'] for f in group['functions']});position=addresses[0]
+        cards.append(dict(group,bay='NIC '+position,position=position,
+                          driver=', '.join(sorted({f['driver'] for f in group['functions'] if f['driver']})),
+                          firmware=', '.join(sorted({f['firmware'] for f in group['functions'] if f['firmware']})),
+                          pci_endpoints=[dict(address=address,function='NIC') for address in addresses]))
+    return dict(cards=cards,warnings=warnings)
+
 
 class FilterModule:
     def filters(self):
-        return {'fhs_fpga_cards':cards,'fhs_fpga_modules':modules,'fhs_nic_vpd':vpd}
+        return {'fhs_fpga_cards':cards,'fhs_fpga_modules':modules,'fhs_nic_vpd':vpd,'fhs_nic_candidates':nic_candidates,'fhs_nic_cards':nic_cards}
