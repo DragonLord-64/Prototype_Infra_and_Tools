@@ -4,11 +4,11 @@ Keep this whole folder together. Each component's settings are visible in its ow
 
 | File | Contents |
 | --- | --- |
-| [values/prometheus.yaml](values/prometheus.yaml) | Switch collector plus eight node9100/custom9101 target pairs, Ceph storage, retention, bundled Alertmanager |
-| [values/telegraf.yaml](values/telegraf.yaml) | John's Cisco DME listener and Prometheus output |
-| [values/elasticsearch.yaml](values/elasticsearch.yaml) | Fresh Elasticsearch9.5.5, bds1data volume, existing Secret |
-| [values/kibana.yaml](values/kibana.yaml) | Kibana9.5.5 overlay for the same Elastic release |
-| [values/grafana.yaml](values/grafana.yaml) | Optional reference only; current running Grafana is excluded |
+| [values/prometheus.yaml](../../monitoring/prometheus.yaml) | Switch collector plus eight node9100/custom9101 target pairs, Ceph storage, retention, bundled Alertmanager |
+| [values/telegraf.yaml](../../monitoring/telegraf.yaml) | John's Cisco DME listener and Prometheus output |
+| [values/elasticsearch.yaml](../../monitoring/elasticsearch.yaml) | Fresh Elasticsearch9.5.5, bds1data volume, existing Secret |
+| [values/kibana.yaml](../../monitoring/kibana.yaml) | Kibana9.5.5 overlay for the same Elastic release |
+| [values/grafana.yaml](../../monitoring/grafana.yaml) | Optional reference only; current running Grafana is excluded |
 
 Use namespace **mid-cbf-monitoring**. Custom exporter **9101 is provisional**; verify it. Prometheus requests **50G**, retains up to fifteen days, and limits retained blocks to **37GB** (about39.7decimalGB). WAL/head/compaction use additional space;37GB is not a hard total-disk quota. The confirmed block-backed class is **bds1**.
 

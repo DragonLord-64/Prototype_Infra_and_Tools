@@ -2,7 +2,7 @@
 
 [Monitoring overview](README.md) · [Unmodified upstream source](upstream-switch/README.md)
 
-[values/prometheus.yaml](values/prometheus.yaml) adapts John's newest standalone Prometheus values while preserving switch scraping and recording rules. It enables a **50G** PVC (50,000,000,000 bytes, not 50Gi), requests the confirmed Ceph RBD storage class **bds1**, retains metrics for up to 15 days, and limits stored TSDB blocks to **37GB** (Prometheus's binary unit: about 39.7 decimal GB). The first time/size limit reached wins. WAL/head/index/compaction still need space; retention size is not a strict filesystem quota. Verify the provisioned PV capacity too because a provisioner may round a request upward. The requested claim does not exceed fifty decimal gigabytes.
+[values/prometheus.yaml](../../monitoring/prometheus.yaml) adapts John's newest standalone Prometheus values while preserving switch scraping and recording rules. It enables a **50G** PVC (50,000,000,000 bytes, not 50Gi), requests the confirmed Ceph RBD storage class **bds1**, retains metrics for up to 15 days, and limits stored TSDB blocks to **37GB** (Prometheus's binary unit: about 39.7 decimal GB). The first time/size limit reached wins. WAL/head/index/compaction still need space; retention size is not a strict filesystem quota. Verify the provisioned PV capacity too because a provisioner may round a request upward. The requested claim does not exceed fifty decimal gigabytes.
 
 The forced one-hour block settings were removed; normal Prometheus compaction is retained. The deployment uses Recreate for a single PVC writer. CPU/memory remains John's 500m/2Gi requests and 2CPU/4Gi limits pending measurement.
 

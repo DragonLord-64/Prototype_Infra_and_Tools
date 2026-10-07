@@ -40,11 +40,11 @@ Added [the current self-contained FHS bundle](end-to-end-netbox/development/READ
 
 ## 2026-10-06 — Active portable work and historical archive
 
-Moved older tracked platform, deployments, automation, utilities, and default-environment source into [archive](archive/README.md), preserving their wiki indexes and history. Kept the existing [NetBox pipeline](end-to-end-netbox/README.md) and latest development bundle active. Added the source-grounded [monitoring design](monitoring/DESIGN.md). Ignored private/runtime files stayed at their original paths; no deployment or service action occurred. Relative documentation links were updated; historical scripts still require a path review before reuse.
+Moved older tracked platform, deployments, automation, utilities, and default-environment source into [archive](archive/README.md), preserving their wiki indexes and history. Kept the existing [NetBox pipeline](end-to-end-netbox/README.md) and latest development bundle active. Added the source-grounded [monitoring design](archive/monitoring/DESIGN.md). Ignored private/runtime files stayed at their original paths; no deployment or service action occurred. Relative documentation links were updated; historical scripts still require a path review before reuse.
 
 ## 2026-10-06 — Grafana node-exporter Slack template
 
-Added the [alert provisioning template](monitoring/node-exporter-slack.yaml), [Helm mount/Secret example](monitoring/reference/grafana-helm-values.example.yaml), and [usage guide](monitoring/README.md). Evidence: current Grafana documentation/provisioning schema and FHS Baremetal node job template. Failed scrapes alert after two minutes; missing inventory targets remain a separate coverage requirement. YAML/schema checks are isolated; no cluster deployment or Slack message was performed.
+Added the [alert provisioning template](archive/monitoring/node-exporter-slack.yaml), [Helm mount/Secret example](archive/monitoring/reference/grafana-helm-values.example.yaml), and [usage guide](archive/monitoring/README.md). Evidence: current Grafana documentation/provisioning schema and FHS Baremetal node job template. Failed scrapes alert after two minutes; missing inventory targets remain a separate coverage requirement. YAML/schema checks are isolated; no cluster deployment or Slack message was performed.
 
 ## 2026-10-06 — FPGA SDK parser formatting compatibility
 
@@ -64,11 +64,11 @@ Extended [the portable FHS bundle](end-to-end-netbox/development/README.md) with
 
 ## 2026-10-06 — Latest John switch setup
 
-Fetched the public SKA prototyping repository and selected John So's monitoring branch. Copied its current [switch monitoring inputs](monitoring/upstream-switch/README.md), preserving source identity and unchanged values/dashboard. No cluster deployment or persistence change was performed.
+Fetched the public SKA prototyping repository and selected John So's monitoring branch. Copied its current [switch monitoring inputs](archive/monitoring/upstream-switch/README.md), preserving source identity and unchanged values/dashboard. No cluster deployment or persistence change was performed.
 
 ## 2026-10-06 — Persistent monitoring configuration and Elastic chart
 
-Added [Prometheus persistence values](monitoring/PERSISTENCE.md) with a 50G requested PVC, editable nfss1 candidate class, retention headroom, and a single writer. Storage backend is unverified; Prometheus NFS incompatibility is explicit. Added a [fresh-install Elastic Helm chart](monitoring/elastic-small/README.md), matching Docker Hub Elasticsearch/Kibana9.5.5 digests, existing Secret references, and bounded Kibana service-user setup. Helm lint/render/schema and isolated resource checks passed. No cluster deployment, existing-data upgrade, volume migration, or log delivery test occurred.
+Added [Prometheus persistence values](archive/monitoring/PERSISTENCE.md) with a 50G requested PVC, editable nfss1 candidate class, retention headroom, and a single writer. Storage backend is unverified; Prometheus NFS incompatibility is explicit. Added a [fresh-install Elastic Helm chart](archive/monitoring/elastic-small/README.md), matching Docker Hub Elasticsearch/Kibana9.5.5 digests, existing Secret references, and bounded Kibana service-user setup. Helm lint/render/schema and isolated resource checks passed. No cluster deployment, existing-data upgrade, volume migration, or log delivery test occurred.
 
 ## 2026-10-06 — NetBox manufacturer IDs and bounded service retries
 
@@ -84,8 +84,12 @@ Corrected [Nexus module-type lookup](end-to-end-netbox/development/README.md): n
 
 ## 2026-10-06 — Unified monitoring Helm bundle
 
-Consolidated [the monitoring stack](monitoring/reference/umbrella/README.md) into a dependency-locked umbrella chart for namespace mid-cbf-monitoring. One values list contains the eight supplied server addresses with node9100/custom9101(provisional), separate scrape jobs, and no added server-side exporters. Updated persistence to user-confirmed bds1 Ceph RBD: Prometheus requests50G and retains blocks up to37GB. Preserved John's queries/tables in a classic dashboard provisioning adaptation with a stable data-source UID. Slack remains disabled pending administrator Secret; no live releases/data/volumes changed. Helm lint/render/contracts validate targets, service/namespace wiring, storage limits, pinned Docker Hub images, optionalSlack and disabled components.
+Consolidated [the monitoring stack](archive/monitoring/reference/umbrella/README.md) into a dependency-locked umbrella chart for namespace mid-cbf-monitoring. One values list contains the eight supplied server addresses with node9100/custom9101(provisional), separate scrape jobs, and no added server-side exporters. Updated persistence to user-confirmed bds1 Ceph RBD: Prometheus requests50G and retains blocks up to37GB. Preserved John's queries/tables in a classic dashboard provisioning adaptation with a stable data-source UID. Slack remains disabled pending administrator Secret; no live releases/data/volumes changed. Helm lint/render/contracts validate targets, service/namespace wiring, storage limits, pinned Docker Hub images, optionalSlack and disabled components.
 
 ## 2026-10-06 — Transparent per-component monitoring values
 
-Replaced the default umbrella interface with [visible component values](monitoring/README.md) and a render-only helper. All eight node/custom target pairs are explicit in the Prometheus file; bds1/50G/37GB/15d settings are retained. Existing Grafana is excluded by default and optional values do not adopt its release. The prior umbrella and samples remain [historical references](monitoring/reference/umbrella/README.md). Documented that Prometheus/Telegraf endpoints currently have no authentication and Telegraf has no UI/default login. Local rendering/contracts validate unchanged targets/storage and absence of Grafana from default output; no live cluster operation occurred.
+Replaced the default umbrella interface with [visible component values](archive/monitoring/README.md) and a render-only helper. All eight node/custom target pairs are explicit in the Prometheus file; bds1/50G/37GB/15d settings are retained. Existing Grafana is excluded by default and optional values do not adopt its release. The prior umbrella and samples remain [historical references](archive/monitoring/reference/umbrella/README.md). Documented that Prometheus/Telegraf endpoints currently have no authentication and Telegraf has no UI/default login. Local rendering/contracts validate unchanged targets/storage and absence of Grafana from default output; no live cluster operation occurred.
+
+## 2026-10-06 — Five YAML files only
+
+Flattened [monitoring](monitoring/) to exactly five component values files, as requested. Moved every extra tracked monitoring document, helper, and chart into [the archive](archive/monitoring/README.md). Root navigation preserves chart compatibility: Elastic overlays require the archived local chart. Values and targets are unchanged; existing running Grafana and the cluster were untouched. YAML and local Helm rendering checks validate the resulting files.
