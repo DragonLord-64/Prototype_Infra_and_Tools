@@ -69,3 +69,7 @@ Fetched the public SKA prototyping repository and selected John So's monitoring 
 ## 2026-10-06 — Persistent monitoring configuration and Elastic chart
 
 Added [Prometheus persistence values](monitoring/PERSISTENCE.md) with a 50G requested PVC, editable nfss1 candidate class, retention headroom, and a single writer. Storage backend is unverified; Prometheus NFS incompatibility is explicit. Added a [fresh-install Elastic Helm chart](monitoring/elastic-small/README.md), matching Docker Hub Elasticsearch/Kibana9.5.5 digests, existing Secret references, and bounded Kibana service-user setup. Helm lint/render/schema and isolated resource checks passed. No cluster deployment, existing-data upgrade, volume migration, or log delivery test occurred.
+
+## 2026-10-06 — NetBox manufacturer IDs and bounded service retries
+
+Updated [both portable imports](end-to-end-netbox/development/README.md) to ensure reported manufacturers and use returned vendor/type IDs, preserving custom slugs and avoiding guessed vendor aliases. Added server write serialization, object-loop pacing and current-result bounded transient502/503/504 retries; permanent400 remains immediate. Synthetic manufacturer and actual Ansible retry/copy-layout/Nexus task tests passed. Underlying live503 cause remains unconfirmed; imports should run separately.

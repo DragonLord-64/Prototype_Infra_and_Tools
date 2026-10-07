@@ -22,6 +22,8 @@ if kind == 'netbox_module':
     assert d['module_bay']['device'] == d['device']
     assert d['module_bay']['name']
     key = kind + ':' + d['device'] + ':' + d['module_bay']['name']
+elif kind=='netbox_module_type':
+    key=kind+':'+str(d['manufacturer'])+':'+d['model']
 else:
     key = kind + ':' + str(d.get('device', '')) + ':' + str(d.get('name', d.get('model')))
 p = Path(os.environ['NEXUS_RECORDS'])
@@ -30,7 +32,7 @@ changed = state.get(key) != d
 state[key] = d
 if not m.check_mode:
     p.write_text(json.dumps(state, sort_keys=True))
-m.exit_json(changed=changed)
+m.exit_json(changed=changed, **({'module_type': {'id': 100+sum(ord(c) for c in key)}} if kind=='netbox_module_type' else {}))
 '''
 
 
@@ -51,15 +53,22 @@ class TestPlaybook(unittest.TestCase):
             play[0]['hosts'] = 'localhost'
             play[0]['connection'] = 'local'
             play[0].pop('vars_files')
-            play[0]['vars'].update(netbox_url='http://unused.invalid', netbox_token='test-only', ansible_python_interpreter=shutil.which('python3'))
+            play[0]['vars'].update(netbox_url='http://unused.invalid', netbox_token='test-only', ansible_python_interpreter=shutil.which('python3'),netbox_api_retry_delay=0,netbox_api_loop_pause=0)
             for task in play[0]['tasks']:
                 if task.get('register') in ('discovered', 'epld'):
                     register = task.pop('register')
                     task.pop('cisco.nxos.nxos_command')
                     for key in ('check_mode', 'changed_when', 'failed_when'):
                         task.pop(key, None)
-                    stdout = [json.dumps(v) for v in fixture()] if register == 'discovered' else ['EPLD Versions\nIO FPGA 0x12']
+                    data=fixture();data[2]['TABLE_interface']['ROW_interface'][0]['name']='Finisar Corp'
+                    stdout = [json.dumps(v) for v in data] if register == 'discovered' else ['EPLD Versions\nIO FPGA 0x12']
                     task['ansible.builtin.set_fact'] = {register: {'stdout': stdout}}
+            for task in play[0]['tasks']:
+                for child in task.get('block',[]):
+                    if 'fhs_manufacturers' in child:
+                        child.pop('fhs_manufacturers')
+                        for key in ['register','until','retries','delay']:child.pop(key,None)
+                        child['ansible.builtin.set_fact']={'nexus_manufacturers':{'manufacturers':{'Cisco':1,'Vendor':2,'Finisar Corp':3}}}
             path = root/'play.yml'
             path.write_text(yaml.safe_dump(play, sort_keys=False))
             records = root/'records.json'
@@ -79,6 +88,8 @@ class TestPlaybook(unittest.TestCase):
             self.assertEqual(device['custom_fields']['fan_count'], 6)
             self.assertEqual(device['custom_fields']['epld_version'], 'EPLD Versions\nIO FPGA 0x12')
             self.assertEqual(len([k for k in state if k.startswith('netbox_module:')]), 10)
+            self.assertTrue(all(isinstance(value['manufacturer'],int) for key,value in state.items() if key.startswith('netbox_module_type:')))
+            self.assertTrue(all(isinstance(value['module_type'],int) for key,value in state.items() if key.startswith('netbox_module:')))
             self.assertEqual(len([k for k in state if k.startswith('netbox_module_bay:')]), 42)
             self.assertIn('changed=0', run())
             self.assertEqual(before, records.read_text())

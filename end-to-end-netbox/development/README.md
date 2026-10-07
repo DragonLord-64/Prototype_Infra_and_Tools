@@ -3,7 +3,7 @@
 This directory is the current, self-contained bundle adapted from the public
 [SKA FHS development branch](https://gitlab.com/ska-telescope/sdi/ska-mid-cbf-fhs-baremetal/-/tree/development/playbooks/development).
 Copy its contents into that repository's `playbooks/development/` directory.
-Keep `tasks/`, `filter_plugins/`, and `library/` beside the entrypoint playbooks;
+Keep `tasks/`, `filter_plugins/`, `library/`, and `module_utils/` beside the entrypoint playbooks;
 no Prototype Infra checkout or absolute development-machine path is required.
 Do not copy generated `output/` files or private credentials into Git.
 
@@ -35,7 +35,7 @@ Working server defaults are retained: MDA, FPGA_HOST_SERVER, BittWare,
 TeraBox1501b, `/opt/venvs/fhs`, `/usr/share/bittware-sdk`, and
 `bw_card_list -v -i USB`. `BWSDK_ROOT` and venv PATH are supplied per SDK command;
 no activate shell or SDK installation is needed. Fleet values and commands are
-ordinary play/inventory overrides. The actual output patterns are top-level vars
+editable play variables or extra-var overrides; derived `bootstrap_site`, `bootstrap_role`, `bootstrap_device_type` and `bootstrap_manufacturer` fallbacks can come from inventory. The actual output patterns are top-level vars
 and are used by the parser. Default patterns accept the working source grammar: variable indentation, index-line suffixes, and complete alphanumeric serial identifiers. Missing required fields are reported by name within each card block, without dumping command output.
 
 ## SDK output debugging
@@ -148,6 +148,31 @@ preview and does not install packages; it may report that installation is needed
 This pipeline must not be described as entirely free of host changes on normal
 runs. BittWare is enabled by the fleet default; disable explicitly on non-FPGA
 hosts with `bootstrap_bittware_enabled: false`.
+
+## NetBox availability and manufacturers
+
+Both imports ensure reported manufacturer names and pass returned numeric IDs to
+device/module types. Existing names with custom slugs are reused without renaming.
+If another vendor owns the generated slug, the new reported name gets a stable
+name-derived suffix; no alias or vendor merge is guessed. Nexus module types and
+installed module references stay scoped by manufacturer plus model, including
+Finisar Corp. The shared helper is in `module_utils/`; copy that directory too.
+
+Server API writes are serialized within a run; Nexus already serializes its write
+block. Native object loops pause one second between items. Both imports retry
+only temporary 502/503/504 service/gateway errors, at most three retries with
+five-second waits. Each retry checks the current module result. Permanent 400
+validation errors fail immediately. Set `-e netbox_api_loop_pause=2`,
+`-e netbox_api_retries=3`, or `-e netbox_api_retry_delay=5` to tune these explicit
+play defaults; zero retries disables additional attempts.
+
+Run server and Nexus imports one at a time: independent processes cannot share
+Ansible throttling. One object upsert may make multiple HTTP lookups and a write,
+so object pacing does not cap every HTTP request. A 503 can also occur with one
+import and a Ready pod; these changes improve importer resilience, not prove or
+repair the underlying backend/proxy cause. If bounded retries exhaust, inspect
+actual NetBox/proxy logs and resources rather than retry indefinitely or restart
+services blindly. No live service operations were performed for this update.
 
 ## Bifrost handoff
 

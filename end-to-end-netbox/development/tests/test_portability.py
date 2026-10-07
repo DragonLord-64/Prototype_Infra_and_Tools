@@ -73,5 +73,11 @@ class TestPortability(unittest.TestCase):
     run();self.assertEqual(len(api.data['dcim/modules/']),3);self.assertEqual(len(api.data['dcim/interfaces/']),8)
     adopted=next(port for port in api.data['dcim/interfaces/'] if port['name']=='eth-demo0');self.assertEqual(adopted['id'],80);self.assertEqual(adopted['cable'],88);self.assertFalse(adopted['enabled'])
     self.assertIn('changed=0',run())
+    # Actual manufacturer helper resolves and returns a vendor ID in the copied bundle.
+    primary['tasks']=[{'name':'Ensure actual reported optic vendor','fhs_manufacturers':{'netbox_url':'{{ netbox_url }}','netbox_token':'{{ netbox_token }}','validate_certs':False,'names':['Finisar Corp']},'register':'vendors'}, {'ansible.builtin.assert':{'that':["vendors.manufacturers['Finisar Corp'] is defined"]}}]
+    (bundle/'synthetic.yml').write_text(yaml.safe_dump([primary],sort_keys=False))
+    before=len(api.writes);run('--check');self.assertEqual(len(api.writes),before)
+    run();self.assertEqual(len([v for v in api.data['dcim/manufacturers/'] if v['name']=='Finisar Corp']),1)
+    self.assertIn('changed=0',run())
   finally:server.shutdown();server.server_close();worker.join(timeout=3)
 if __name__=='__main__':unittest.main()

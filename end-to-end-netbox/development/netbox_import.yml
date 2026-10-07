@@ -36,7 +36,7 @@
     facts: '{{ hostvars[inventory_hostname].ansible_facts }}'
     netbox_site: '{{ server_info.site | default(bootstrap_site | default(''MDA'')) }}'
     netbox_role: '{{ server_info.role | default(bootstrap_role | default(''FPGA_HOST_SERVER'')) }}'
-    netbox_manufacturer: '{{ bootstrap_manufacturer | default(''BittWare'') }}'
+    netbox_manufacturer: '{{ bootstrap_manufacturer | default(''BittWare'') | trim }}'
     netbox_device_type: '{{ bootstrap_device_type | default(''TeraBox1501b'') }}'
     netbox_auth: '{{ (''Bearer '' if netbox_token.startswith(''nbt_'') else ''Token '') ~ netbox_token }}'
     bootstrap_bittware_pci_list_argv:
@@ -59,6 +59,9 @@
     bootstrap_nic_collect_link: true
     bootstrap_nic_part_pattern: \[PN\]\s+Part number:\s*(\S+)
     bootstrap_nic_serial_pattern: \[SN\]\s+Serial number:\s*(\S+)
+    netbox_api_retries: 3
+    netbox_api_retry_delay: 5
+    netbox_api_loop_pause: 1
   module_defaults:
     ansible.builtin.uri:
       validate_certs: '{{ netbox_validate_certs | default(netbox_validate_certs_default) | bool }}'

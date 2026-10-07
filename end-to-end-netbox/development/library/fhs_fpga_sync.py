@@ -11,54 +11,13 @@ import re
 import requests
 
 
-def scalar(value):
-    if isinstance(value,dict):
-        return value.get('id',value.get('value',value))
-    return value
-
-
-class Sync:
-    def __init__(self,params,check):
-        self.url=params['netbox_url'].rstrip('/')+'/api/'
-        self.check=check;self.plan=[];self.virtual=-1;self.cache={}
-        self.session=requests.Session();self.session.verify=params['validate_certs']
-        token=params['netbox_token'];self.session.headers.update(Authorization=('Bearer ' if token.startswith('nbt_') else 'Token ')+token)
-    def request(self,method,path,**kwargs):
-        response=self.session.request(method,self.url+path,timeout=30,**kwargs)
-        if not response.ok:raise ValueError(f'NetBox {method} {path} failed with HTTP {response.status_code}; no automatic deletion attempted')
-        return response.json()
-    def find(self,path,**filters):
-        key=(path,tuple(sorted(filters.items())))
-        if key in self.cache:return self.cache[key]
-        if any(isinstance(v,int) and v<0 for v in filters.values()):return None
-        data=self.request('GET',path,params=dict(filters,limit=2))
-        if data['count']>1:raise ValueError('Ambiguous NetBox object at '+path)
-        value=data['results'][0] if data['results'] else None
-        self.cache[key]=value
-        return value
-    def ensure(self,path,key,data,label):
-        old=self.find(path,**key)
-        changed={k:v for k,v in data.items() if (scalar(old.get(k)) if old else None)!=v}
-        # Custom fields merge observations; absent optional values retain existing state.
-        if 'custom_fields' in data and old:
-            merged=dict(old.get('custom_fields') or {},**data['custom_fields'])
-            changed.pop('custom_fields',None)
-            if merged!=old.get('custom_fields'):changed['custom_fields']=merged
-        if not changed:return old
-        self.plan.append(dict(object=label,action='update' if old else 'create',before={k:old.get(k) for k in changed} if old else {},after=changed))
-        if self.check:
-            if old:result=dict(old,**changed)
-            else:
-                self.virtual-=1;result=dict(data,id=self.virtual)
-        else:result=self.request('PATCH',path+str(old['id'])+'/',json=changed) if old else self.request('POST',path,json=data)
-        self.cache[(path,tuple(sorted(key.items())))]=result
-        return result
+from ansible.module_utils.fhs_netbox import Sync, scalar, ensure_manufacturers
 
 
 def synchronize(params,check):
     sync=Sync(params,check)
     kind=params.get('kind','FPGA')
-    manufacturer=params.get('manufacturer') or ('Mellanox' if kind=='NIC' else 'BittWare')
+    manufacturer=(params.get('manufacturer') or ('Mellanox' if kind=='NIC' else 'BittWare')).strip()
     if not params['cards']:return sync.plan
     device=sync.find('dcim/devices/',name=params['device'])
     if device is None and not check:raise ValueError('Create the parent server before applying hardware modules')
@@ -81,7 +40,7 @@ def synchronize(params,check):
             old=sync.find('dcim/interfaces/',device_id=device_id,name=interface['name'])
             if old and old.get('module') and (not existing or scalar(old['module'])!=existing['id']):
                 raise ValueError('Interface '+interface['name']+' already belongs to another module')
-    maker=sync.ensure('dcim/manufacturers/',{'name':manufacturer},{'name':manufacturer,'slug':re.sub('[^a-z0-9]+','-',manufacturer.lower()).strip('-')},manufacturer+' manufacturer')
+    maker=ensure_manufacturers(sync,[manufacturer])[manufacturer]
     definitions=[('fpga_bmc_firmware','text'),('fpga_board_version','text'),('pci_endpoints','json')] if kind=='FPGA' else [('nic_driver','text'),('nic_firmware','text'),('nic_functions','json'),('pci_endpoints','json')]
     for name,field_kind in definitions:
         old=sync.find('extras/custom-fields/',name=name)

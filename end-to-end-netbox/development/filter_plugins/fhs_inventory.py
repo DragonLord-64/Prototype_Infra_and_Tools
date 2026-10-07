@@ -106,6 +106,40 @@ def nic_cards(ports, driver_probes, link_probes, identity_probes, drivers, part_
     return dict(cards=cards,warnings=warnings)
 
 
+def netbox_transient(result):
+    """Retry confirmed gateway/service errors, never permanent validation errors."""
+    if not result.get('failed',False):return False
+    codes=[];messages=[]
+    def inspect(value):
+        if isinstance(value,dict):
+            for key,child in value.items():
+                if key.lower() in ['status','status_code','http_status','http_status_code'] and str(child).isdigit():
+                    codes.append(int(child))
+                else:inspect(child)
+        elif isinstance(value,list):
+            for child in value:inspect(child)
+        elif isinstance(value,str):messages.append(value)
+    inspect(result)
+    for message in messages:
+        codes.extend(int(code) for code in re.findall(r'(?i)\b(?:HTTP(?: status)?|status(?:_code)?|code)\s*[:=]?\s*(\d{3})\b',message))
+        codes.extend(int(code) for code in re.findall(r'(?i)\b(\d{3})\s+(?:Bad Request|Service Unavailable|Bad Gateway|Gateway Timeout|Unauthorized|Forbidden|Not Found)\b',message))
+    if any(400<=code<500 for code in codes):return False
+    if codes:return any(code in [502,503,504] for code in codes)
+    # Pynetbox can preserve the response detail but lose the HTTP status.
+    return any(message.strip().lower().rstrip('.') in ['service temporarily unavailable','service unavailable','bad gateway','gateway timeout'] for message in messages)
+
+def unique_module_types(modules):
+    seen=set();result=[]
+    for module in modules:
+        key=(module['manufacturer'],module['model'])
+        if key not in seen:seen.add(key);result.append(module)
+    return result
+
+def module_type_ids(probes):
+    import json
+    return {json.dumps([p['item']['manufacturer'],p['item']['model']]):p['module_type']['id'] for p in probes if not p.get('skipped')}
+
+
 class FilterModule:
     def filters(self):
-        return {'fhs_fpga_cards':cards,'fhs_fpga_modules':modules,'fhs_nic_vpd':vpd,'fhs_nic_candidates':nic_candidates,'fhs_nic_cards':nic_cards}
+        return {'fhs_fpga_cards':cards,'fhs_fpga_modules':modules,'fhs_nic_vpd':vpd,'fhs_nic_candidates':nic_candidates,'fhs_nic_cards':nic_cards,'fhs_netbox_transient':netbox_transient,'fhs_unique_module_types':unique_module_types,'fhs_module_type_ids':module_type_ids}

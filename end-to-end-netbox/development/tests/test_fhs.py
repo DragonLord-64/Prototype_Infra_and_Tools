@@ -7,6 +7,8 @@ from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
 def load(name,path):
     spec=importlib.util.spec_from_file_location(name,path);module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+import ansible.module_utils
+ansible.module_utils.__path__.append(str(ROOT/'module_utils'))
 filters=load('fhs_filters',ROOT/'filter_plugins/fhs_inventory.py')
 sync=load('fhs_sync',ROOT/'library/fhs_fpga_sync.py')
 TEXT='''IA-860M 123456
