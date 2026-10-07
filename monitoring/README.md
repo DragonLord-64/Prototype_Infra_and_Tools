@@ -69,6 +69,25 @@ Keep both Elastic overlays whenever Kibana is desired. Applying only Elasticsear
 
 For initial Kibana access, run `kubectl -n mid-cbf-monitoring port-forward service/logging-elastic-kibana 5601:5601` and sign in at localhost:5601 as `elastic` with the saved administrator password. Use that administrator for bootstrap, not permanent Filebeat ingestion.
 
+## PDU push receiver on the existing Telegraf
+
+The [Telegraf values](telegraf.yaml) add an HTTP JSON receiver on TCP **8080**, path **`/pdu`**, alongside the existing Cisco gRPC listener on 57000 and Prometheus metrics on 9273. All three use the existing `switch-telegraf` Service; no additional collector is installed. After upgrading Telegraf, use `kubectl -n mid-cbf-monitoring get service switch-telegraf` to find its assigned private LoadBalancer address. Configure a compatible Raritan Data Push destination as `http://PRIVATE_TELEGRAF_ADDRESS:8080/pdu` using POST (PUT is also accepted). Permit that port from the PDUs on your private network. This receiver has no authentication or TLS; keep its exposure restricted to that network.
+
+For an initial connection test, run the following from a machine that can reach the Service:
+
+```sh
+curl --fail-with-body -i -X POST \
+  -H 'Content-Type: application/json' \
+  --data-binary '{"pdu_id":"connectivity-test","power_watts":123}' \
+  http://PRIVATE_TELEGRAF_ADDRESS:8080/pdu
+```
+
+The listener is configured for the default HTTP 204 success response. Within the normal collection interval, look in `http://PRIVATE_TELEGRAF_ADDRESS:9273/metrics` for a metric such as `pdu_power_watts` with `pdu_id="connectivity-test"`. Central Prometheus already scrapes this Telegraf output. This test inserts a synthetic measurement; it does not validate actual PDU readings.
+
+The initial generic JSON parser accepts numeric fields and uses an optional `pdu_id` string as a distinguishing tag. It is **not durable raw-message capture**: incompatible JSON can be rejected or yield no useful measurements. Receiving requests alone does not establish correct units, sensor identities, or dashboards. Refine parsing and tags later against the actual PX firmware payload so different PDUs and sensors remain distinguishable. A PDU sample is not required to deploy the listener, but actual Raritan format compatibility is still unverified.
+
+Source: [Telegraf HTTP Listener v2 configuration](https://docs.influxdata.com/telegraf/v1/input-plugins/http_listener_v2/).
+
 ## 4. Give Filebeat a real reachable endpoint and publishing account
 
 `logging-elastic.mid-cbf-monitoring.svc:9200` is cluster-local. Bare-metal servers generally cannot use that DNS/ClusterIP. Choose a private reachable proxy or, if your cluster supports it, set `elasticsearch.service.type: LoadBalancer` in elasticsearch.yaml and use the actual assigned private address. No address is guessed. HTTP here is authenticated but unencrypted; keep it on the trusted private network or add TLS before wider exposure. Port-forwarding is only for initial setup, not continuous Filebeat delivery.

@@ -1,5 +1,5 @@
 # Standalone Telegraf chart1.8.77; John's Cisco DME collector configuration.
-# No UI/default login; gRPC57000 and Prometheus9273 are not authenticated here.
+# No UI/default login; gRPC57000, HTTP8080 and Prometheus9273 are not authenticated here.
 config:
   agent:
     interval: 10s
@@ -19,6 +19,22 @@ config:
       - clearTs
       - modTs
       - subscription
+  # Initial PDU push receiver; refine JSON mapping against actual Raritan payloads.
+  - http_listener_v2:
+      service_address: :8080
+      paths:
+      - /pdu
+      methods:
+      - POST
+      - PUT
+      data_source: body
+      data_format: json
+      name_override: pdu
+      tag_keys:
+      - pdu_id
+      read_timeout: 10s
+      write_timeout: 10s
+      max_body_size: 1MB
   processors:
   - regex:
       namepass:
@@ -42,11 +58,18 @@ service:
   type: LoadBalancer
   port: 57000
   additionalPorts:
+  - name: pdu-http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
   - name: metrics
     port: 9273
     targetPort: 9273
     protocol: TCP
 containerPorts:
+- name: pdu-http
+  containerPort: 8080
+  protocol: TCP
 - name: nxos
   containerPort: 57000
   protocol: TCP
