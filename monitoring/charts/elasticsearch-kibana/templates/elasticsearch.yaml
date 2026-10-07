@@ -20,7 +20,7 @@ kind: Service
 metadata:
   name: {{ include "elastic-small.name" . }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.elasticsearch.service.type }}
   selector: {app: {{ include "elastic-small.name" . }}}
   ports: [{name: http, port: 9200, targetPort: http}]
 ---

@@ -97,3 +97,7 @@ Flattened [monitoring](monitoring/) to exactly five component values files, as r
 ## 2026-10-06 — Module-aware FHS dynamic inventory
 
 Added [the read-only module inventory extension](end-to-end-netbox/development/MODULE_INVENTORY.md), preserving existing NetBox inventory auth/Vault, filters, role groups and native host variables. Supplies FPGA/NIC module lists and the existing BIST serial aliases without PSU/BDF discovery or importer changes. Actual ansible-inventory/Vault/filter/group tests passed against a synthetic API; existing BDF/interface role defaults remain unchanged.
+
+## 2026-10-06 — Active chart and beginner setup
+
+Added the [beginner monitoring guide](monitoring/README.md) and restored required [Elasticsearch/Kibana templates](monitoring/charts/elasticsearch-kibana/Chart.yaml) to the active folder. Kept five visible values; local chart uses the same release-based services and adds an explicit private LoadBalancer option. Guide covers Secret generation, dedicated Filebeat publisher, real host-reachable endpoint, actual FHS role output variables, and version/input compatibility. Existing Grafana and all live cluster resources remain untouched. Local chart render/lint and targeted contract/document checks passed.

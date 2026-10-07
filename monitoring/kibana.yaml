@@ -1,4 +1,4 @@
-# Overlay for the SAME elastic-small release, not a second Elasticsearch release.
+# Overlay for the SAME elasticsearch-kibana release, not a second Elasticsearch release.
 # Combine with elasticsearch.yaml to enable Kibana9.5.5.
 kibana:
   enabled: true

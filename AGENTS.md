@@ -12,7 +12,7 @@ additional instructions.
 | Area | Index | Overview |
 | --- | --- | --- |
 | Active Ansible/NetBox | [Pipeline index](end-to-end-netbox/AGENTS.md) | [Latest portable bundle](end-to-end-netbox/development/README.md) |
-| Monitoring values | [Five component YAML files](monitoring/) | [Usage in root README](README.md#monitoring-values) |
+| Monitoring | [Beginner guide](monitoring/README.md) | [Component values and active chart](monitoring/) |
 | Historical prototypes | [Archive overview](archive/README.md) | [Original overview](archive/ORIGINAL_REPOSITORY_README.md) |
 
 Inspired by [Karpathy’s LLM Wiki notes](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): persistent, source-grounded Markdown knowledge, ingest/query/lint workflows, and a chronological log. Here AGENTS.md combines the schema and navigation roles.

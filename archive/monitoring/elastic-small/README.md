@@ -1,3 +1,7 @@
+# Historical Elastic guide
+
+The required chart is now active at [monitoring/charts/elasticsearch-kibana](../../../monitoring/charts/elasticsearch-kibana/Chart.yaml). Use the [current beginner guide](../../../monitoring/README.md). The earlier reference below is retained for provenance and is not the active setup interface.
+
 # Minimal Elasticsearch and Kibana Helm chart
 
 Fresh-install chart for a private small cluster: one persistent Elasticsearch node, one Kibana instance, and a bounded setup Job for Kibana's service account password. It does not deploy Prometheus, Grafana, Telegraf, Filebeat, Logstash, or an operator.

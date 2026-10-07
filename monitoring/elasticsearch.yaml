@@ -1,5 +1,4 @@
-# Local elastic-small chart0.1.0. Fresh Elasticsearch9.5.5; NEVER reuse an older data PVC.
-# Existing Secret reference and bds1persistent storage are visible below.
+# Local charts/elasticsearch-kibana chart0.2.0; fresh9.5.5, no older data PVC reuse.
 existingSecret: elastic-credentials
 elasticsearch:
   image:
@@ -17,5 +16,7 @@ elasticsearch:
     limits:
       cpu: '2'
       memory: 4Gi
+  service:
+    type: ClusterIP
 kibana:
   enabled: false
