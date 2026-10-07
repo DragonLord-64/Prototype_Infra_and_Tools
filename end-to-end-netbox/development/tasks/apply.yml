@@ -236,7 +236,7 @@
     until: netbox_write_result is succeeded or not (netbox_write_result | fhs_netbox_transient)
     retries: '{{ netbox_api_retries }}'
     delay: '{{ netbox_api_retry_delay }}'
-  - name: Ensure legacy DDR5 NVMe and NIC inventory components
+  - name: Ensure DDR5 NVMe and NIC inventory components
     netbox.netbox.netbox_inventory_item:
       query_params:
       - device

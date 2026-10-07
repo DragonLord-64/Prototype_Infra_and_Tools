@@ -9,7 +9,6 @@ def first(text, pattern):
 
 
 def cards(text, index_pattern, serial_pattern, part_pattern, version_pattern, firmware_pattern, pci_map):
-    # Serial headings delimit records: missing fields cannot bleed into the next card.
     headings = list(re.finditer(serial_pattern, text, re.MULTILINE))
     result = []
     for pos, heading in enumerate(headings):
@@ -125,7 +124,6 @@ def netbox_transient(result):
         codes.extend(int(code) for code in re.findall(r'(?i)\b(\d{3})\s+(?:Bad Request|Service Unavailable|Bad Gateway|Gateway Timeout|Unauthorized|Forbidden|Not Found)\b',message))
     if any(400<=code<500 for code in codes):return False
     if codes:return any(code in [502,503,504] for code in codes)
-    # Pynetbox can preserve the response detail but lose the HTTP status.
     return any(message.strip().lower().rstrip('.') in ['service temporarily unavailable','service unavailable','bad gateway','gateway timeout'] for message in messages)
 
 def unique_module_types(modules):

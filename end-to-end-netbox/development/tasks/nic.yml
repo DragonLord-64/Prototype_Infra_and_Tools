@@ -62,7 +62,7 @@
     ansible.builtin.set_fact:
       nic_discovery: '{{ nic_ports | fhs_nic_cards(nic_driver_probes.results, nic_link_probes.results | default([]), nic_card_identity_probes.results, bootstrap_nic_drivers,
         bootstrap_nic_part_pattern, bootstrap_nic_serial_pattern) }}'
-  - name: Keep NIC module records separate from legacy inventory
+  - name: Record discovered NIC modules
     ansible.builtin.set_fact:
       desired_nic_cards: '{{ nic_discovery.cards }}'
       nic_discovery_warnings: '{{ nic_discovery.warnings }}'

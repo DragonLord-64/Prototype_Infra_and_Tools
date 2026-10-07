@@ -53,7 +53,6 @@ def nexus_inventory(outputs):
             interface = clean(item.get('interface'))
             if not re.fullmatch(r'Ethernet\d+/\d+(?:/\d+)?', interface):
                 continue
-            # Breakout lanes share one physical pluggable cage.
             bay = '/'.join(interface.split('/')[:2])
             bays.add(bay)
             present = clean(item.get('sfp') or item.get('qsfp') or item.get('qsfp_or_cfp')).lower()

@@ -1,11 +1,5 @@
 #!/usr/bin/python
-"""Small NetBox reconciler for FPGA/NIC modules and safe interface adoption.
-
-NetBox 4.3's REST serializer doesn't expose UI adoption flags. Create new modules
-using a template-free staging type, then attach existing interfaces and switch to
-the real type. This preserves existing interface IDs/cables/IPs without duplicate
-replication; no resources are deleted. The shared staging type must remain empty.
-"""
+"""Reconcile FPGA/NIC modules and adopt interfaces in place."""
 from ansible.module_utils.basic import AnsibleModule
 import re
 import requests
@@ -22,7 +16,6 @@ def synchronize(params,check):
     device=sync.find('dcim/devices/',name=params['device'])
     if device is None and not check:raise ValueError('Create the parent server before applying hardware modules')
     device_id=device['id'] if device else -1
-    # Reuse a known NIC bay across partial discovery, using verified card identity.
     cards=[dict(card) for card in params['cards']]
     if kind=='NIC':
         for card in cards:
@@ -32,7 +25,6 @@ def synchronize(params,check):
                 old_bay=sync.find('dcim/module-bays/',id=scalar(previous['module_bay']))
                 if old_type and old_type['model']==card['part'] and old_bay and old_bay['name'].startswith('NIC '):
                     card['bay']=old_bay['name'];card['position']=old_bay.get('position',card['position'])
-    # Validate associations before changing any hardware objects.
     for card in cards:
         existing_bay=sync.find('dcim/module-bays/',device_id=device_id,name=card['bay'])
         existing=sync.find('dcim/modules/',device_id=device_id,module_bay_id=existing_bay['id']) if existing_bay else None
@@ -84,14 +76,12 @@ def synchronize(params,check):
         if not existing:
             installed=sync.ensure('dcim/modules/',key,{'device':device_id,'module_bay':bay['id'],'module_type':staging['id'],'serial':card['serial'],'status':'active','custom_fields':fields},card['bay']+' module')
         else:installed=existing
-        # Update existing interfaces rather than recreating; keep enabled/type/IP/cable settings.
         for interface in card['interfaces']:
             ikey={'device_id':device_id,'name':interface['name']}
             old=sync.find('dcim/interfaces/',**ikey)
             data={'device':device_id,'name':interface['name'],'module':installed['id']}
             if not old:data.update(type=interface['type'],enabled=True)
             sync.ensure('dcim/interfaces/',ikey,data,interface['name'])
-        # PATCH does not replicate module-type templates; interface IDs stay intact.
         sync.ensure('dcim/modules/',key,{'device':device_id,'module_bay':bay['id'],'module_type':module_type['id'],'serial':card['serial'],'status':'active','custom_fields':fields},card['bay']+' identity')
     return sync.plan
 
@@ -102,7 +92,6 @@ def main():
         plan=synchronize(module.params,module.check_mode or module.params['preview'])
         module.exit_json(changed=bool(plan),plan=plan,diff={'before':'Existing hardware module resources','after':plan} if module._diff else {})
     except Exception as error:
-        # Never echo request headers, URLs with user info, response payloads, or tokens.
         module.fail_json(msg=str(error) if isinstance(error,ValueError) else 'Hardware module reconciliation failed; check NetBox connectivity and API permissions')
 
 

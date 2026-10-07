@@ -73,3 +73,7 @@ Added [Prometheus persistence values](monitoring/PERSISTENCE.md) with a 50G requ
 ## 2026-10-06 — NetBox manufacturer IDs and bounded service retries
 
 Updated [both portable imports](end-to-end-netbox/development/README.md) to ensure reported manufacturers and use returned vendor/type IDs, preserving custom slugs and avoiding guessed vendor aliases. Added server write serialization, object-loop pacing and current-result bounded transient502/503/504 retries; permanent400 remains immediate. Synthetic manufacturer and actual Ansible retry/copy-layout/Nexus task tests passed. Underlying live503 cause remains unconfirmed; imports should run separately.
+
+## 2026-10-06 — First implementation run guide
+
+Shortened the [portable FHS bundle guide](end-to-end-netbox/development/README.md) to real-environment setup and execution: whole-directory copying including shared module utilities, Bifrost credential paths, inventory overrides, scoped imports and export handoff. Removed explanatory code comments and outdated task labels without changing functionality. Python syntax-tree equivalence and YAML equivalence apart from task labels verified behavior preservation; published implementation tests remain intact. The operator confirmed FPGA/NIC import on one server; fleet and cluster validation remain separate.

@@ -31,7 +31,6 @@ class Sync:
     def ensure(self,path,key,data,label):
         old=self.find(path,**key)
         changed={k:v for k,v in data.items() if (scalar(old.get(k)) if old else None)!=v}
-        # Custom fields merge observations; absent optional values retain existing state.
         if 'custom_fields' in data and old:
             merged=dict(old.get('custom_fields') or {},**data['custom_fields'])
             changed.pop('custom_fields',None)
@@ -59,7 +58,6 @@ def ensure_manufacturers(sync,names):
         if owner and owner['name'].strip().casefold()==name.casefold():
             records[name]=owner;continue
         if owner:
-            # No alias guessing or renaming an unrelated vendor. Preserve both names.
             slug=slug[:90]+'-'+hashlib.sha256(name.encode('utf-8')).hexdigest()[:8]
             collision=sync.find('dcim/manufacturers/',slug=slug)
             if collision and collision['name']!=name:
