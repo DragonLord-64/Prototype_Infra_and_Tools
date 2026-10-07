@@ -31,3 +31,6 @@ kibana:
     limits:
       cpu: '1'
       memory: 2Gi
+# Optional publisher bootstrap; existingSecret must also contain filebeat-password.
+filebeat:
+  enabled: false

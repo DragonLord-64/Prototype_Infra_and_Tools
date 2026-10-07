@@ -26,14 +26,20 @@ umask 077
 credentials_dir=$(mktemp -d)
 openssl rand -hex 24 | tr -d '\n' > "$credentials_dir/elastic-password"
 openssl rand -hex 24 | tr -d '\n' > "$credentials_dir/kibana-password"
+openssl rand -hex 24 | tr -d '\n' > "$credentials_dir/filebeat-password"
 openssl rand -hex 32 | tr -d '\n' > "$credentials_dir/kibana-encryption-key"
 kubectl -n mid-cbf-monitoring create secret generic elastic-credentials \
   --from-file=elastic-password="$credentials_dir/elastic-password" \
   --from-file=kibana-password="$credentials_dir/kibana-password" \
+  --from-file=filebeat-password="$credentials_dir/filebeat-password" \
   --from-file=kibana-encryption-key="$credentials_dir/kibana-encryption-key"
 ```
 
-If the namespace does not exist, first run `kubectl create namespace mid-cbf-monitoring`. Save those values in your password manager, then remove the private temporary files. Reuse the Secret across upgrades. The chart configures Kibana's service user automatically. Changing the Secret alone does not rotate an existing Elasticsearch user's stored password.
+If the namespace does not exist, first run `kubectl create namespace mid-cbf-monitoring`. Save those values in your password manager. `elastic-password` is your initial browser login as `elastic`; `kibana-password` is Kibana's internal Elasticsearch login; `filebeat-password` is shared by your eight Filebeat publishers; the encryption key is not a login password. Store the **same Filebeat password value** in Ansible Vault as `vault_filebeat_password`, then remove the private temporary files. Do not copy the whole Kubernetes Secret into playbooks or put plaintext passwords in Git.
+
+The active Elasticsearch values enable `filebeat.enabled`: the chart creates the `filebeat_writer` role/user automatically from `elastic-credentials/filebeat-password`. Chart defaults leave this optional feature disabled for existing users. The setup Job also works when Kibana is disabled. All enabled setup steps must succeed for the Job to complete. Reuse the Secret across upgrades. Changing `filebeat-password` or `kibana-password` in the Secret requires a **Helm upgrade** to reconcile Elasticsearch's stored password; also update the eight hosts when rotating Filebeat's password. Changing `elastic-password` in the Secret does not rotate an existing administrator account.
+
+If `elastic-credentials` already exists, keep its original administrator/Kibana values and add `filebeat-password` to it through your existing Secret-management workflow before enabling this feature. A missing key fails the setup Job.
 
 ## 3. Install only the components you choose
 
@@ -84,23 +90,16 @@ sudo filebeat setup --index-management \
 
 If using Filebeat modules, also preload their ingest pipelines. Set finite log retention in Kibana's Index Lifecycle Policies to fit the 20 Gi starting volume. The administrator credential is for this setup step only; remove its keystore entry afterwards using `filebeat keystore remove ES_SETUP_PASSWORD`.
 
-Create a dedicated publisher once. In another terminal, temporarily run `kubectl -n mid-cbf-monitoring port-forward service/logging-elastic 9200:9200`. These curl commands prompt for the saved `elastic` password and do not print a new password:
+The chart has already created the dedicated `filebeat_writer` publisher using your saved `filebeat-password`; no manual user-creation curl commands are needed. It can publish to default `filebeat-*` indices/data streams, but cannot perform the administrator setup above. Custom index names require matching role permissions. The setup Job makes idempotent PUT requests on each install/upgrade, retries while Elasticsearch starts, and is limited to ten minutes.
+
+Check that bootstrap succeeded (the Job suffix is the Helm release revision):
 
 ```sh
-ES_URL=http://127.0.0.1:9200
-curl --fail --user elastic -X PUT "$ES_URL/_security/role/filebeat_writer" \
-  -H 'Content-Type: application/json' \
-  --data '{"cluster":["monitor","read_ilm","read_pipeline"],"indices":[{"names":["filebeat-*"],"privileges":["auto_configure","create_doc"]}]}'
-umask 077
-filebeat_credentials_dir=$(mktemp -d)
-openssl rand -hex 24 > "$filebeat_credentials_dir/filebeat-password"
-printf '{"password":"%s","roles":["filebeat_writer"]}\n' \
-  "$(cat "$filebeat_credentials_dir/filebeat-password")" > "$filebeat_credentials_dir/filebeat-user.json"
-curl --fail --user elastic -X PUT "$ES_URL/_security/user/filebeat_writer" \
-  -H 'Content-Type: application/json' --data-binary "@$filebeat_credentials_dir/filebeat-user.json"
+kubectl -n mid-cbf-monitoring get jobs
+kubectl -n mid-cbf-monitoring logs job/logging-elastic-setup-1
 ```
 
-Keep the publishing password in Ansible Vault and remove its private temporary files afterwards. That role is scoped to default `filebeat-*` indices; custom index names require corresponding permissions.
+For a first install, expect `logging-elastic-setup-1` to show `Complete` and the message `Elasticsearch service users configured`. After upgrades, use the latest revision's Job name. Credentials are not printed. Only start publishing after bootstrap and Filebeat template/lifecycle setup succeed.
 
 ## 5. Point existing Filebeat at Elasticsearch
 

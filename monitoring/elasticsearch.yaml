@@ -1,4 +1,4 @@
-# Local charts/elasticsearch-kibana chart0.2.0; fresh9.5.5, no older data PVC reuse.
+# Local charts/elasticsearch-kibana chart 0.3.0; fresh9.5.5, no older data PVC reuse.
 existingSecret: elastic-credentials
 elasticsearch:
   image:
@@ -20,3 +20,6 @@ elasticsearch:
     type: ClusterIP
 kibana:
   enabled: false
+# Creates the publisher from elastic-credentials/filebeat-password on install/upgrade.
+filebeat:
+  enabled: true
