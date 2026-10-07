@@ -2,23 +2,15 @@
 
 [Monitoring overview](README.md) · [Unmodified upstream source](upstream-switch/README.md)
 
-[switch-prometheus-values.yaml](switch-prometheus-values.yaml) adapts John's newest standalone Prometheus values while preserving switch scraping and recording rules. It enables a **50G** PVC (50,000,000,000 bytes, not 50Gi), requests editable storage class **nfss1**, retains metrics for up to 15 days, and limits stored TSDB blocks to **37GB** (Prometheus's binary unit: about 39.7 decimal GB). The first time/size limit reached wins. WAL/head/index/compaction still need space; retention size is not a strict filesystem quota. Verify the provisioned PV capacity too because a provisioner may round a request upward. The requested claim does not exceed fifty decimal gigabytes.
+[switch-prometheus-values.yaml](switch-prometheus-values.yaml) adapts John's newest standalone Prometheus values while preserving switch scraping and recording rules. It enables a **50G** PVC (50,000,000,000 bytes, not 50Gi), requests the confirmed Ceph RBD storage class **bds1**, retains metrics for up to 15 days, and limits stored TSDB blocks to **37GB** (Prometheus's binary unit: about 39.7 decimal GB). The first time/size limit reached wins. WAL/head/index/compaction still need space; retention size is not a strict filesystem quota. Verify the provisioned PV capacity too because a provisioner may round a request upward. The requested claim does not exceed fifty decimal gigabytes.
 
 The forced one-hour block settings were removed; normal Prometheus compaction is retained. The deployment uses Recreate for a single PVC writer. CPU/memory remains John's 500m/2Gi requests and 2CPU/4Gi limits pending measurement.
 
-## REVIEW CANDIDATE — storage decision before deployment
+## Confirmed storage and deployment boundary
 
-The class name `nfss1` does NOT identify its provisioner. This value is the user's requested candidate, not a claim that its backend is supported. Inspect its provisioner and a provisioned volume. **Prometheus explicitly does not support NFS for local TSDB storage.** If this class is NFS-backed, select a local/block-backed class for this file before applying it; do not treat retries or a smaller volume as a compatibility fix. [Prometheus storage documentation](https://prometheus.io/docs/prometheus/latest/storage/).
+The user confirmed **bds1** uses Ceph RBD in the rook-ceph cluster and volumes pool, with cluster health reported OK. Block-backed RBD resolves the earlier NFS compatibility concern. This does not establish available pool capacity, provisioned volume size, or backup durability. Prometheus local TSDB is not supported on NFS; keep this block-backed class rather than the earlier unverified nfss1 candidate.
 
-Read-only preflight on the intended cluster:
-
-```sh
-kubectl get storageclass nfss1 -o yaml
-```
-
-Check its `provisioner` and parameters, then confirm the backing filesystem for a provisioned volume. A generic CSI provisioner name can conceal an NFS backend; its name alone is insufficient. Before applying, establish whether this class is actually NFS-backed.
-
-The repository was prepared without access to the user's other cluster. No volume was created, mounted, resized, or migrated. Turning the existing ephemeral release into a PVC-backed release may replace its ephemeral history; preserve anything important separately and review Helm's diff and release ownership first.
+No claim or volume was created, resized, or migrated here. Review the existing release/PVC ownership before switching ephemeral data to persistent storage.
 
 ## Use with the existing release
 

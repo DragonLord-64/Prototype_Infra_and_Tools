@@ -2,7 +2,13 @@
 
 [Repository index](../AGENTS.md) · [Design](DESIGN.md)
 
-The [design](DESIGN.md) describes reusing current switch monitoring, adding persistent storage, and minimal Elasticsearch/Kibana/Filebeat logging. This folder includes switch-monitoring values, a small Elasticsearch/Kibana Helm chart, the alert template, and design notes. It is not yet one umbrella monitoring release.
+The [design](DESIGN.md) describes reusing current switch monitoring, adding persistent storage, and minimal Elasticsearch/Kibana/Filebeat logging. This folder is the portable monitoring deployment bundle, with a unified Helm chart and retained source/reference configurations.
+
+## One chart and one values file
+
+The [unified Helm chart](chart/README.md) now packages Prometheus, Telegraf, Grafana, Alertmanager, and Elasticsearch/Kibana. Its [values file](chart/values.yaml) declares all eight servers, node port9100 and provisional custom port9101. Use namespace **mid-cbf-monitoring**. Prometheus requests50G on the confirmed **bds1** Ceph RBD class and limits retained blocks to37GB, leaving space for database overhead.
+
+Start with the unified chart guide for deployment; the standalone files below remain reference inputs. Slack stays disabled until the administrator supplies the webhook Secret. No running releases were changed or existing data migrated.
 
 ## What the alert does
 
@@ -51,5 +57,5 @@ Validation performed: YAML parsing and isolated structural/condition checks, plu
 
 ## Deployable configuration additions
 
-- [Persistent switch Prometheus values and storage decision](PERSISTENCE.md): fifty-decimal-gigabyte requested PVC, nfss1 candidate class, retention and single-writer settings. Backend support must be checked before deployment.
+- [Persistent switch Prometheus values and storage decision](PERSISTENCE.md): fifty-decimal-gigabyte requested PVC, confirmed bds1 Ceph RBD class, retention and single-writer settings.
 - [Small Elasticsearch/Kibana Helm chart](elastic-small/README.md): fresh single-node installation, matching Docker Hub images, existing Secret references; no live upgrade performed.

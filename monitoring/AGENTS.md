@@ -13,3 +13,6 @@ Follow the repository ingest/query/lint workflow. Keep deployment design grounde
 
 - [Prometheus persistence configuration](PERSISTENCE.md)
 - [Elasticsearch/Kibana Helm chart](elastic-small/README.md)
+
+- [Unified monitoring chart and deployment](chart/README.md)
+- [All server targets and component values](chart/values.yaml)

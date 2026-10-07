@@ -1,0 +1,76 @@
+# Grafana-managed alert provisioning. Fill datasource UID before installation.
+# The FHS Baremetal template currently calls its node_exporter job "node".
+apiVersion: 1
+contactPoints:
+  - orgId: 1
+    name: cluster-slack
+    receivers:
+      - uid: cluster-slack-webhook
+        type: slack
+        disableResolveMessage: false
+        settings:
+          # Supplied by a Kubernetes Secret as an environment variable.
+          url: $SLACK_WEBHOOK_URL
+
+groups:
+  - orgId: 1
+    name: node-exporter-availability
+    folder: Cluster monitoring
+    interval: 30s
+    rules:
+      - uid: node-exporter-down
+        title: Node exporter scrape unavailable
+        condition: C
+        for: 2m
+        # Missing targets require expected inventory; this rule detects failed scrapes.
+        noDataState: OK
+        execErrState: Error
+        isPaused: false
+        labels:
+          severity: warning
+          component: node-exporter
+        annotations:
+          summary: 'Node exporter scrape unavailable for {{ $labels.instance }}'
+          description: 'Prometheus could not scrape this target for two minutes. Check connectivity and node_exporter; this alone does not prove the host is down.'
+        notification_settings:
+          receiver: cluster-slack
+          group_by: [grafana_folder, alertname, instance]
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 4h
+        data:
+          - refId: A
+            datasourceUid: REPLACE_PROMETHEUS_UID
+            relativeTimeRange: {from: 300, to: 0}
+            model:
+              datasource: {type: prometheus, uid: REPLACE_PROMETHEUS_UID}
+              # Boolean comparison retains healthy targets as 0, failed ones as 1.
+              expr: 'up{job="node"} == bool 0'
+              instant: true
+              range: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            datasourceUid: __expr__
+            relativeTimeRange: {from: 0, to: 0}
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: A
+              reducer: last
+              type: reduce
+              refId: B
+          - refId: C
+            datasourceUid: __expr__
+            relativeTimeRange: {from: 0, to: 0}
+            model:
+              datasource: {type: __expr__, uid: __expr__}
+              expression: B
+              type: threshold
+              refId: C
+              conditions:
+                - type: query
+                  evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last, params: []}

@@ -1,0 +1,15 @@
+dependencies:
+- name: prometheus
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 29.35.0
+- name: grafana
+  repository: https://grafana-community.github.io/helm-charts
+  version: 13.2.7
+- name: telegraf
+  repository: https://helm.influxdata.com
+  version: 1.8.77
+- name: elastic-small
+  repository: file://../elastic-small
+  version: 0.1.0
+digest: sha256:d44d0ae197f96bf32b8aadda4d3f156769ce0d45668d55448b5ff7cf15fa0fbb
+generated: "2026-10-06T20:46:02.317009339-07:00"

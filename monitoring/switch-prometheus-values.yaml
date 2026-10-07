@@ -1,11 +1,9 @@
-# Adapted SKA Observatory source: license retained at upstream-switch/LICENSE.SKAPROTOTYPING.
-# REVIEW CANDIDATE: confirm nfss1 backend. Prometheus local TSDB does not support NFS.
-# Adapted from John So's upstream values. Storage backend must be checked before deployment.
-# 50G = 50,000,000,000 bytes. Prometheus 37GB is approximately 39.7 decimal GB.
+# Adapted SKA Observatory source: license at upstream-switch/LICENSE.SKAPROTOTYPING.
+# bds1 is user-confirmed Ceph RBD; requested claim50G and retained-block cap37GB.
 server:
   persistentVolume:
     enabled: true
-    storageClass: nfss1
+    storageClass: bds1
     size: 50G
     accessModes:
     - ReadWriteOnce

@@ -81,3 +81,7 @@ Shortened the [portable FHS bundle guide](end-to-end-netbox/development/README.m
 ## 2026-10-06 — Nexus manufacturer query contract
 
 Corrected [Nexus module-type lookup](end-to-end-netbox/development/README.md): numeric manufacturer IDs use the manufacturer_id filter, while manufacturer is a slug filter. Restored native installed-module ID filter defaults to avoid the same override problem for module bays. Added real installed-collection builder and strict isolated request/copy-layout regressions; no live cluster actions or manufacturer deletion.
+
+## 2026-10-06 — Unified monitoring Helm bundle
+
+Consolidated [the monitoring stack](monitoring/chart/README.md) into a dependency-locked umbrella chart for namespace mid-cbf-monitoring. One values list contains the eight supplied server addresses with node9100/custom9101(provisional), separate scrape jobs, and no added server-side exporters. Updated persistence to user-confirmed bds1 Ceph RBD: Prometheus requests50G and retains blocks up to37GB. Preserved John's queries/tables in a classic dashboard provisioning adaptation with a stable data-source UID. Slack remains disabled pending administrator Secret; no live releases/data/volumes changed. Helm lint/render/contracts validate targets, service/namespace wiring, storage limits, pinned Docker Hub images, optionalSlack and disabled components.

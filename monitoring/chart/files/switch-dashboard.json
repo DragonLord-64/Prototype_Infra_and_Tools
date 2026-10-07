@@ -1,0 +1,838 @@
+{
+  "uid": "nexus-switch",
+  "title": "nx09AS0 400G Switch Dashboard",
+  "schemaVersion": 42,
+  "version": 1,
+  "editable": false,
+  "tags": [],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "templating": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1000,
+      "type": "row",
+      "title": "Config and Counters",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 3,
+      "title": "TableSwitch",
+      "description": "",
+      "links": [],
+      "type": "table",
+      "pluginVersion": "13.2.1",
+      "options": {
+        "cellHeight": "sm",
+        "frameIndex": 65,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "interface"
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "green"
+              },
+              {
+                "value": 80,
+                "color": "red"
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "clearTs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 75
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "dn"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 302
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "__name__"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 260
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "source"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 457
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 265
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 258
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "interface"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 164
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "accessVlan"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 220
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "operMode"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 249
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "allowedVlans"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 314
+              }
+            ]
+          }
+        ]
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "min by (interface, operSt, accessVlan, allowedVlans, operMode) (\r\n  label_replace(\r\n    nexus_interfaces_vdcId,\r\n    \"interface\",\r\n    \"$1\",\r\n    \"dn\",\r\n    \"sys/intf/phys-\\\\[([^ ]+)\\\\].*\"\r\n  )\r\n)\r\n",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A",
+          "hide": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "keepLabels": [
+              "dn",
+              "host",
+              "instance",
+              "interface",
+              "source"
+            ],
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "joinByField",
+          "options": {
+            "byField": "interface",
+            "mode": "outerTabular"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Value": true,
+              "clearTs": true,
+              "dn": false,
+              "host": true,
+              "instance": true,
+              "job": true,
+              "modTs": true,
+              "path": true,
+              "subscription": true,
+              "sys_intf": true
+            },
+            "includeByName": {},
+            "indexByName": {
+              "Time": 0,
+              "Value": 3,
+              "accessVlan": 4,
+              "allowedVlans": 5,
+              "interface": 1,
+              "operMode": 2,
+              "operSt": 6
+            },
+            "renameByName": {
+              "Time": "",
+              "dn": ""
+            }
+          }
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 15,
+        "h": 29
+      }
+    },
+    {
+      "id": 1,
+      "title": "TableSwitch",
+      "description": "",
+      "links": [],
+      "type": "table",
+      "pluginVersion": "13.2.1",
+      "options": {
+        "cellHeight": "sm",
+        "frameIndex": 65,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "Out"
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "green"
+              },
+              {
+                "value": 80,
+                "color": "red"
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "clearTs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 75
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "dn"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 302
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "__name__"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 260
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "source"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 457
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 265
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 258
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "interface"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 164
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "In"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 336
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "interface\\direction"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 254
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "Out"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 514
+              }
+            ]
+          }
+        ]
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum by (interface, direction) (\r\n  label_replace(\r\n    label_replace(\r\n      nexus_interfaces_ucastPkts,\r\n      \"interface\",\r\n      \"$1\",\r\n      \"dn\",\r\n      \"sys/intf/phys-\\\\[([^ ]+)\\\\].*\"\r\n    ),\r\n    \"direction\",\r\n    \"$1\",\r\n    \"dn\",\r\n    \".*dbgIfHC(In|Out)\"\r\n  )\r\n)\r\n* on(interface) group_left(operSt, accessVlan, allowedVlans) \r\nmin by (interface, operSt, accessVlan, allowedVlans) (\r\n  label_replace(\r\n    nexus_interfaces_vdcId,\r\n    \"interface\",\r\n    \"$1\",\r\n    \"dn\",\r\n    \"sys/intf/phys-\\\\[([^ ]+)\\\\].*\"\r\n  )\r\n)\r\n",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A",
+          "hide": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "keepLabels": [
+              "dn",
+              "host",
+              "instance",
+              "interface",
+              "source"
+            ],
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "joinByField",
+          "options": {
+            "byField": "interface",
+            "mode": "outerTabular"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "clearTs": true,
+              "dn": false,
+              "host": true,
+              "instance": true,
+              "job": true,
+              "modTs": true,
+              "path": true,
+              "subscription": true,
+              "sys_intf": true
+            },
+            "includeByName": {},
+            "indexByName": {
+              "Time": 0,
+              "Value": 2,
+              "accessVlan": 4,
+              "allowedVlans": 5,
+              "direction": 3,
+              "interface": 1,
+              "operSt": 6
+            },
+            "renameByName": {
+              "Time": "",
+              "dn": ""
+            }
+          }
+        },
+        {
+          "id": "groupingToMatrix",
+          "options": {
+            "columnField": "direction",
+            "rowField": "interface",
+            "valueField": "Value"
+          }
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 30,
+        "w": 15,
+        "h": 15
+      }
+    },
+    {
+      "id": 4,
+      "title": "TableSwitch",
+      "description": "",
+      "links": [],
+      "type": "table",
+      "pluginVersion": "13.2.1",
+      "options": {
+        "cellHeight": "sm",
+        "frameIndex": 65,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "In"
+          }
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "green"
+              },
+              {
+                "value": 80,
+                "color": "red"
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "clearTs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 75
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "dn"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 302
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "__name__"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 260
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "source"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 457
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 265
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 258
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "interface"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 164
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "In"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 336
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "interface\\direction"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 254
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "Out"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 514
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "scope": "series",
+              "options": "vlan"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 395
+              }
+            ]
+          }
+        ]
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum by (vlan) (\r\n  label_replace(\r\n    nexus_vlans_inBcastOctets, \r\n    \"vlan\", \r\n    \"$1\", \r\n    \"dn\", \r\n    \"sys/bd/bd-\\\\[([^\\\\]]+)\\\\].*\"\r\n  )\r\n)\r\n",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A",
+          "hide": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "keepLabels": [
+              "dn",
+              "host",
+              "instance",
+              "interface",
+              "source"
+            ],
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "joinByField",
+          "options": {
+            "byField": "interface",
+            "mode": "outerTabular"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "clearTs": true,
+              "dn": false,
+              "host": true,
+              "instance": true,
+              "job": true,
+              "modTs": true,
+              "path": true,
+              "subscription": true,
+              "sys_intf": true
+            },
+            "includeByName": {},
+            "indexByName": {
+              "Time": 0,
+              "Value": 2,
+              "vlan": 1
+            },
+            "renameByName": {
+              "Time": "",
+              "dn": ""
+            }
+          }
+        },
+        {
+          "id": "groupingToMatrix",
+          "options": {
+            "columnField": "direction",
+            "rowField": "interface",
+            "valueField": "Value"
+          }
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 45,
+        "w": 15,
+        "h": 15
+      }
+    }
+  ]
+}

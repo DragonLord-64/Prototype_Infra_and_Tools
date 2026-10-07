@@ -1,0 +1,23 @@
+apiVersion: v2
+name: mid-cbf-monitoring
+version: 0.1.0
+description: Portable small-cluster metrics, dashboards, alerts and Elastic logging
+type: application
+dependencies:
+  - name: prometheus
+    version: 29.35.0
+    repository: https://prometheus-community.github.io/helm-charts
+    condition: prometheus.enabled
+  - name: grafana
+    version: 13.2.7
+    repository: https://grafana-community.github.io/helm-charts
+    condition: grafana.enabled
+  - name: telegraf
+    version: 1.8.77
+    repository: https://helm.influxdata.com
+    condition: telegraf.enabled
+  - name: elastic-small
+    alias: elastic
+    version: 0.1.0
+    repository: file://../elastic-small
+    condition: elastic.enabled
