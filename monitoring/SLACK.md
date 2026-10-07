@@ -42,4 +42,3 @@ Validation performed: YAML parsing and isolated structural/condition checks, plu
 - [Grafana contact point schema](https://github.com/grafana/grafana/blob/main/pkg/services/provisioning/alerting/contact_point_types.go)
 - [Grafana Helm chart values](https://github.com/grafana-community/helm-charts/blob/main/charts/grafana/values.yaml)
 - [Prometheus jobs, instances, and up](https://prometheus.io/docs/concepts/jobs_instances/)
-
