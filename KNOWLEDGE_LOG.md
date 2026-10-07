@@ -53,3 +53,7 @@ Aligned [portable FHS SDK parser defaults](end-to-end-netbox/development/README.
 ## 2026-10-06 — Published SDK sample validation
 
 Validated the [FHS parser](end-to-end-netbox/development/README.md) against the newly published public SDK/QSFP sample. Corrected full alphanumeric serial matching and retained variable indentation. Added sanitized output-shape fixtures and copied-layout tests using them; FPGA optics remain unimported. No live hardware commands were run.
+
+## 2026-10-06 — Opt-in SDK discovery debugging
+
+Added [SDK debugging instructions](end-to-end-netbox/development/README.md), gated command-output diagnostics before normalization, and explicit failed-exit validation. Restored the source target PATH after venv prefixes and documented how old generic error wording identifies a stale filter copy. Synthetic tests cover debug output and stopping before parse/API changes on SDK failure.

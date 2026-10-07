@@ -38,6 +38,12 @@ no activate shell or SDK installation is needed. Fleet values and commands are
 ordinary play/inventory overrides. The actual output patterns are top-level vars
 and are used by the parser. Default patterns accept the working source grammar: variable indentation, index-line suffixes, and complete alphanumeric serial identifiers. Missing required fields are reported by name within each card block, without dumping command output.
 
+## SDK output debugging
+
+Enable `bootstrap_bittware_debug: true` (or pass `-e bootstrap_bittware_debug=true`) to print the SDK command exit code, stdout/stderr lines, argv and configured patterns immediately before parsing. This opt-in output includes hardware serials, so review it before sharing. It does not dump credential variables. A failed SDK exit stops before normalization; error-only output with a zero exit still must pass identity validation. The SDK retains the target's existing PATH after the venv prefixes, matching the working source.
+
+If an error still says only “Incomplete FPGA card record; review SDK output and patterns,” the controller is loading an older filter: the current parser reports missing field names. Recopy `filter_plugins/fhs_inventory.py`, `tasks/fpga.yml`, and `netbox_import.yml` together, and run a fresh Ansible process. Check any configured duplicate filter-plugin directories if the old wording persists.
+
 ## FPGA modules and ports
 
 Each discovered card has one module bay (`FPGA CARD <actual index>`), a BittWare

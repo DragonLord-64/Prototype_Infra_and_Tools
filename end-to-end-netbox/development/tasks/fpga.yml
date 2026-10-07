@@ -12,11 +12,32 @@
       argv: '{{ bootstrap_bittware_card_list_argv }}'
     environment:
       BWSDK_ROOT: '{{ bootstrap_bittware_sdk_root }}'
-      PATH: '{{ bootstrap_bittware_venv }}/../bin:{{ bootstrap_bittware_venv }}/bin:{{ hardware_command_path }}'
+      PATH: '{{ bootstrap_bittware_venv }}/../bin:{{ bootstrap_bittware_venv }}/bin:{{ ansible_facts.env.PATH | default(hardware_command_path) }}'
       LC_ALL: C
     register: _bittware_raw
     changed_when: false
     check_mode: false
+    failed_when: false
+  - name: Show SDK command output before parsing when requested
+    ansible.builtin.debug:
+      msg:
+        return_code: '{{ _bittware_raw.rc }}'
+        command_argv: '{{ _bittware_raw.cmd | default(bootstrap_bittware_card_list_argv) }}'
+        stdout_lines: '{{ _bittware_raw.stdout_lines }}'
+        stderr_lines: '{{ _bittware_raw.stderr_lines }}'
+        patterns:
+          index: '{{ bootstrap_bittware_index_pattern }}'
+          serial: '{{ bootstrap_bittware_serial_pattern }}'
+          part: '{{ bootstrap_bittware_part_pattern }}'
+          version: '{{ bootstrap_bittware_version_pattern }}'
+          bmc_firmware: '{{ bootstrap_bittware_bmc_firmware_pattern }}'
+    when: bootstrap_bittware_debug | default(false) | bool
+  - name: Require SDK command success before parsing
+    ansible.builtin.assert:
+      that:
+      - _bittware_raw.rc == 0
+      fail_msg: SDK card command failed (exit {{ _bittware_raw.rc }}). Enable bootstrap_bittware_debug to inspect stdout and stderr; no card metadata was
+        parsed.
   - name: Normalize actual card output and explicit PCI mappings
     ansible.builtin.set_fact:
       discovered_bittware: '{{ _bittware_raw.stdout | fhs_fpga_cards(bootstrap_bittware_index_pattern, bootstrap_bittware_serial_pattern, bootstrap_bittware_part_pattern,

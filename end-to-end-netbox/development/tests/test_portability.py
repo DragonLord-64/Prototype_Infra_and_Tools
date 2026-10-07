@@ -33,7 +33,7 @@ class TestPortability(unittest.TestCase):
     primary=yaml.safe_load((bundle/'netbox_import.yml').read_text())[0]
     primary['hosts']='localhost';primary['connection']='local';primary.pop('vars_files')
     primary['vars'].update(netbox_url='http://127.0.0.1:'+str(server.server_port),netbox_token='synthetic-only',ansible_python_interpreter=sys.executable,
-                           bootstrap_bittware_card_list_argv=[sys.executable,str(sdk)],facts={'hostname':'host'})
+                           bootstrap_bittware_card_list_argv=[sys.executable,str(sdk)],bootstrap_bittware_debug=True,facts={'hostname':'host'})
     helper=next(t for t in yaml.safe_load((bundle/'tasks/apply.yml').read_text()) if 'fhs_fpga_sync' in t)
     helper.pop('tags');helper['fhs_fpga_sync']['preview']='{{ ansible_check_mode }}'
     primary['tasks']=[{'ansible.builtin.import_tasks':'tasks/fpga.yml'},helper]
@@ -44,8 +44,13 @@ class TestPortability(unittest.TestCase):
      self.assertEqual(result.returncode,0,result.stdout+result.stderr);return result.stdout
     # Remove unused collection action group so custom module test has no hidden collections.
     primary['module_defaults'].pop('group/netbox.netbox.netbox');(bundle/'synthetic.yml').write_text(yaml.safe_dump([primary],sort_keys=False))
-    run('--check','--diff');self.assertFalse(api.writes)
+    preview=run('--check','--diff');self.assertIn('stdout_lines',preview);self.assertIn('stderr_lines',preview);self.assertIn('900AAAA',preview);self.assertFalse(api.writes)
     run();self.assertEqual(len(api.data['dcim/modules/']),2);self.assertEqual(len(api.data['dcim/interfaces/']),6)
     self.assertIn('changed=0',run())
+    # A failing SDK command must stop before parsing or any API write.
+    sdk.write_text('import sys; print("synthetic SDK failure", file=sys.stderr); sys.exit(7)')
+    before=len(api.writes)
+    result=subprocess.run([str(Path(sys.executable).with_name('ansible-playbook')),'-i','localhost,',str(bundle/'synthetic.yml'),'--check'],env=env,capture_output=True,text=True,timeout=60)
+    self.assertNotEqual(result.returncode,0);self.assertIn('exit 7',result.stdout);self.assertIn('synthetic SDK failure',result.stdout);self.assertNotIn('Normalize actual card output',result.stdout);self.assertEqual(len(api.writes),before)
   finally:server.shutdown();server.server_close();worker.join(timeout=3)
 if __name__=='__main__':unittest.main()

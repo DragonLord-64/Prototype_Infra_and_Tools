@@ -45,6 +45,7 @@
     - -nn
     bootstrap_bittware_pci_map: {}
     bootstrap_fpga_interface_type: 400gbase-x-qsfpdd
+    bootstrap_bittware_debug: false
   module_defaults:
     ansible.builtin.uri:
       validate_certs: '{{ netbox_validate_certs | default(netbox_validate_certs_default) | bool }}'
