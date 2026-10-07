@@ -19,6 +19,12 @@ elasticsearch:
   service:
     type: ClusterIP
 kibana:
+  ingress:
+    enabled: false
+    className: replace-me
+    host: kibana.example.invalid
+    annotations: {}
+    tlsSecretName: ''
   enabled: true
   image:
     repository: docker.io/library/kibana

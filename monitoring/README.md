@@ -6,7 +6,7 @@ A **Helm chart** contains Kubernetes resource templates. A **values file** suppl
 | --- | --- |
 | [prometheus.yaml](prometheus.yaml) | prometheus-community/prometheus 29.35.0 |
 | [telegraf.yaml](telegraf.yaml) | influxdata/telegraf 1.8.77 |
-| [elasticsearch.yaml](elasticsearch.yaml) + [kibana.yaml](kibana.yaml) | charts/elasticsearch-kibana 0.2.0, one release |
+| [elasticsearch.yaml](elasticsearch.yaml) + [kibana.yaml](kibana.yaml) | charts/elasticsearch-kibana 0.4.0, one release |
 | [grafana.yaml](grafana.yaml) | Optional Grafana 13.2.7 reference; leave the running Grafana alone |
 
 Telegraf collects switch **metrics**; central Prometheus scrapes Telegraf plus the eight servers' node/custom exporters, and Grafana displays them. Existing host Filebeat collects **logs** and sends them to Elasticsearch; Kibana searches those logs. Filebeat does not send logs to Prometheus, and Logstash is not needed here.
@@ -68,6 +68,14 @@ helm upgrade --install logging monitoring/charts/elasticsearch-kibana \
 Keep both Elastic overlays whenever Kibana is desired. Applying only Elasticsearch values to that same release sets Kibana disabled. Existing Grafana is neither installed nor upgraded by these commands. Add a Prometheus data source there manually: `http://monitoring-prometheus.mid-cbf-monitoring.svc:9090`. Prometheus/Telegraf endpoints currently have no authentication configured; Telegraf has no UI/default login.
 
 For initial Kibana access, run `kubectl -n mid-cbf-monitoring port-forward service/logging-elastic-kibana 5601:5601` and sign in at localhost:5601 as `elastic` with the saved administrator password. Use that administrator for bootstrap, not permanent Filebeat ingestion.
+
+## Kibana ingress
+
+The [Kibana overlay](kibana.yaml) enables ingress with placeholders. Before deploying, replace `kibana.ingress.className: replace-me` with your installed ingress class and `kibana.ingress.host: kibana.example.invalid` with your Kibana hostname. Run `kubectl get ingressclass` to inspect available classes. An ingress controller must already be installed; the chart creates only the routing resource. Point the hostname's DNS record at that controller's address.
+
+For HTTPS, set `kibana.ingress.tlsSecretName` to a TLS Secret in `mid-cbf-monitoring` containing your hostname's certificate/key, or configure your controller's certificate automation through `kibana.ingress.annotations`. An empty TLS Secret name renders no TLS configuration. Use HTTPS before sending login credentials across an untrusted network. The backend is the existing Kibana Service on port 5601; Elasticsearch remains cluster-internal with these values.
+
+Deploy using the existing `helm upgrade --install logging` command with both Elastic overlays. Check routing with `kubectl -n mid-cbf-monitoring get ingress`. To keep using port-forwarding instead, add `--set kibana.ingress.enabled=false` to that command. Chart defaults disable ingress; applying the Kibana overlay enables it.
 
 ## PDU push receiver on the existing Telegraf
 

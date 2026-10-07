@@ -1,4 +1,4 @@
-# Local charts/elasticsearch-kibana chart 0.3.0; fresh9.5.5, no older data PVC reuse.
+# Local charts/elasticsearch-kibana chart 0.4.0; fresh9.5.5, no older data PVC reuse.
 existingSecret: elastic-credentials
 elasticsearch:
   image:

@@ -13,3 +13,10 @@ kibana:
     limits:
       cpu: '1'
       memory: 2Gi
+  ingress:
+    enabled: true
+    className: replace-me
+    host: kibana.example.invalid
+    annotations: {}
+    # Optional TLS: set an existing Secret name after arranging its certificate.
+    tlsSecretName: ''

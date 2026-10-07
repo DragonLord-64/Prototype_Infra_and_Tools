@@ -1,0 +1,29 @@
+{{- if and .Values.kibana.enabled .Values.kibana.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "elastic-small.name" . }}-kibana
+  {{- with .Values.kibana.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.kibana.ingress.className | quote }}
+  {{- with .Values.kibana.ingress.tlsSecretName }}
+  tls:
+    - hosts:
+        - {{ $.Values.kibana.ingress.host | quote }}
+      secretName: {{ . | quote }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.kibana.ingress.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "elastic-small.name" . }}-kibana
+                port:
+                  number: 5601
+{{- end }}
