@@ -19,7 +19,7 @@ spec:
     - host: {{ .Values.kibana.ingress.host | quote }}
       http:
         paths:
-          - path: /
+          - path: {{ .Values.kibana.basePath | default "/" | quote }}
             pathType: Prefix
             backend:
               service:

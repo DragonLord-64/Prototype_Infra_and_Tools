@@ -113,3 +113,7 @@ Extended [the existing Telegraf values](monitoring/telegraf.yaml) with HTTP JSON
 ## 2026-10-07 — Kibana ingress with editable placeholders
 
 Added optional Kibana-only ingress to [the active Elastic chart](monitoring/charts/elasticsearch-kibana/Chart.yaml), version 0.4.0. [The Kibana overlay](monitoring/kibana.yaml) enables routing with placeholder hostname/class, optional annotations and existing TLS Secret; chart defaults disable it. [The guide](monitoring/README.md#kibana-ingress) explains replacement, controller/DNS prerequisites, HTTPS and disabling ingress. Local Helm rendering verifies backend port/service, TLS, disabled Kibana/ingress and schema rejection; existing bootstrap checks pass. No cluster changes performed.
+
+## 2026-10-07 — Kibana subpath routing
+
+Updated [chart 0.5.0](monitoring/charts/elasticsearch-kibana/Chart.yaml) and [Kibana values](monitoring/kibana.yaml) to serve `/mid-cbf-kibana`. Ingress preserves the path; Kibana strips it internally and probes include it. Optional publicBaseUrl supports full external URLs; chart defaults retain root routing. [The guide](monitoring/README.md#kibana-ingress) explains URLs and avoiding proxy rewrites, grounded in Elastic's base-path documentation. Helm lint/render contracts verify paths, environment, probes, root defaults and invalid-path rejection; bootstrap regressions pass. No deployment performed.

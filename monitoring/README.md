@@ -6,7 +6,7 @@ A **Helm chart** contains Kubernetes resource templates. A **values file** suppl
 | --- | --- |
 | [prometheus.yaml](prometheus.yaml) | prometheus-community/prometheus 29.35.0 |
 | [telegraf.yaml](telegraf.yaml) | influxdata/telegraf 1.8.77 |
-| [elasticsearch.yaml](elasticsearch.yaml) + [kibana.yaml](kibana.yaml) | charts/elasticsearch-kibana 0.4.0, one release |
+| [elasticsearch.yaml](elasticsearch.yaml) + [kibana.yaml](kibana.yaml) | charts/elasticsearch-kibana 0.5.0, one release |
 | [grafana.yaml](grafana.yaml) | Optional Grafana 13.2.7 reference; leave the running Grafana alone |
 
 Telegraf collects switch **metrics**; central Prometheus scrapes Telegraf plus the eight servers' node/custom exporters, and Grafana displays them. Existing host Filebeat collects **logs** and sends them to Elasticsearch; Kibana searches those logs. Filebeat does not send logs to Prometheus, and Logstash is not needed here.
@@ -67,9 +67,13 @@ helm upgrade --install logging monitoring/charts/elasticsearch-kibana \
 
 Keep both Elastic overlays whenever Kibana is desired. Applying only Elasticsearch values to that same release sets Kibana disabled. Existing Grafana is neither installed nor upgraded by these commands. Add a Prometheus data source there manually: `http://monitoring-prometheus.mid-cbf-monitoring.svc:9090`. Prometheus/Telegraf endpoints currently have no authentication configured; Telegraf has no UI/default login.
 
-For initial Kibana access, run `kubectl -n mid-cbf-monitoring port-forward service/logging-elastic-kibana 5601:5601` and sign in at localhost:5601 as `elastic` with the saved administrator password. Use that administrator for bootstrap, not permanent Filebeat ingestion.
+For initial Kibana access, run `kubectl -n mid-cbf-monitoring port-forward service/logging-elastic-kibana 5601:5601` and sign in at localhost:5601/mid-cbf-kibana as `elastic` with the saved administrator password. Use that administrator for bootstrap, not permanent Filebeat ingestion.
 
 ## Kibana ingress
+
+The active overlay mounts Kibana at `/mid-cbf-kibana`. Browse to `https://YOUR_HOST/mid-cbf-kibana` when TLS is configured (otherwise HTTP). The ingress forwards the prefix unchanged; Kibana's `SERVER_BASEPATH` and `SERVER_REWRITEBASEPATH=true` handle routing, redirects and assets. Do not add a proxy rewrite that strips the prefix. Readiness/startup probes use the same prefix. Port-forward access uses `http://localhost:5601/mid-cbf-kibana`.
+
+Set optional `kibana.publicBaseUrl` to the complete external URL, including `/mid-cbf-kibana` and no trailing slash, after choosing your hostname/protocol. To use root routing instead, set `kibana.basePath: ''`; ingress then uses `/`. [Kibana base-path settings](https://www.elastic.co/docs/reference/kibana/configuration-reference/general-settings).
 
 The [Kibana overlay](kibana.yaml) enables ingress with placeholders. Before deploying, replace `kibana.ingress.className: replace-me` with your installed ingress class and `kibana.ingress.host: kibana.example.invalid` with your Kibana hostname. Run `kubectl get ingressclass` to inspect available classes. An ingress controller must already be installed; the chart creates only the routing resource. Point the hostname's DNS record at that controller's address.
 

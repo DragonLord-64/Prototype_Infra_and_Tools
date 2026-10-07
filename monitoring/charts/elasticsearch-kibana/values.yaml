@@ -19,6 +19,8 @@ elasticsearch:
   service:
     type: ClusterIP
 kibana:
+  basePath: ''
+  publicBaseUrl: ''
   ingress:
     enabled: false
     className: replace-me

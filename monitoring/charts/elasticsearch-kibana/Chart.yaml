@@ -1,6 +1,6 @@
 apiVersion: v2
 name: elasticsearch-kibana
-version: 0.4.0
+version: 0.5.0
 appVersion: 9.5.5
 description: Single-node Elasticsearch and Kibana for a small private monitoring cluster
 type: application

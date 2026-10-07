@@ -73,6 +73,14 @@
         },
         "ingress": {
           "$ref": "#/definitions/ingress"
+        },
+        "basePath": {
+          "type": "string",
+          "pattern": "^(/[^/?#]+(/[^/?#]+)*)?$"
+        },
+        "publicBaseUrl": {
+          "type": "string",
+          "pattern": "^(|https?://[^\\s]+[^/])$"
         }
       }
     },

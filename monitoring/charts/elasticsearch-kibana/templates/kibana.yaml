@@ -28,6 +28,13 @@ spec:
           ports: [{name: http, containerPort: 5601}]
           env:
             - {name: SERVER_HOST, value: "0.0.0.0"}
+            {{- if .Values.kibana.basePath }}
+            - {name: SERVER_BASEPATH, value: {{ .Values.kibana.basePath | quote }}}
+            - {name: SERVER_REWRITEBASEPATH, value: "true"}
+            {{- end }}
+            {{- with .Values.kibana.publicBaseUrl }}
+            - {name: SERVER_PUBLICBASEURL, value: {{ . | quote }}}
+            {{- end }}
             - {name: ELASTICSEARCH_HOSTS, value: '["http://{{ include "elastic-small.name" . }}:9200"]'}
             - {name: ELASTICSEARCH_USERNAME, value: kibana_system}
             - name: ELASTICSEARCH_PASSWORD
@@ -46,11 +53,11 @@ spec:
           resources:
             {{- toYaml .Values.kibana.resources | nindent 12 }}
           startupProbe:
-            httpGet: {path: /api/status, port: http}
+            httpGet: {path: {{ printf "%s/api/status" .Values.kibana.basePath | quote }}, port: http}
             periodSeconds: 10
             failureThreshold: 60
           readinessProbe:
-            httpGet: {path: /api/status, port: http}
+            httpGet: {path: {{ printf "%s/api/status" .Values.kibana.basePath | quote }}, port: http}
             periodSeconds: 10
           livenessProbe:
             tcpSocket: {port: http}
