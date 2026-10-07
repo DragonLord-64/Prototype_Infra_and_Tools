@@ -2,10 +2,10 @@ server:
   # 1. Ephemeral Storage Setup (No Long-Term Storage)
   persistentVolume:
     enabled: false # Disables PVC provisioning entirely; runs in-memory/ephemeral
-  
+
   # 2. Set retention natively at the top level so the chart doesn't duplicate the flag
   retention: "6h"
-  
+
   # 3. Force chunks to flush to disk every hour to lower memory footprints
   extraArgs:
     storage.tsdb.min-block-duration: "1h"
