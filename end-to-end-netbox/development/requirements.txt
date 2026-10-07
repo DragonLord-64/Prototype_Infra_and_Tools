@@ -2,3 +2,5 @@ ansible-core==2.20.10
 pynetbox==7.8.0
 requests==2.34.2
 packaging==26.3
+
+pytz>=2025.2

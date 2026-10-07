@@ -9,6 +9,8 @@ Keep discovery, metadata mapping, and export knowledge here. Distinguish simulat
 
 ## Index
 
+- [Module-aware FHS dynamic inventory](development/MODULE_INVENTORY.md)
+
 - [Current portable FHS playbook bundle, FPGA/NIC modules](development/README.md)
 
 - [Pipeline and server metadata](README.md)

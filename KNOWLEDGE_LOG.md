@@ -93,3 +93,7 @@ Replaced the default umbrella interface with [visible component values](archive/
 ## 2026-10-06 — Five YAML files only
 
 Flattened [monitoring](monitoring/) to exactly five component values files, as requested. Moved every extra tracked monitoring document, helper, and chart into [the archive](archive/monitoring/README.md). Root navigation preserves chart compatibility: Elastic overlays require the archived local chart. Values and targets are unchanged; existing running Grafana and the cluster were untouched. YAML and local Helm rendering checks validate the resulting files.
+
+## 2026-10-06 — Module-aware FHS dynamic inventory
+
+Added [the read-only module inventory extension](end-to-end-netbox/development/MODULE_INVENTORY.md), preserving existing NetBox inventory auth/Vault, filters, role groups and native host variables. Supplies FPGA/NIC module lists and the existing BIST serial aliases without PSU/BDF discovery or importer changes. Actual ansible-inventory/Vault/filter/group tests passed against a synthetic API; existing BDF/interface role defaults remain unchanged.

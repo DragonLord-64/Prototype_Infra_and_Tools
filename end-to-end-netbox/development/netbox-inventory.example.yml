@@ -1,0 +1,14 @@
+# Keep api_endpoint/token from your existing inventory; this example uses NETBOX_API/NETBOX_TOKEN.
+plugin: fhs_nb_inventory
+validate_certs: false
+config_context: true
+use_extra_vars: true
+flatten_custom_fields: true
+interfaces: true
+fetch_all: false
+query_filters:
+  - status: active
+device_query_filters:
+  - has_primary_ip: 'true'
+group_by:
+  - device_roles
