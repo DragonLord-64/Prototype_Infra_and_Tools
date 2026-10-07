@@ -1,0 +1,66 @@
+# Standalone Telegraf chart1.8.77; John's Cisco DME collector configuration.
+# No UI/default login; gRPC57000 and Prometheus9273 are not authenticated here.
+config:
+  agent:
+    interval: 10s
+    round_interval: true
+    metric_batch_size: 1000
+    metric_buffer_limit: 10000
+    flush_interval: 10s
+  inputs:
+  - cisco_telemetry_mdt:
+      transport: grpc
+      service_address: :57000
+      aliases:
+        nexus_interfaces: sys/intf
+        nexus_vlans: sys/bd
+        nexus_ch: sys/ch
+      fielddrop:
+      - clearTs
+      - modTs
+      - subscription
+  processors:
+  - regex:
+      namepass:
+      - nexus_interfaces_*
+      tags:
+      - key: dn
+        pattern: phys-\[(?P<interface>[^\]]+)\]
+        replacement: ${interface}
+        result_key: interface
+      - key: dn
+        pattern: dbgIf(?P<direction>In|Out)
+        replacement: ${direction}
+        result_key: direction
+  outputs:
+  - prometheus_client:
+      listen: :9273
+      metric_version: 2
+      path: /metrics
+service:
+  enabled: true
+  type: LoadBalancer
+  port: 57000
+  additionalPorts:
+  - name: metrics
+    port: 9273
+    targetPort: 9273
+    protocol: TCP
+containerPorts:
+- name: nxos
+  containerPort: 57000
+  protocol: TCP
+- name: metrics
+  containerPort: 9273
+  protocol: TCP
+fullnameOverride: switch-telegraf
+image:
+  repo: docker.io/library/telegraf
+  tag: 1.40.1@sha256:e91237482edcb054c81571923c6b7cf64f06ed6087a2f9cf0bd3bc2cd8c0ed61
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

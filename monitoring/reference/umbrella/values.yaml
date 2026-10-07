@@ -1,5 +1,4 @@
-# All eight user-supplied server addresses are declared below.
-# Namespace: mid-cbf-monitoring. Custom port 9101 is provisional and must be verified.
+# Historical umbrella reference; Grafana disabled to preserve existing instance.
 servers:
 - address: 192.168.8.31
 - address: 192.168.8.33
@@ -192,7 +191,7 @@ telegraf:
       cpu: 500m
       memory: 512Mi
 grafana:
-  enabled: true
+  enabled: false
   fullnameOverride: monitoring-grafana
   image:
     registry: docker.io

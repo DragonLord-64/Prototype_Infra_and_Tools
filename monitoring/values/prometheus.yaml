@@ -1,0 +1,119 @@
+# Standalone Prometheus chart29.35.0; namespace mid-cbf-monitoring.
+# bds1CephRBD, requested50G, retainedblocks37GB (~39.7decimalGB).
+# Custom exporter9101 is provisional. No endpoint authentication is configured.
+server:
+  persistentVolume:
+    enabled: true
+    storageClass: bds1
+    size: 50G
+    accessModes:
+    - ReadWriteOnce
+  retention: 15d
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 500m
+    limits:
+      memory: 4Gi
+      cpu: '2'
+  service:
+    enabled: true
+    type: ClusterIP
+    servicePort: 9090
+  global:
+    scrape_interval: 30s
+    scrape_timeout: 10s
+  retentionSize: 37GB
+  strategy:
+    type: Recreate
+  fullnameOverride: monitoring-prometheus
+  image:
+    repository: docker.io/prom/prometheus
+    tag: v3.15.0
+    digest: sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e
+serverFiles:
+  recording_rules.yml:
+    groups:
+    - name: data_rates
+      interval: 30s
+      rules:
+      - record: instance:nexus_vlans_inBcastOctets:rate1m
+        expr: rate(nexus_vlans_inBcastOctets[1m])
+      - record: instance:nexus_vlans_inBcastPkts:rate1m
+        expr: rate(nexus_vlans_inBcastPkts[1m])
+      - record: instance:nexus_interfaces_broadcastPkts:rate1m
+        expr: rate(nexus_interfaces_broadcastPkts[1m])
+  prometheus.yml:
+    scrape_configs:
+    - job_name: switch-telegraf
+      static_configs:
+      - targets:
+        - switch-telegraf:9273
+    - job_name: node
+      metrics_path: /metrics
+      static_configs:
+      - targets:
+        - 192.168.8.31:9100
+        - 192.168.8.33:9100
+        - 192.168.8.35:9100
+        - 192.168.8.37:9100
+        - 192.168.8.39:9100
+        - 192.168.8.41:9100
+        - 192.168.8.43:9100
+        - 192.168.8.45:9100
+    - job_name: fhs
+      metrics_path: /metrics
+      static_configs:
+      - targets:
+        - 192.168.8.31:9101
+        - 192.168.8.33:9101
+        - 192.168.8.35:9101
+        - 192.168.8.37:9101
+        - 192.168.8.39:9101
+        - 192.168.8.41:9101
+        - 192.168.8.43:9101
+        - 192.168.8.45:9101
+    rule_files:
+    - /etc/config/recording_rules.yml
+    alerting:
+      alertmanagers:
+      - static_configs:
+        - targets:
+          - monitoring-alertmanager:9093
+alertmanager:
+  enabled: true
+  fullnameOverride: monitoring-alertmanager
+  image:
+    repository: docker.io/prom/alertmanager
+    tag: v0.31.1@sha256:88b605de9aba0410775c1eb3438f951115054e0d307f23f274a4c705f51630c1
+  configmapReload:
+    enabled: false
+  persistence:
+    enabled: true
+    storageClass: bds1
+    size: 1Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  config:
+    enabled: true
+    route:
+      receiver: pending-notifications
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 4h
+    receivers:
+    - name: pending-notifications
+prometheus-pushgateway:
+  enabled: false
+kube-state-metrics:
+  enabled: false
+prometheus-node-exporter:
+  enabled: false
+configmapReload:
+  prometheus:
+    enabled: false

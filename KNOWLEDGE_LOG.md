@@ -44,7 +44,7 @@ Moved older tracked platform, deployments, automation, utilities, and default-en
 
 ## 2026-10-06 — Grafana node-exporter Slack template
 
-Added the [alert provisioning template](monitoring/node-exporter-slack.yaml), [Helm mount/Secret example](monitoring/grafana-helm-values.example.yaml), and [usage guide](monitoring/README.md). Evidence: current Grafana documentation/provisioning schema and FHS Baremetal node job template. Failed scrapes alert after two minutes; missing inventory targets remain a separate coverage requirement. YAML/schema checks are isolated; no cluster deployment or Slack message was performed.
+Added the [alert provisioning template](monitoring/node-exporter-slack.yaml), [Helm mount/Secret example](monitoring/reference/grafana-helm-values.example.yaml), and [usage guide](monitoring/README.md). Evidence: current Grafana documentation/provisioning schema and FHS Baremetal node job template. Failed scrapes alert after two minutes; missing inventory targets remain a separate coverage requirement. YAML/schema checks are isolated; no cluster deployment or Slack message was performed.
 
 ## 2026-10-06 — FPGA SDK parser formatting compatibility
 
@@ -84,4 +84,8 @@ Corrected [Nexus module-type lookup](end-to-end-netbox/development/README.md): n
 
 ## 2026-10-06 — Unified monitoring Helm bundle
 
-Consolidated [the monitoring stack](monitoring/chart/README.md) into a dependency-locked umbrella chart for namespace mid-cbf-monitoring. One values list contains the eight supplied server addresses with node9100/custom9101(provisional), separate scrape jobs, and no added server-side exporters. Updated persistence to user-confirmed bds1 Ceph RBD: Prometheus requests50G and retains blocks up to37GB. Preserved John's queries/tables in a classic dashboard provisioning adaptation with a stable data-source UID. Slack remains disabled pending administrator Secret; no live releases/data/volumes changed. Helm lint/render/contracts validate targets, service/namespace wiring, storage limits, pinned Docker Hub images, optionalSlack and disabled components.
+Consolidated [the monitoring stack](monitoring/reference/umbrella/README.md) into a dependency-locked umbrella chart for namespace mid-cbf-monitoring. One values list contains the eight supplied server addresses with node9100/custom9101(provisional), separate scrape jobs, and no added server-side exporters. Updated persistence to user-confirmed bds1 Ceph RBD: Prometheus requests50G and retains blocks up to37GB. Preserved John's queries/tables in a classic dashboard provisioning adaptation with a stable data-source UID. Slack remains disabled pending administrator Secret; no live releases/data/volumes changed. Helm lint/render/contracts validate targets, service/namespace wiring, storage limits, pinned Docker Hub images, optionalSlack and disabled components.
+
+## 2026-10-06 — Transparent per-component monitoring values
+
+Replaced the default umbrella interface with [visible component values](monitoring/README.md) and a render-only helper. All eight node/custom target pairs are explicit in the Prometheus file; bds1/50G/37GB/15d settings are retained. Existing Grafana is excluded by default and optional values do not adopt its release. The prior umbrella and samples remain [historical references](monitoring/reference/umbrella/README.md). Documented that Prometheus/Telegraf endpoints currently have no authentication and Telegraf has no UI/default login. Local rendering/contracts validate unchanged targets/storage and absence of Grafana from default output; no live cluster operation occurred.

@@ -1,0 +1,21 @@
+# Local elastic-small chart0.1.0. Fresh Elasticsearch9.5.5; NEVER reuse an older data PVC.
+# Existing Secret reference and bds1persistent storage are visible below.
+existingSecret: elastic-credentials
+elasticsearch:
+  image:
+    repository: docker.io/library/elasticsearch
+    tag: 9.5.5
+    digest: sha256:320bef0140dcaa30527babaae9d7a41c0ccc001e97ab87c08171d867b89e8f4f
+  persistence:
+    storageClass: bds1
+    size: 20Gi
+  heap: 1g
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2Gi
+    limits:
+      cpu: '2'
+      memory: 4Gi
+kibana:
+  enabled: false

@@ -1,0 +1,40 @@
+# OPTIONAL: separate Grafana configuration; current running Grafana is untouched.
+# Default render helper excludes this file. Standalone chart13.2.7.
+fullnameOverride: optional-grafana
+image:
+  registry: docker.io
+  repository: grafana/grafana
+  tag: 13.2.3
+  sha: b28bae15e219c998fb0e0424ed724930cc61b1f61fb404d47c862f9a23f9e572
+admin:
+  existingSecret: monitoring-grafana-admin
+  userKey: admin-user
+  passwordKey: admin-password
+persistence:
+  enabled: true
+  type: pvc
+  storageClassName: bds1
+  size: 2Gi
+deploymentStrategy:
+  type: Recreate
+initChownData:
+  enabled: false
+testFramework:
+  enabled: false
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: '1'
+    memory: 1Gi
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      uid: prometheus
+      type: prometheus
+      access: proxy
+      url: http://monitoring-prometheus.{{ .Release.Namespace }}.svc:9090
+      isDefault: true

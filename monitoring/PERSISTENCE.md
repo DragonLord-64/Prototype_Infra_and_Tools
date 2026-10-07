@@ -2,7 +2,7 @@
 
 [Monitoring overview](README.md) · [Unmodified upstream source](upstream-switch/README.md)
 
-[switch-prometheus-values.yaml](switch-prometheus-values.yaml) adapts John's newest standalone Prometheus values while preserving switch scraping and recording rules. It enables a **50G** PVC (50,000,000,000 bytes, not 50Gi), requests the confirmed Ceph RBD storage class **bds1**, retains metrics for up to 15 days, and limits stored TSDB blocks to **37GB** (Prometheus's binary unit: about 39.7 decimal GB). The first time/size limit reached wins. WAL/head/index/compaction still need space; retention size is not a strict filesystem quota. Verify the provisioned PV capacity too because a provisioner may round a request upward. The requested claim does not exceed fifty decimal gigabytes.
+[values/prometheus.yaml](values/prometheus.yaml) adapts John's newest standalone Prometheus values while preserving switch scraping and recording rules. It enables a **50G** PVC (50,000,000,000 bytes, not 50Gi), requests the confirmed Ceph RBD storage class **bds1**, retains metrics for up to 15 days, and limits stored TSDB blocks to **37GB** (Prometheus's binary unit: about 39.7 decimal GB). The first time/size limit reached wins. WAL/head/index/compaction still need space; retention size is not a strict filesystem quota. Verify the provisioned PV capacity too because a provisioner may round a request upward. The requested claim does not exceed fifty decimal gigabytes.
 
 The forced one-hour block settings were removed; normal Prometheus compaction is retained. The deployment uses Recreate for a single PVC writer. CPU/memory remains John's 500m/2Gi requests and 2CPU/4Gi limits pending measurement.
 
@@ -21,9 +21,9 @@ Review locally:
 ```sh
 helm template YOUR_EXISTING_RELEASE prometheus \
   --repo https://prometheus-community.github.io/helm-charts --version 29.35.0 \
-  -n YOUR_NAMESPACE -f monitoring/switch-prometheus-values.yaml
+  -n YOUR_NAMESPACE -f monitoring/values/prometheus.yaml
 ```
 
 After choosing a supported class and reviewing existing release/image/storage settings, use your normal Helm upgrade on the existing release with this values file and any other existing overrides. The pinned validation version above is not automatic permission to upgrade the deployed Prometheus binary. The chart's standard Prometheus/config-reloader registry dependencies still need to be accessible; changing Elastic registry paths does not change these images.
 
-This configuration currently scrapes the switch Telegraf service only. Central server/node exporter target discovery remains a separate follow-up; it does not silently replace or duplicate existing bare-metal Prometheus deployments. Existing Grafana data sources should continue to use this same service.
+The primary values file explicitly scrapes the switch collector and all eight supplied node/custom exporter pairs. It installs no server-side exporters or per-server Prometheus. Existing Grafana can add the central Prometheus service manually; its running release is unchanged.

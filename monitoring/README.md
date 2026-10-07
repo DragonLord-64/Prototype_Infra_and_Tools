@@ -1,61 +1,56 @@
-# Monitoring design and Slack alerts
+# Monitoring: visible component values
 
-[Repository index](../AGENTS.md) · [Design](DESIGN.md)
+Keep this whole folder together. Each component's settings are visible in its own file:
 
-The [design](DESIGN.md) describes reusing current switch monitoring, adding persistent storage, and minimal Elasticsearch/Kibana/Filebeat logging. This folder is the portable monitoring deployment bundle, with a unified Helm chart and retained source/reference configurations.
+| File | Contents |
+| --- | --- |
+| [values/prometheus.yaml](values/prometheus.yaml) | Switch collector plus eight node9100/custom9101 target pairs, Ceph storage, retention, bundled Alertmanager |
+| [values/telegraf.yaml](values/telegraf.yaml) | John's Cisco DME listener and Prometheus output |
+| [values/elasticsearch.yaml](values/elasticsearch.yaml) | Fresh Elasticsearch9.5.5, bds1data volume, existing Secret |
+| [values/kibana.yaml](values/kibana.yaml) | Kibana9.5.5 overlay for the same Elastic release |
+| [values/grafana.yaml](values/grafana.yaml) | Optional reference only; current running Grafana is excluded |
 
-## One chart and one values file
+Use namespace **mid-cbf-monitoring**. Custom exporter **9101 is provisional**; verify it. Prometheus requests **50G**, retains up to fifteen days, and limits retained blocks to **37GB** (about39.7decimalGB). WAL/head/compaction use additional space;37GB is not a hard total-disk quota. The confirmed block-backed class is **bds1**.
 
-The [unified Helm chart](chart/README.md) now packages Prometheus, Telegraf, Grafana, Alertmanager, and Elasticsearch/Kibana. Its [values file](chart/values.yaml) declares all eight servers, node port9100 and provisional custom port9101. Use namespace **mid-cbf-monitoring**. Prometheus requests50G on the confirmed **bds1** Ceph RBD class and limits retained blocks to37GB, leaving space for database overhead.
+## Review locally
 
-Start with the unified chart guide for deployment; the standalone files below remain reference inputs. Slack stays disabled until the administrator supplies the webhook Secret. No running releases were changed or existing data migrated.
+```sh
+./monitoring/render.sh prometheus
+./monitoring/render.sh telegraf
+./monitoring/render.sh elastic
+```
 
-## What the alert does
+With no argument, the helper renders those three releases. **It never renders Grafana by default and never installs, upgrades, applies, or contacts the cluster.** It uses the included pinned chart packages. Edit the visible values and render again; later deploy each reviewed release explicitly after checking existing release ownership and storage. No automatic adoption or data migration is implemented.
 
-[node-exporter-slack.yaml](node-exporter-slack.yaml) creates a Grafana-managed rule and Slack contact point. A target whose Prometheus `up` remains zero for two minutes alerts; successful recovery generates a resolved notification. Prometheus `up` means scrape success, not proof the server is powered off.
+## Deploy only the component you choose
 
-The inspected FHS Baremetal `roles/manage_prometheus/templates/prometheus.yml.j2` uses job `node` for `localhost:9100`. The template therefore uses `up{job="node"} == bool 0`: failed targets return 1, healthy targets 0. It preserves per-instance labels without treating a healthy fleet as no data. Replace the job selector with your actual job if different. Only targets already scraped by this Prometheus are covered.
+These are operator commands, not actions already performed. Check existing Helm release ownership first; use the existing owning release when updating a component, and do not adopt the running Grafana. No full-stack deploy script is included.
 
-A target removed from discovery disappears rather than returning zero. Missing inventory targets and a disappearing whole job need a separate expected-target comparison; this template deliberately does not invent a fleet list. No data is OK for this rule, so verify the selector before installing it. Query errors produce Grafana's Error state; review error notification routing separately.
+```sh
+# Choose ONE command; each uses namespace mid-cbf-monitoring.
+helm upgrade --install monitoring-prometheus monitoring/reference/umbrella/charts/prometheus-29.35.0.tgz -n mid-cbf-monitoring -f monitoring/values/prometheus.yaml
+helm upgrade --install switch-telegraf monitoring/reference/umbrella/charts/telegraf-1.8.77.tgz -n mid-cbf-monitoring -f monitoring/values/telegraf.yaml
+helm upgrade --install logging monitoring/elastic-small -n mid-cbf-monitoring -f monitoring/values/elasticsearch.yaml -f monitoring/values/kibana.yaml
+# Only if you deliberately want a NEW separate Grafana instance:
+helm upgrade --install optional-grafana monitoring/reference/umbrella/charts/grafana-13.2.7.tgz -n mid-cbf-monitoring -f monitoring/values/grafana.yaml
+```
 
-## Fill the template
+Only a chosen Elastic installation needs `elastic-credentials`; only optional Grafana needs `monitoring-grafana-admin`. Prometheus/Telegraf need neither login Secret in these values. The namespace and storage prerequisites must already exist.
 
-1. In Grafana, open Connections → Data sources → your Prometheus source. Get its UID from its settings URL or its provisioning definition (`uid:`). In Explore, run `up{job="node"}` and confirm the expected instances. Replace BOTH `REPLACE_PROMETHEUS_UID` values with that UID. Do not use a dashboard variable here; rule query models do not interpolate environment variables.
-2. Create a Slack incoming webhook for your chosen channel. Store it in a Kubernetes Secret named `grafana-slack`, key `webhook-url`, in the SAME namespace as Grafana. Use your secret manager or Kubernetes tooling; never write the real URL into this YAML, Helm values, Git, or a ConfigMap.
-3. Create a ConfigMap named `grafana-node-exporter-alerting` from the filled non-secret file. The following command acts on the selected cluster; review the namespace/context before running it:
+Elasticsearch and Kibana share the local [elastic-small chart](elastic-small/README.md). Use both values overlays in one release; Elasticsearch-only rendering omits Kibana. For a new Elasticsearch-only installation, omit the Kibana overlay. On a release that already includes Kibana, applying only the Elasticsearch file sets Kibana disabled and can remove it, so keep both overlays whenever Kibana is desired. The existing `elastic-credentials` Secret and Elasticsearch node prerequisites are still required. These files are a fresh install, not an upgrade of older Elastic data.
 
-   ```sh
-   kubectl -n YOUR_GRAFANA_NAMESPACE create configmap grafana-node-exporter-alerting \
-     --from-file=node-exporter-slack.yaml=node-exporter-slack.yaml \
-     --dry-run=client -o yaml | kubectl apply -f -
-   ```
+## Keep existing Grafana
 
-4. Merge [grafana-helm-values.example.yaml](grafana-helm-values.example.yaml) into your existing Grafana chart values, preserving other environment entries and extra mounts. For kube-prometheus-stack, nest the example keys under `grafana:`. Upgrade the EXISTING release using its reviewed chart/version and full existing values; do not install a second Grafana. If Grafana is deployed by plain Kubernetes manifests instead, add the same Secret-backed environment variable and ConfigMap file mount to its existing Deployment.
-5. Restart Grafana through your normal release update, or reload alert provisioning via the Grafana Admin API. Provisioning runs on startup/reload; editing a ConfigMap alone does not automatically reload rules. This example uses a subPath file mount, so recreate the pod after ConfigMap changes to refresh the mounted file. Then inspect Alerting → Alert rules and Contact points, and explicitly test the Slack contact point when ready.
+Leave its deployment and Helm release unchanged. When central Prometheus is available, manually add a Prometheus data source in the existing Grafana pointing to:
 
-The ConfigMap mounts one file at `/etc/grafana/provisioning/alerting/node-exporter-slack.yaml`; it does not mask other provisioning files. `SLACK_WEBHOOK_URL` is read from the Secret at Grafana startup and expanded in contact point `settings.url`. Current Grafana file provisioning uses `settings`, not a separate `secureSettings` contact-point field; Grafana handles notifier secrets internally. Secret rotation requires restarting the pod and reprovisioning.
+`http://monitoring-prometheus.mid-cbf-monitoring.svc:9090`
 
-## Version and policy compatibility
+That address is reachable from Grafana inside the cluster; an external Grafana needs an appropriate private reachable endpoint. [dashboards/switch-dashboard.json](dashboards/switch-dashboard.json) is an optional classic-format adaptation of John's three tables with datasource UID `prometheus`. Match that UID on the new data source or select the intended source during import. The [Slack alert template](node-exporter-slack.yaml) and [its setup guide](SLACK.md) are separate; do not change Grafana provisioning or enable Slack before the administrator supplies the Secret.
 
-Direct rule-level `notification_settings.receiver` is confirmed in Grafana's 11.6 provisioning schema and current source; the local historical Grafana manifest pins 12.1.1. The user's other cluster version remains unknown. Verify support there before installation. This file contains NO policy tree, so it does not overwrite existing notification policies.
+## Authentication
 
-On an older version without direct rule routing, remove `notification_settings` and add a narrowly scoped child policy matching `component=node-exporter` to your existing policy tree, receiver `cluster-slack`. Edit/merge the current tree rather than importing an unrelated replacement. Keep stable unique rule/contact-point UIDs; if those resources already exist with different ownership, export/reconcile them first.
+Prometheus9090 and Telegraf's metrics9273 currently have **no endpoint authentication configured**. Telegraf has no web UI and no default username/password. Its DME listener57000 also has no authentication/TLS in these values. Grafana's existing login is separate; adding a Prometheus data source does not add authentication to Prometheus itself.
 
-Validation performed: YAML parsing and isolated structural/condition checks, plus comparison with official provisioning/Helm schemas. No Grafana deployment, Slack message, or live target failure test was executed.
+If endpoint authentication is required later, configure a Prometheus web-config file or an authenticated proxy and reference credentials through Secrets. For Telegraf, configure the relevant plugin's supported credentials/TLS. Never put real credentials in these values. Elasticsearch/Kibana already use Secret-backed authentication; no Secret values are printed or included here.
 
-## Sources
-
-- [Grafana file provisioning and interpolation](https://grafana.com/docs/grafana/latest/alerting/set-up/provision-alerting-resources/file-provisioning/)
-- [Grafana rule provisioning schema](https://github.com/grafana/grafana/blob/v11.6.0/pkg/services/provisioning/alerting/rules_types.go)
-- [Grafana contact point schema](https://github.com/grafana/grafana/blob/main/pkg/services/provisioning/alerting/contact_point_types.go)
-- [Grafana Helm chart values](https://github.com/grafana-community/helm-charts/blob/main/charts/grafana/values.yaml)
-- [Prometheus jobs, instances, and up](https://prometheus.io/docs/concepts/jobs_instances/)
-
-## Current switch source
-
-[Latest upstream switch monitoring setup](upstream-switch/README.md) contains John So's current Telegraf/Prometheus values, recording rules, and Grafana dashboard as unchanged reference inputs.
-
-## Deployable configuration additions
-
-- [Persistent switch Prometheus values and storage decision](PERSISTENCE.md): fifty-decimal-gigabyte requested PVC, confirmed bds1 Ceph RBD class, retention and single-writer settings.
-- [Small Elasticsearch/Kibana Helm chart](elastic-small/README.md): fresh single-node installation, matching Docker Hub images, existing Secret references; no live upgrade performed.
+The prior [umbrella chart](reference/umbrella/README.md), [upstream source](upstream-switch/README.md), and [design](DESIGN.md) remain references. They are not the default deployment interface. The optional Grafana values can be inspected with `render.sh grafana`; that still only renders and does not change the running instance.

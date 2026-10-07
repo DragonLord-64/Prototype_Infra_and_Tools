@@ -1,3 +1,7 @@
+# Historical design background
+
+This earlier planning snapshot is retained for provenance. The current interface is [visible component values](README.md); it leaves running Grafana alone.
+
 # Minimal cluster management design
 
 Read-only design, October 6, 2026; no cluster changes made.

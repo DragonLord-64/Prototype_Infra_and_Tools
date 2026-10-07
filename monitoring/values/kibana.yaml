@@ -1,0 +1,15 @@
+# Overlay for the SAME elastic-small release, not a second Elasticsearch release.
+# Combine with elasticsearch.yaml to enable Kibana9.5.5.
+kibana:
+  enabled: true
+  image:
+    repository: docker.io/library/kibana
+    tag: 9.5.5
+    digest: sha256:2302bf43b02d7497f54961cdf1308a51d2f00a9c94d4dc30a6cf1540fcc16476
+  resources:
+    requests:
+      cpu: 250m
+      memory: 1Gi
+    limits:
+      cpu: '1'
+      memory: 2Gi
