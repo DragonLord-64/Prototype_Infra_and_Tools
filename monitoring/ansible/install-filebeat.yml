@@ -1,0 +1,6 @@
+---
+- name: Install Filebeat and collect server logs
+  hosts: filebeat_servers
+  become: true
+  roles:
+    - filebeat

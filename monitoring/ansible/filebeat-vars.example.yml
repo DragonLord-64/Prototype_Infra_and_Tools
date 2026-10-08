@@ -1,0 +1,9 @@
+---
+# Absolute paths on the Ansible controller; package must match target OS/architecture.
+filebeat_package_path: /srv/packages/filebeat-9.5.5-amd64.deb
+filebeat_credentials_file: /srv/private/filebeat-credentials.vault.yml
+filebeat_elasticsearch_hosts:
+  - http://PRIVATE_ES_ADDRESS:9200
+# On journal-only systems, use journald instead of duplicate syslog collection:
+# filebeat_file_inputs_enabled: false
+# filebeat_journald_enabled: true

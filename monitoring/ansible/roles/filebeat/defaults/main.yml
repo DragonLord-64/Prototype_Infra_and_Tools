@@ -1,0 +1,46 @@
+---
+# Controller-side paths; credentials file may be encrypted with Ansible Vault.
+filebeat_package_path: ''
+filebeat_credentials_file: ''
+filebeat_remote_package_path: "/var/tmp/{{ filebeat_package_path | basename }}"
+filebeat_elasticsearch_hosts: []
+filebeat_config_path: /etc/filebeat/filebeat.yml
+filebeat_binary: /usr/bin/filebeat
+filebeat_path_home: /usr/share/filebeat
+filebeat_path_data: /var/lib/filebeat
+filebeat_path_logs: /var/log/filebeat
+filebeat_expected_major_version: '9'
+filebeat_validate_output: true
+filebeat_ssl_certificate_authorities: []
+filebeat_ssl_verification_mode: full
+filebeat_output_workers: 1
+filebeat_output_bulk_max_size: 1600
+filebeat_queue_mem_events: 3200
+filebeat_logging_level: info
+filebeat_logging_metrics_period: 30s
+filebeat_file_inputs_enabled: true
+filebeat_system_paths:
+  - /var/log/syslog
+  - /var/log/messages
+  - /var/log/kern.log
+  - /var/log/dpkg.log
+  - /var/log/apt/history.log
+  - /var/log/dnf.log
+  - /var/log/yum.log
+filebeat_auth_paths:
+  - /var/log/auth.log
+  - /var/log/secure
+  - /var/log/sudo.log
+filebeat_audit_enabled: false
+filebeat_audit_paths:
+  - /var/log/audit/audit.log
+filebeat_journald_enabled: false
+# Start with recent entries on first install; existing registry cursor wins.
+filebeat_journald_seek: since
+filebeat_journald_since: -1h
+filebeat_journald_include_matches: []
+filebeat_extra_inputs: []
+filebeat_processors:
+  - add_host_metadata: {}
+# Stable fingerprint settings; changing them can replay existing files.
+filebeat_fingerprint_length: 64

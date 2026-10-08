@@ -1,0 +1,53 @@
+# Managed by Ansible. Publishing credentials only; setup is a separate admin task.
+path.home: {{ filebeat_path_home | to_json }}
+path.data: {{ filebeat_path_data | to_json }}
+path.logs: {{ filebeat_path_logs | to_json }}
+filebeat.inputs:
+{% if filebeat_file_inputs_enabled %}
+{% for input in [{'id': 'server-system', 'paths': filebeat_system_paths, 'dataset': 'system.syslog'}, {'id': 'server-auth', 'paths': filebeat_auth_paths, 'dataset': 'system.auth'}] + ([{'id': 'server-audit', 'paths': filebeat_audit_paths, 'dataset': 'audit.raw'}] if filebeat_audit_enabled else []) %}
+  - type: filestream
+    id: {{ input.id }}
+    enabled: true
+    paths: {{ input.paths | to_json }}
+    prospector.scanner.fingerprint.enabled: true
+    prospector.scanner.fingerprint.length: {{ filebeat_fingerprint_length }}
+    file_identity.fingerprint: {}
+    fields_under_root: true
+    fields:
+      event.dataset: {{ input.dataset | to_json }}
+{% endfor %}
+{% endif %}
+{% if filebeat_journald_enabled %}
+  - type: journald
+    id: server-journal
+    seek: {{ filebeat_journald_seek | to_json }}
+    since: {{ filebeat_journald_since | to_json }}
+{% if filebeat_journald_include_matches %}
+    include_matches.match: {{ filebeat_journald_include_matches | to_json }}
+{% endif %}
+{% endif %}
+{% for input in filebeat_extra_inputs %}
+  - {{ input | to_nice_yaml(indent=2) | indent(4) | trim }}
+{% endfor %}
+processors: {{ filebeat_processors | to_json }}
+output.elasticsearch:
+  hosts: {{ filebeat_elasticsearch_hosts | to_json }}
+  username: {{ filebeat_credentials.filebeat_elasticsearch_username | replace('${', '$${') | to_json }}
+  password: {{ filebeat_credentials.filebeat_elasticsearch_password | replace('${', '$${') | to_json }}
+  worker: {{ filebeat_output_workers }}
+  bulk_max_size: {{ filebeat_output_bulk_max_size }}
+  ssl.verification_mode: {{ filebeat_ssl_verification_mode | to_json }}
+{% if filebeat_ssl_certificate_authorities %}
+  ssl.certificate_authorities: {{ filebeat_ssl_certificate_authorities | to_json }}
+{% endif %}
+# Use Filebeat's default versioned filebeat-* destination and preloaded template/ILM.
+setup.template.enabled: false
+setup.ilm.enabled: true
+setup.ilm.check_exists: false
+setup.ilm.overwrite: false
+queue.mem.events: {{ filebeat_queue_mem_events }}
+logging.level: {{ filebeat_logging_level | to_json }}
+logging.to_files: false
+logging.to_stderr: true
+logging.metrics.enabled: true
+logging.metrics.period: {{ filebeat_logging_metrics_period | to_json }}

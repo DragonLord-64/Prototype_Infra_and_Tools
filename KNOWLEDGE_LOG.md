@@ -117,3 +117,7 @@ Added optional Kibana-only ingress to [the active Elastic chart](monitoring/char
 ## 2026-10-07 — Kibana subpath routing
 
 Updated [chart 0.5.0](monitoring/charts/elasticsearch-kibana/Chart.yaml) and [Kibana values](monitoring/kibana.yaml) to serve `/mid-cbf-kibana`. Ingress preserves the path; Kibana strips it internally and probes include it. Optional publicBaseUrl supports full external URLs; chart defaults retain root routing. [The guide](monitoring/README.md#kibana-ingress) explains URLs and avoiding proxy rewrites, grounded in Elastic's base-path documentation. Helm lint/render contracts verify paths, environment, probes, root defaults and invalid-path rejection; bootstrap regressions pass. No deployment performed.
+
+## 2026-10-08 — Local-package host Filebeat role
+
+Added [the standalone Debian/Ubuntu role and guide](monitoring/ansible/README.md), with controller-local apt package installation, Vault-compatible credentials-file loading and a root-only Jinja config. Documented system/auth defaults, optional journal/audit inputs, chart-compatible `filebeat-*` publishing, required per-version administrator setup and two-host troubleshooting. Linked it from [monitoring](monitoring/README.md) and the index. Local syntax/render checks are recorded in the task result; no live package installation, deployment or indexed delivery has been verified.

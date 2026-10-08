@@ -134,6 +134,8 @@ For a first install, expect `logging-elastic-setup-1` to show `Complete` and the
 
 ## 5. Point existing Filebeat at Elasticsearch
 
+For local `.deb` installation and configurable system/authentication collection, use [the standalone Filebeat role](ansible/README.md). It reads a controller-side Vault credentials file and uses the chart publisher account.
+
 The current FHS `geerlingguy.filebeat` role supports these output variables:
 
 ```yaml
