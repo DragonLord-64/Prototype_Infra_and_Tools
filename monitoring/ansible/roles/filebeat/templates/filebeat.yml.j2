@@ -3,21 +3,6 @@ path.home: {{ filebeat_path_home | to_json }}
 path.data: {{ filebeat_path_data | to_json }}
 path.logs: {{ filebeat_path_logs | to_json }}
 filebeat.inputs:
-{% if filebeat_file_inputs_enabled %}
-{% for input in [{'id': 'server-system', 'paths': filebeat_system_paths, 'dataset': 'system.syslog'}, {'id': 'server-auth', 'paths': filebeat_auth_paths, 'dataset': 'system.auth'}] + ([{'id': 'server-audit', 'paths': filebeat_audit_paths, 'dataset': 'audit.raw'}] if filebeat_audit_enabled else []) %}
-  - type: filestream
-    id: {{ input.id }}
-    enabled: true
-    paths: {{ input.paths | to_json }}
-    prospector.scanner.fingerprint.enabled: true
-    prospector.scanner.fingerprint.length: {{ filebeat_fingerprint_length }}
-    file_identity.fingerprint: {}
-    fields_under_root: true
-    fields:
-      event.dataset: {{ input.dataset | to_json }}
-{% endfor %}
-{% endif %}
-{% if filebeat_journald_enabled %}
   - type: journald
     id: server-journal
     seek: {{ filebeat_journald_seek | to_json }}
@@ -25,11 +10,22 @@ filebeat.inputs:
 {% if filebeat_journald_include_matches %}
     include_matches.match: {{ filebeat_journald_include_matches | to_json }}
 {% endif %}
-{% endif %}
-{% for input in filebeat_extra_inputs %}
-  - {{ input | to_nice_yaml(indent=2) | indent(4) | trim }}
-{% endfor %}
-processors: {{ filebeat_processors | to_json }}
+processors:
+  - add_host_metadata: {}
+  # Filebeat translates journald PRIORITY to log.syslog.priority.
+  # Preserve that field and add the readable level for valid priorities only.
+  - script:
+      lang: javascript
+      id: journal_priority_level
+      source: |
+        function process(event) {
+          var priority = event.Get("log.syslog.priority");
+          if (typeof priority !== "number" && typeof priority !== "string") return;
+          var key = String(priority);
+          if (!/^[0-7]$/.test(key)) return;
+          var levels = ["emergency", "alert", "critical", "error", "warning", "notice", "info", "debug"];
+          event.Put("log.level", levels[Number(key)]);
+        }
 output.elasticsearch:
   hosts: {{ filebeat_elasticsearch_hosts | to_json }}
   username: {{ filebeat_credentials.filebeat_elasticsearch_username | replace('${', '$${') | to_json }}

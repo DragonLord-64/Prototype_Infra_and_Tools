@@ -121,3 +121,7 @@ Updated [chart 0.5.0](monitoring/charts/elasticsearch-kibana/Chart.yaml) and [Ki
 ## 2026-10-08 — Local-package host Filebeat role
 
 Added [the standalone Debian/Ubuntu role and guide](monitoring/ansible/README.md), with controller-local apt package installation, Vault-compatible credentials-file loading and a root-only Jinja config. Documented system/auth defaults, optional journal/audit inputs, chart-compatible `filebeat-*` publishing, required per-version administrator setup and two-host troubleshooting. Linked it from [monitoring](monitoring/README.md) and the index. Local syntax/render checks are recorded in the task result; no live package installation, deployment or indexed delivery has been verified.
+
+## 2026-10-08 — Journal-only Filebeat collection
+
+Updated [the standalone role](monitoring/ansible/README.md) to collect only the systemd journal, retaining priority metadata and adding readable `log.level` values for priorities 0–7. Removed separate file/audit/application input defaults. Verified the PRIORITY translation against Elastic Beats v9.5.5 source; local syntax/render and executable priority mapping checks passed. No live deployment or delivery was verified.

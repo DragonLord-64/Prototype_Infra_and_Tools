@@ -2,7 +2,7 @@
 galaxy_info:
   role_name: filebeat
   author: DragonLord-64
-  description: Install local Filebeat packages and ship host logs to the monitoring Elastic chart
+  description: Install local Filebeat packages and ship journal logs with priorities to the monitoring Elastic chart
   license: MIT
   min_ansible_version: '2.16'
   platforms:

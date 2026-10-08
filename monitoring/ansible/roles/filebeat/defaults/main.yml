@@ -18,29 +18,7 @@ filebeat_output_bulk_max_size: 1600
 filebeat_queue_mem_events: 3200
 filebeat_logging_level: info
 filebeat_logging_metrics_period: 30s
-filebeat_file_inputs_enabled: true
-filebeat_system_paths:
-  - /var/log/syslog
-  - /var/log/messages
-  - /var/log/kern.log
-  - /var/log/dpkg.log
-  - /var/log/apt/history.log
-  - /var/log/dnf.log
-  - /var/log/yum.log
-filebeat_auth_paths:
-  - /var/log/auth.log
-  - /var/log/secure
-  - /var/log/sudo.log
-filebeat_audit_enabled: false
-filebeat_audit_paths:
-  - /var/log/audit/audit.log
-filebeat_journald_enabled: false
-# Start with recent entries on first install; existing registry cursor wins.
+# Read only the default systemd journal. Existing registry cursor wins.
 filebeat_journald_seek: since
 filebeat_journald_since: -1h
 filebeat_journald_include_matches: []
-filebeat_extra_inputs: []
-filebeat_processors:
-  - add_host_metadata: {}
-# Stable fingerprint settings; changing them can replay existing files.
-filebeat_fingerprint_length: 64

@@ -10,8 +10,7 @@
       - filebeat_elasticsearch_hosts | select('match', '^https?://') | list | length == filebeat_elasticsearch_hosts | length
       - filebeat_package_path.endswith('.deb')
       - filebeat_ssl_verification_mode in ['full', 'strict', 'certificate']
-      - filebeat_fingerprint_length | int >= 64
-      - filebeat_file_inputs_enabled | bool or filebeat_journald_enabled | bool or filebeat_extra_inputs | length > 0
+      - filebeat_journald_seek in ['head', 'tail', 'since']
     fail_msg: Set controller package/credentials paths and reachable Elasticsearch URLs for a supported Linux package.
 
 - name: Load controller-side publishing credentials (Vault supported)
@@ -27,6 +26,11 @@
       - filebeat_credentials.filebeat_elasticsearch_password | default('') | length > 0
     fail_msg: Credentials file must define filebeat_elasticsearch_username and filebeat_elasticsearch_password.
   no_log: true
+
+- name: Require journalctl for journal collection
+  ansible.builtin.command:
+    argv: [journalctl, --version]
+  changed_when: false
 
 - name: Copy local package to target
   ansible.builtin.copy:

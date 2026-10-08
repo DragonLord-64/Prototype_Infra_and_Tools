@@ -21,25 +21,42 @@ class TemplateTests(unittest.TestCase):
 
     def test_defaults_and_secret_escaping(self):
         config = self.render()
-        self.assertEqual([i["id"] for i in config["filebeat.inputs"]], ["server-system", "server-auth"])
+        self.assertEqual([i["id"] for i in config["filebeat.inputs"]], ["server-journal"])
         self.assertEqual(config["output.elasticsearch"]["password"], 'quote"\\ colon: newline\n$${PASSWORD}')
         self.assertFalse(config["setup.template.enabled"])
         self.assertFalse(config["setup.ilm.check_exists"])
         self.assertNotIn("index", config["output.elasticsearch"])
-        self.assertEqual(config["processors"], [{"add_host_metadata": {}}])
+        self.assertEqual(config["processors"][0], {"add_host_metadata": {}})
 
-    def test_optional_inputs(self):
-        extra = {"type": "filestream", "id": "app", "paths": ["/var/log/app/*.log"]}
-        config = self.render(filebeat_audit_enabled=True, filebeat_journald_enabled=True,
-                             filebeat_extra_inputs=[extra], filebeat_journald_include_matches=["SYSLOG_IDENTIFIER=sshd"])
-        inputs = config["filebeat.inputs"]
-        self.assertEqual(len(inputs), 5)
-        self.assertEqual(inputs[-1], extra)
-        self.assertEqual(inputs[-2]["include_matches.match"], ["SYSLOG_IDENTIFIER=sshd"])
+    def test_journal_only_and_matches(self):
+        config = self.render(filebeat_journald_include_matches=["SYSLOG_IDENTIFIER=sshd"])
+        self.assertEqual(len(config["filebeat.inputs"]), 1)
+        self.assertEqual(config["filebeat.inputs"][0]["type"], "journald")
+        self.assertEqual(config["filebeat.inputs"][0]["include_matches.match"], ["SYSLOG_IDENTIFIER=sshd"])
 
-    def test_journal_only(self):
-        config = self.render(filebeat_file_inputs_enabled=False, filebeat_journald_enabled=True)
-        self.assertEqual([i["type"] for i in config["filebeat.inputs"]], ["journald"])
+    def test_priority_mapping_execution(self):
+        import subprocess
+        script = self.render()["processors"][1]["script"]["source"]
+        harness = r'''
+var assert = require("assert");
+var levels = ["emergency", "alert", "critical", "error", "warning", "notice", "info", "debug"];
+function run(priority) {
+  var fields = {"log.syslog.priority": priority};
+  process({Get: function(k) { return fields[k]; }, Put: function(k, v) { fields[k] = v; }});
+  return fields;
+}
+for (var n = 0; n < 8; n++) {
+  [n, String(n)].forEach(function(value) {
+    var fields = run(value);
+    assert.strictEqual(fields["log.level"], levels[n]);
+    assert.strictEqual(fields["log.syslog.priority"], value);
+  });
+}
+[undefined, null, -1, 8, "", "info", "3junk", "3.0", 2.5, false, []].forEach(function(value) {
+  assert.strictEqual(run(value)["log.level"], undefined);
+});
+'''
+        subprocess.run(["node", "-"], input=script + harness, text=True, check=True)
 
 if __name__ == "__main__":
     unittest.main()
