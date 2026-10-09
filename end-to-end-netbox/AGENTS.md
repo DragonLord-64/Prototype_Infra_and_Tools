@@ -24,3 +24,5 @@ Keep discovery, metadata mapping, and export knowledge here. Distinguish simulat
 
 For knowledge changes, update relevant topic pages and this index, then append
 to [the knowledge-base log](../KNOWLEDGE_LOG.md).
+
+- [NetBox to Bifrost DHCP and Cisco POAP starter](development/switch-poap/README.md) — serial-selected management MAC/IP export, templated DHCP options and switch bootstrap.

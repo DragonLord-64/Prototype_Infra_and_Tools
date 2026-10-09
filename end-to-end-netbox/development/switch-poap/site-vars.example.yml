@@ -1,0 +1,16 @@
+---
+poap_serials:
+  - REPLACE_WITH_SWITCH_SERIAL
+poap_bootfile: REPLACE_WITH_SERVER_AND_SCRIPT_LOCATION
+poap_gateway: REPLACE_WITH_MANAGEMENT_GATEWAY
+# Paths below follow the user's tested layout. Change them for your container.
+poap_hosts_file: /etc/dnsmasq.d/bifrost.dhcp-hosts.d/cisco-poap-host
+poap_options_file: /etc/dnsmasq.d/bifrost.dhcp-opts.d/cisco-poap-opts
+poap_script_file: /REPLACE_WITH_SERVED_DIRECTORY/poap_script.py
+poap_script_mode: '0644'
+poap_become: true
+# Enable only after specifying the appropriate container/service reload command.
+poap_reload_dnsmasq: false
+poap_dnsmasq_reload_argv: []
+# Optional per-switch gateways override poap_gateway.
+poap_gateways_by_serial: {}

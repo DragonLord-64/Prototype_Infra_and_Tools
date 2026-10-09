@@ -125,3 +125,7 @@ Added [the standalone Debian/Ubuntu role and guide](monitoring/ansible/README.md
 ## 2026-10-08 — Journal-only Filebeat collection
 
 Updated [the standalone role](monitoring/ansible/README.md) to collect only the systemd journal, retaining priority metadata and adding readable `log.level` values for priorities 0–7. Removed separate file/audit/application input defaults. Verified the PRIORITY translation against Elastic Beats v9.5.5 source; local syntax/render and executable priority mapping checks passed. No live deployment or delivery was verified.
+
+## 2026-10-09 — NetBox-driven switch POAP starter
+
+Added [the switch POAP bundle](end-to-end-netbox/development/switch-poap/README.md), using the existing NetBox lookup/credentials pattern. User-tested DHCP host-tag and option-67 forms define the templates; management-interface screenshots establish the MAC/IP source. All deployment paths, bootfile, gateway, credentials and NX-OS staging settings are variables. Cisco POAP references support serial-environment selection, checksum formatting and scheduled configuration. Offline tests and local HTTP-fixture execution verify rendering, validation, check mode and idempotence. Model/version compatibility and real DHCP, SSH login and configuration persistence remain unverified. No live Bifrost or switch changes were made.

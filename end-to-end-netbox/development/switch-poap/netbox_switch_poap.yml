@@ -1,0 +1,95 @@
+---
+- name: Render Bifrost DHCP and Cisco POAP from selected NetBox switches
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - defaults.yml
+    - '{{ netbox_credentials_file | default("/provision/files.d/credentials/netbox.yml") }}'
+  tasks:
+    - name: Validate settings before reading NetBox
+      ansible.builtin.assert:
+        that:
+          - poap_serials is sequence and poap_serials is not string
+          - poap_serials | length > 0
+          - poap_serials | unique | length == poap_serials | length
+          - poap_bootfile is match('^[^\s,]+$')
+          - poap_dhcp_tag is match('^[A-Za-z0-9_-]+$')
+          - poap_dhcp_option | int > 0 and poap_dhcp_option | int < 255
+          - not poap_reload_dnsmasq or poap_dnsmasq_reload_argv | length > 0
+          - poap_switch_config_filename is match('^[A-Za-z0-9_.-]+$')
+          - poap_hosts_file != poap_options_file
+          - poap_hosts_file != poap_script_file
+          - poap_options_file != poap_script_file
+        fail_msg: Supply unique serials, a bootfile, distinct output paths and valid DHCP settings.
+
+    - name: Initialize source records
+      ansible.builtin.set_fact:
+        poap_switches: []
+        poap_configurations: {}
+
+    - name: Read each selected switch and its management interface
+      ansible.builtin.include_tasks: tasks/read_switch.yml
+      loop: '{{ poap_serials }}'
+      loop_control:
+        loop_var: poap_serial
+
+    - name: Validate the complete mapping before writing files
+      ansible.builtin.set_fact:
+        poap_switches: '{{ poap_switches | poap_validate_switches }}'
+
+    - name: Render per-switch NX-OS configurations into the shared script mapping
+      ansible.builtin.set_fact:
+        poap_configurations: '{{ poap_configurations | combine({poap_switch.serial: lookup("ansible.builtin.template", "templates/nxos.cfg.j2")}) }}'
+      loop: '{{ poap_switches }}'
+      loop_control:
+        loop_var: poap_switch
+      no_log: true
+
+    - name: Create output directories
+      ansible.builtin.file:
+        path: '{{ item }}'
+        state: directory
+        mode: '{{ poap_directory_mode }}'
+        owner: '{{ poap_output_owner }}'
+        group: '{{ poap_output_group }}'
+      loop: '{{ [poap_hosts_file | dirname, poap_options_file | dirname, poap_script_file | dirname] | unique }}'
+      become: '{{ poap_become }}'
+
+    # Publish the script before DHCP advertises it.
+    - name: Publish the checksum-bearing POAP script
+      ansible.builtin.template:
+        src: templates/poap_script.py.j2
+        dest: '{{ poap_script_file }}'
+        mode: '{{ poap_script_mode }}'
+        owner: '{{ poap_output_owner }}'
+        group: '{{ poap_output_group }}'
+      become: '{{ poap_become }}'
+      no_log: true
+
+    - name: Render management MAC DHCP tags
+      ansible.builtin.template:
+        src: templates/dhcp-hosts.j2
+        dest: '{{ poap_hosts_file }}'
+        mode: '{{ poap_dnsmasq_file_mode }}'
+        owner: '{{ poap_output_owner }}'
+        group: '{{ poap_output_group }}'
+      become: '{{ poap_become }}'
+      notify: Reload Bifrost dnsmasq
+
+    - name: Render tagged bootfile option
+      ansible.builtin.template:
+        src: templates/dhcp-options.j2
+        dest: '{{ poap_options_file }}'
+        mode: '{{ poap_dnsmasq_file_mode }}'
+        owner: '{{ poap_output_owner }}'
+        group: '{{ poap_output_group }}'
+      become: '{{ poap_become }}'
+      notify: Reload Bifrost dnsmasq
+
+  handlers:
+    - name: Reload Bifrost dnsmasq
+      ansible.builtin.command:
+        argv: '{{ poap_dnsmasq_reload_argv }}'
+      become: '{{ poap_become }}'
+      when: poap_reload_dnsmasq and not ansible_check_mode

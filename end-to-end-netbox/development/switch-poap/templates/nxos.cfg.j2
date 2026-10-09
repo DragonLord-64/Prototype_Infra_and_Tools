@@ -1,0 +1,17 @@
+hostname {{ poap_switch.name | poap_cli_token }}
+{% if poap_disable_password_strength_check %}
+no password strength-check
+{% endif %}
+username {{ poap_admin_username | poap_cli_token }} password 0 {{ poap_admin_password | poap_cli_token }} role {{ poap_admin_role | poap_cli_token }}
+{% if poap_enable_ssh %}
+feature ssh
+{% endif %}
+interface {{ poap_management_interface | poap_cli_token }}
+  vrf member {{ poap_management_vrf | poap_cli_token }}
+  ip address {{ poap_switch.address }}
+  no shutdown
+vrf context {{ poap_management_vrf | poap_cli_token }}
+  ip route 0.0.0.0/0 {{ poap_switch.gateway }}
+{% for line in poap_extra_config_lines %}
+{{ line }}
+{% endfor %}

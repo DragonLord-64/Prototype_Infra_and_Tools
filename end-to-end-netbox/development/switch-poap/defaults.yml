@@ -1,0 +1,38 @@
+---
+# Override these with -e @/path/to/site-vars.yml. Keep real inventories outside Git.
+poap_serials: []
+poap_management_interface: mgmt0
+poap_management_vrf: management
+poap_gateway: ''
+poap_gateways_by_serial: {}
+poap_dhcp_tag: real-nexus-poap
+poap_dhcp_option: 67
+# Required: exactly the bootfile value your tested DHCP setup expects.
+poap_bootfile: ''
+# Preview defaults; explicitly point these at Bifrost for installation.
+poap_hosts_file: '{{ playbook_dir }}/output/bifrost.dhcp-hosts.d/cisco-poap-host'
+poap_options_file: '{{ playbook_dir }}/output/bifrost.dhcp-opts.d/cisco-poap-opts'
+poap_script_file: '{{ playbook_dir }}/output/poap_script.py'
+poap_output_owner: '{{ omit }}'
+poap_output_group: '{{ omit }}'
+poap_directory_mode: '0755'
+poap_dnsmasq_file_mode: '0644'
+# Must be readable by your HTTP/TFTP server when installed there.
+poap_script_mode: '0600'
+poap_become: false
+poap_reload_dnsmasq: false
+poap_dnsmasq_reload_argv: []
+poap_admin_username: admin
+poap_admin_password: admin
+poap_admin_role: network-admin
+poap_disable_password_strength_check: true
+poap_enable_ssh: true
+poap_extra_config_lines: []
+# NX-OS writes this temporary configuration and schedules it during POAP.
+poap_switch_config_directory: /bootflash
+poap_switch_config_filename: netbox-poap.cfg
+poap_switch_config_cli_path: bootflash:netbox-poap.cfg
+poap_serial_environment_variable: POAP_SERIAL
+poap_cli_import_module: cli
+poap_schedule_command: 'copy {config_path} scheduled-config'
+poap_netbox_validate_certs: true

@@ -1,0 +1,40 @@
+{% set body %}#!/usr/bin/env python
+"""Generated NetBox POAP bootstrap. No live NetBox access is required."""
+from __future__ import print_function
+import importlib
+import json
+import os
+import sys
+
+CONFIGURATIONS = json.loads({{ poap_configurations | to_json | to_json }})
+SERIAL_ENVIRONMENT_VARIABLE = {{ poap_serial_environment_variable | to_json }}
+CLI_IMPORT_MODULE = {{ poap_cli_import_module | to_json }}
+CONFIG_DIRECTORY = {{ poap_switch_config_directory | to_json }}
+CONFIG_FILENAME = {{ poap_switch_config_filename | to_json }}
+CONFIG_CLI_PATH = {{ poap_switch_config_cli_path | to_json }}
+SCHEDULE_COMMAND = {{ poap_schedule_command | to_json }}
+
+
+def main():
+    serial = os.environ.get(SERIAL_ENVIRONMENT_VARIABLE, "").strip()
+    if not serial or serial not in CONFIGURATIONS:
+        raise ValueError("Missing or unknown POAP serial; no configuration written")
+    # Import before writing; select cisco instead of cli on legacy NX-OS.
+    cli = importlib.import_module(CLI_IMPORT_MODULE).cli
+    destination = os.path.join(CONFIG_DIRECTORY, CONFIG_FILENAME)
+    with open(destination, "w") as config_file:
+        config_file.write(CONFIGURATIONS[serial])
+    os.chmod(destination, 0o600)
+    # NX-OS POAP applies scheduled configuration after successful script exit.
+    cli(SCHEDULE_COMMAND.format(config_path=CONFIG_CLI_PATH))
+    print("NetBox POAP configuration scheduled successfully")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception:
+        # Avoid exposing configuration/passwords through CLI exception text.
+        sys.stderr.write("NetBox POAP failed; configuration was not confirmed\n")
+        sys.exit(1)
+{% endset %}{{ body | poap_checksum -}}
