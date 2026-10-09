@@ -1,0 +1,88 @@
+---
+# Run inside Bifrost with your existing NetBox inventory (interfaces: true).
+# Supply poap_url; the only optional settings are switch_group and dnsmasq_dir.
+# Run for the entire switch group: this replaces the group's shared hosts file.
+- name: Configure switch DHCP reservations and POAP bootfile
+  hosts: '{{ switch_group | default("nexus") }}'
+  gather_facts: false
+  any_errors_fatal: true
+  vars:
+    dnsmasq_dir: /etc/dnsmasq.d
+  tasks:
+    - name: Select mgmt0 from the NetBox inventory
+      ansible.builtin.set_fact:
+        management_interfaces: '{{ interfaces | default([]) | selectattr("name", "equalto", "mgmt0") | list }}'
+
+    - name: Require one enabled management interface and a bootfile URL
+      ansible.builtin.assert:
+        that:
+          - management_interfaces | length == 1
+          - management_interfaces[0].enabled
+          - poap_url is defined
+          - poap_url is match('^https?://[^\s,]+$')
+        fail_msg: Enable interfaces in nb_inventory and supply poap_url=http://SERVER/poap_script.py.
+
+    - name: Read its MAC and IPv4 addresses
+      ansible.builtin.set_fact:
+        management_mac: '{{ ((management_interfaces[0].primary_mac_address | default({}, true)).mac_address | default(management_interfaces[0].mac_address | default(""), true)) | lower }}'
+        management_addresses: '{{ management_interfaces[0].ip_addresses | default([]) | rejectattr("address", "search", ":") | map(attribute="address") | list }}'
+
+    - name: Require a management MAC and one IPv4 address matching Ansible's address
+      ansible.builtin.assert:
+        that:
+          - management_mac is match('^([0-9a-f]{2}:){5}[0-9a-f]{2}$')
+          - management_addresses | length == 1
+          - ansible_host == management_addresses[0].split('/')[0]
+        fail_msg: Set mgmt0's MAC/IP in NetBox and make that IP the device's primary IPv4 address.
+
+    - name: Require unique management MACs and IPs across the switch group
+      ansible.builtin.assert:
+        that:
+          - ansible_play_hosts_all | map('extract', hostvars, 'management_mac') | unique | length == ansible_play_hosts_all | length
+          - ansible_play_hosts_all | map('extract', hostvars, 'ansible_host') | unique | length == ansible_play_hosts_all | length
+      run_once: true
+
+    - name: Update Bifrost DHCP files locally
+      delegate_to: localhost
+      run_once: true
+      become: true
+      vars:
+        ansible_connection: local
+      block:
+        - name: Ensure both Bifrost DHCP directories exist
+          ansible.builtin.file:
+            path: '{{ dnsmasq_dir }}/{{ item }}'
+            state: directory
+            mode: '0755'
+          loop:
+            - bifrost.dhcp-hosts.d
+            - bifrost.dhcp-opts.d
+
+        - name: Reserve each NetBox management IP and mark it for POAP
+          ansible.builtin.copy:
+            dest: '{{ dnsmasq_dir }}/bifrost.dhcp-hosts.d/cisco-poap-host'
+            mode: '0644'
+            content: |
+              {% for switch in ansible_play_hosts_all | sort %}
+              {{ hostvars[switch].management_mac }},id:*,set:real-nexus-poap,{{ hostvars[switch].ansible_host }}
+              {% endfor %}
+          notify: Reload dnsmasq DHCP data
+
+        - name: Advertise the shared HTTP script as DHCP option 67
+          ansible.builtin.copy:
+            dest: '{{ dnsmasq_dir }}/bifrost.dhcp-opts.d/cisco-poap-opts'
+            mode: '0644'
+            content: |
+              tag:real-nexus-poap,67,{{ poap_url }}
+          notify: Reload dnsmasq DHCP data
+
+  handlers:
+    # Bifrost container assumption: one dnsmasq service. HUP reloads host/option
+    # data, including changed/deleted records, without restarting the service.
+    - name: Reload dnsmasq DHCP data
+      ansible.builtin.command: pkill -HUP -x dnsmasq
+      delegate_to: localhost
+      run_once: true
+      become: true
+      vars:
+        ansible_connection: local

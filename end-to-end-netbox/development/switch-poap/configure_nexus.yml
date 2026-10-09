@@ -1,0 +1,49 @@
+---
+# Use the same NetBox inventory after POAP. mgmt0 remains on reserved DHCP.
+- name: Configure Nexus switches from their NetBox inventory
+  hosts: '{{ switch_group | default("nexus") }}'
+  connection: ansible.netcommon.network_cli
+  gather_facts: false
+  vars:
+    ansible_network_os: cisco.nxos.nxos
+  tasks:
+    - name: Default the initial login while retaining inventory authentication
+      ansible.builtin.set_fact:
+        ansible_user: '{{ ansible_user | default("admin") }}'
+        ansible_password: '{{ ansible_password | default("admin") }}'
+      no_log: true
+
+    - name: Require a valid hostname and enabled management interface
+      ansible.builtin.assert:
+        that:
+          - inventory_hostname is match('^[A-Za-z0-9][A-Za-z0-9_.-]*$')
+          - interfaces | default([]) | selectattr('name', 'equalto', 'mgmt0') | selectattr('enabled') | list | length == 1
+
+    - name: Set the NetBox device name
+      cisco.nxos.nxos_config:
+        lines:
+          - 'hostname {{ inventory_hostname }}'
+
+    - name: Apply NetBox interface descriptions and admin state
+      cisco.nxos.nxos_config:
+        parents: 'interface {{ item.name }}'
+        lines:
+          - '{{ "description " ~ item.description if item.description | default("") | length else "no description" }}'
+          - '{{ "no shutdown" if item.enabled else "shutdown" }}'
+      # Physical ports and mgmt0 only; module-bay pseudo-ports aren't configured.
+      loop: '{{ interfaces | selectattr("name", "match", "^(mgmt0|Ethernet[0-9]+(/[0-9]+)+)$") | list }}'
+      loop_control:
+        label: '{{ item.name }}'
+
+    - name: Apply any additional NX-OS commands stored in NetBox config context
+      cisco.nxos.nxos_config:
+        lines: '{{ nxos_lines }}'
+      vars:
+        context: '{{ config_context if config_context | default([]) is mapping else (config_context | default([{}], true) | first) }}'
+        nxos_lines: '{{ nxos_config | default(context.get("nxos_config", [])) }}'
+      when: nxos_lines | length > 0
+      no_log: true
+
+    - name: Save the resulting configuration
+      cisco.nxos.nxos_config:
+        save_when: modified

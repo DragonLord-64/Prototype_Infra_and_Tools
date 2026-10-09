@@ -25,4 +25,4 @@ Keep discovery, metadata mapping, and export knowledge here. Distinguish simulat
 For knowledge changes, update relevant topic pages and this index, then append
 to [the knowledge-base log](../KNOWLEDGE_LOG.md).
 
-- [NetBox to Bifrost DHCP and Cisco POAP starter](development/switch-poap/README.md) — serial-selected management MAC/IP export, templated DHCP options and switch bootstrap.
+- [DHCP, POAP SSH bootstrap, and Ansible takeover](NEXUS.md#dhcp-poap-ssh-bootstrap-and-ansible-takeover) — two playbooks and one shared script, using the existing native NetBox inventory.

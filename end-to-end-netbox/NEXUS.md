@@ -82,3 +82,78 @@ Sources: [NX-OS 10.3 show command reference](https://www.cisco.com/c/en/us/td/do
 [Cisco inventory JSON example](https://developer.cisco.com/docs/nx-api-cli-reference-for-the-cisco-nexus-9000-series-platform/inventory-commands/),
 [Cisco transceiver JSON examples](https://developer.cisco.com/docs/nx-api-cli-reference-for-the-cisco-nexus-9000-series-platform/interface-commands/),
 [Ansible NX-OS command module](https://docs.ansible.com/projects/ansible/latest/collections/cisco/nxos/nxos_command_module.html).
+
+## DHCP, POAP SSH bootstrap, and Ansible takeover
+
+The [switch-poap folder](development/switch-poap/) contains only three files:
+
+- [configure_bifrost_dhcp.yml](development/switch-poap/configure_bifrost_dhcp.yml)
+  writes the two Bifrost DHCP files using existing NetBox inventory variables.
+- [poap_script.py](development/switch-poap/poap_script.py) is the same HTTP-served
+  script for every switch: enable DHCP on mgmt0 and SSH with admin/admin.
+- [configure_nexus.yml](development/switch-poap/configure_nexus.yml) connects over
+  SSH and applies the NetBox hostname, physical-interface descriptions/admin
+  state, optional configuration-context commands, and saves the configuration.
+
+Assume your working `netbox.netbox.nb_inventory` source has `interfaces: true`.
+It supplies `interfaces[].primary_mac_address.mac_address` (or legacy
+`mac_address`), `interfaces[].ip_addresses[].address` and `ansible_host`.
+Assign one IPv4 address to an enabled mgmt0 and make it the device's primary IPv4.
+The default inventory group is `nexus`; use `switch_group` for your existing role
+group, for example `device_roles_network_switch`. No additional NetBox requests,
+credentials files, serial list, plugins, templates, or generated script are used.
+
+Run the first playbook inside Bifrost, where `/etc/dnsmasq.d` is available:
+
+```sh
+ansible-playbook -i /path/to/netbox-inv.yml \
+  development/switch-poap/configure_bifrost_dhcp.yml \
+  -e switch_group=YOUR_SWITCH_GROUP \
+  -e poap_url=http://YOUR_HTTP_SERVER/poap_script.py
+```
+
+Only `poap_url` is required beyond the working inventory. `dnsmasq_dir` overrides
+the default path if needed. Run for the entire selected group; `--limit` would
+replace the shared hosts file with only that subset. Switches are never contacted
+by this playbook; writes and a dnsmasq SIGHUP run locally with privilege escalation.
+It assumes a single dnsmasq service in the Bifrost container and `pkill` available.
+Check mode skips the HUP command and changes; create destination directories
+before a first-run check-mode preview.
+
+The files are `bifrost.dhcp-hosts.d/cisco-poap-host` and
+`bifrost.dhcp-opts.d/cisco-poap-opts`. The hosts file adds each switch's management
+MAC, `id:*`, the `real-nexus-poap` tag, and its NetBox IP reservation. The options
+file advertises `poap_url` in option 67. Other Ironic files are untouched. The
+reservation must belong to a subnet already served by Bifrost DHCP; existing
+DHCP range/router/DNS options and HTTP serving are assumed.
+
+DHCP supplies the initial IP before downloading the script. POAP then schedules
+a persistent mgmt0 DHCP/SSH configuration; reservations make that address match
+Ansible inventory after POAP too. The script needs no serial-to-IP table or
+NetBox access. Upload it to the HTTP repository yourself. To use a controller
+key, paste an OpenSSH RSA **public** key into `SSH_PUBLIC_KEY`; no hashing or
+private key is needed. admin/admin remains the initial fallback login.
+After editing the script, update its Cisco checksum header before serving it:
+
+```sh
+python3 development/switch-poap/poap_script.py --checksum
+ansible-playbook -i /path/to/netbox-inv.yml \
+  development/switch-poap/configure_nexus.yml -e switch_group=YOUR_SWITCH_GROUP
+```
+
+The takeover playbook uses existing inventory authentication and defaults missing
+username/password to admin/admin. Configure your controller private key through
+inventory as usual. Management remains on reserved DHCP. Additional commands can
+be stored as an `nxos_config` list in NetBox config context, including your final
+admin credential configuration; both native wrapped context and flattened
+context variables are supported. Interface VLAN modes, VLAN IDs, routing and
+other fabric policy are not inferred; supply their commands in that context.
+
+This replaces the earlier serial-mapping starter. Local validation covers native
+inventory consumption, DHCP file rendering/check mode/idempotence, and mocked
+POAP and takeover commands. DHCP delivery, exact NX-OS compatibility, SSH login,
+and scheduled configuration persistence still need a one-switch hardware test.
+
+Sources: [dnsmasq host reservations and SIGHUP](https://thekelleys.org.uk/dnsmasq/docs/dnsmasq-man.html),
+[NX-OS DHCP client configuration](https://www.cisco.com/c/en/us/td/docs/dcn/nx-os/nexus9000/104x/configuration/security/cisco-nexus-9000-series-nx-os-security-configuration-guide-release-104x/m-configuring-dhcp.html),
+[NX-OS SSH public key configuration](https://www.cisco.com/c/en/us/td/docs/switches/datacenter/nexus9000/sw/7-x/security/configuration/guide/b_Cisco_Nexus_9000_Series_NX-OS_Security_Configuration_Guide_7x/b_Cisco_Nexus_9000_Series_NX-OS_Security_Configuration_Guide_7x_chapter_0111.html).
