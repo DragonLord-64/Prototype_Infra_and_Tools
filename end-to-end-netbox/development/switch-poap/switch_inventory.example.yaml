@@ -1,0 +1,6 @@
+---
+# Copy to switch_inventory.yaml on the HTTP(S) server beside poap_script.py.
+# Replace these documentation-only serials and addresses before use.
+# Flat serial: IPv4/prefix map; exact, case-sensitive chassis serials.
+EXAMPLE001: 192.0.2.10/24
+EXAMPLE002: 192.0.2.11/24

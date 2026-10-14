@@ -25,4 +25,5 @@ Keep discovery, metadata mapping, and export knowledge here. Distinguish simulat
 For knowledge changes, update relevant topic pages and this index, then append
 to [the knowledge-base log](../KNOWLEDGE_LOG.md).
 
-- [DHCP, POAP SSH bootstrap, and Ansible takeover](NEXUS.md#dhcp-poap-ssh-bootstrap-and-ansible-takeover) — two playbooks and one shared script, using the existing native NetBox inventory.
+- [DHCP, POAP SSH bootstrap, and Ansible takeover](NEXUS.md#dhcp-poap-ssh-bootstrap-and-ansible-takeover) — two playbooks and one shared script, with optional HTTP-served serial/IP mapping and DHCP fallback; takeover uses the existing native NetBox inventory.
+

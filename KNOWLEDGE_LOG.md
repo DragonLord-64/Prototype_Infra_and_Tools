@@ -133,3 +133,8 @@ Added [the switch POAP bundle](end-to-end-netbox/NEXUS.md#dhcp-poap-ssh-bootstra
 ## 2026-10-09 — Simplified DHCP/POAP workflow
 
 Replaced the earlier serial-mapping bundle with [two playbooks and one script](end-to-end-netbox/NEXUS.md#dhcp-poap-ssh-bootstrap-and-ansible-takeover), as requested. Existing native NetBox inventory supplies mgmt0 MAC/IP data. DHCP reservations align switch leases with inventory; shared POAP enables DHCP/SSH, admin/admin and an optional RSA public key. The takeover playbook applies device/interface state and optional NetBox context commands. Removed separate defaults, templates, custom filters, request tasks and test scaffolding. Native inventory fixture execution verified DHCP render/check mode/idempotence and invalid-record rejection; recording modules and CLI/filesystem doubles verified takeover/bootstrap behavior and checksum. Real hardware delivery, login and POAP replay remain unverified.
+
+
+## 2026-10-14 — Optional HTTP serial map for POAP
+
+Updated [the POAP bootstrap guide](end-to-end-netbox/NEXUS.md#optional-serial-inventory) and script with an optional `switch_inventory.yaml` serial-to-IPv4/CIDR map, explicit gateway setting, bounded curl fetch, strict dependency-free YAML subset, and conservative DHCP fallback. Added a documentation-address example and offline parser/configuration/download regression tests. Existing admin/SSH setup and Ansible takeover remain in place. Source evidence: current repository script and Cisco's `POAP_SERIAL` reference implementation. No live switches or Bifrost services were changed; hardware, management-VRF curl reachability, Python 2.7 execution and persistence remain unverified.

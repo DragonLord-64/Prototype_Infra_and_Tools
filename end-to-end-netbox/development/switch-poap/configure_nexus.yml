@@ -1,5 +1,5 @@
 ---
-# Use the same NetBox inventory after POAP. mgmt0 remains on reserved DHCP.
+# Use the same NetBox inventory after POAP. ansible_host must match the static mapping or DHCP fallback.
 - name: Configure Nexus switches from their NetBox inventory
   hosts: '{{ switch_group | default("nexus") }}'
   connection: ansible.netcommon.network_cli
@@ -47,3 +47,4 @@
     - name: Save the resulting configuration
       cisco.nxos.nxos_config:
         save_when: modified
+
