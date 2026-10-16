@@ -52,8 +52,8 @@
     - name: Validate SSH public keys
       ansible.builtin.assert:
         that:
-          - lookup('ansible.builtin.file', item) | trim is match('^(ssh-rsa|ssh-ed25519) [A-Za-z0-9+/]+={0,3}( .*)?$')
-        fail_msg: 'Use one OpenSSH RSA or Ed25519 public key per .pub file.'
+          - (lookup('ansible.builtin.file', item).splitlines() | map('trim') | reject('equalto', '') | list | first | default('')) is match('^(ssh-rsa|ssh-ed25519) [A-Za-z0-9+/]+={0,3}( .*)?$')
+        fail_msg: 'The first non-empty line must be an OpenSSH RSA or Ed25519 public key.'
       loop: '{{ nexus_key_files }}'
       loop_control:
         label: '{{ item | basename }}'
@@ -76,7 +76,7 @@
       cisco.nxos.nxos_config:
         lines:
           - "username {{ item | basename | regex_replace('\\.pub$', '') }} role {{ nexus_role }}"
-          - "username {{ item | basename | regex_replace('\\.pub$', '') }} sshkey {{ (lookup('ansible.builtin.file', item) | trim).split()[0:2] | join(' ') }}"
+          - "username {{ item | basename | regex_replace('\\.pub$', '') }} sshkey {{ (lookup('ansible.builtin.file', item).splitlines() | map('trim') | reject('equalto', '') | list | first).split()[0:2] | join(' ') }}"
       loop: '{{ nexus_key_files }}'
       loop_control:
         label: '{{ item | basename }}'
