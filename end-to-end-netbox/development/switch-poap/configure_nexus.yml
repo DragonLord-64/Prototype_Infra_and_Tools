@@ -21,6 +21,12 @@
           vars:
             ansible_password: ""
             ansible_ssh_pass: ""
+
+        - name: Keep password authentication disabled after key login
+          ansible.builtin.set_fact:
+            ansible_password: ""
+            ansible_ssh_pass: ""
+          no_log: true
       rescue:
         - name: Reset failed SSH connection
           ansible.builtin.meta: reset_connection
