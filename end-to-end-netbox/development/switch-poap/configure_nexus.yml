@@ -52,7 +52,53 @@
     - name: Validate SSH public keys
       ansible.builtin.assert:
         that:
-          - lookup('ansible.builtin.file', item) | trim is match('^ssh-rsa [A-Za-z0-9+/]+={0,3}( .*)?$')
+          - lookup('ansible.builtin.file', item) | trim is match('^(ssh-rsa|ssh-ed25519) [A-Za-z0-9+/]+={0,3}( .*)?)
+        fail_msg: 'Use one OpenSSH RSA or Ed25519 public key per .pub file.'
+      loop: '{{ nexus_key_files }}'
+      loop_control:
+        label: '{{ item | basename }}'
+
+    - name: Set hostname from NetBox
+      cisco.nxos.nxos_config:
+        lines:
+          - 'hostname {{ inventory_hostname }}'
+
+    - name: Create or update password-managed users except admin
+      cisco.nxos.nxos_config:
+        lines:
+          - "username {{ item | basename | regex_replace('\\.hash$', '') }} password 5 {{ lookup('ansible.builtin.file', item) | trim }} role {{ nexus_role }}"
+      loop: "{{ nexus_hash_files | reject('search', '/admin\\.hash$') | list }}"
+      loop_control:
+        label: '{{ item | basename }}'
+      no_log: true
+
+    - name: Create or update SSH-key users with full privileges
+      cisco.nxos.nxos_config:
+        lines:
+          - "username {{ item | basename | regex_replace('\\.pub$', '') }} role {{ nexus_role }}"
+          - "username {{ item | basename | regex_replace('\\.pub$', '') }} sshkey {{ (lookup('ansible.builtin.file', item) | trim).split()[0:2] | join(' ') }}"
+      loop: '{{ nexus_key_files }}'
+      loop_control:
+        label: '{{ item | basename }}'
+
+    - name: Apply raw telemetry commands from resolved NetBox config context
+      cisco.nxos.nxos_config:
+        lines: '{{ nexus_telemetry_lines }}'
+      vars:
+        nexus_context: "{{ config_context if config_context | default({}) is mapping else (config_context | default([{}], true) | first) }}"
+        nexus_telemetry_lines: "{{ hostvars[inventory_hostname].get(nexus_telemetry_key, nexus_context.get(nexus_telemetry_key, [])) }}"
+      when: nexus_telemetry_lines | length > 0
+
+    - name: Update existing admin password last (never delete admin)
+      cisco.nxos.nxos_config:
+        lines:
+          - "username admin password 5 {{ lookup('ansible.builtin.file', nexus_credentials_dir ~ '/admin.hash') | trim }} role {{ nexus_role }}"
+      no_log: true
+
+    - name: Save configuration
+      cisco.nxos.nxos_config:
+        save_when: modified
+)
         fail_msg: 'Use one OpenSSH RSA public key per .pub file.'
       loop: '{{ nexus_key_files }}'
       loop_control:
