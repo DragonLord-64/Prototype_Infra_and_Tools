@@ -128,32 +128,105 @@
           cisco.nxos.nxos_config:
             save_when: modified
 
-    # Destructive: clears all port settings, including pre-existing breakouts.
-    # Confirm CLI support and port capabilities on the actual switch first.
-    - name: Reset physical ports and apply 4x100G breakout
+    # Port configuration is opt-in; run with --tags ports.
+    # Breakout mapping is intentionally separate from logical interface settings.
+    - name: Configure ports from declarative YAML
+      tags:
+        - never
+        - ports
+      vars:
+        nexus_port_config_file: "{{ playbook_dir }}/nexus_ports.yml"
+      block:
+        - name: Load shared port configuration
+          ansible.builtin.include_vars:
+            file: "{{ nexus_port_config_file }}"
+            name: nexus_ports
+
+        - name: Validate port configuration
+          ansible.builtin.assert:
+            that:
+              - nexus_ports.defaults is mapping
+              - nexus_ports.breakout is mapping
+              - nexus_ports.interfaces is mapping
+              - nexus_ports.defaults.mode in ['trunk', 'access']
+              - nexus_ports.defaults.enabled is boolean
+              - nexus_ports.defaults.native_vlan | int >= 1
+              - nexus_ports.defaults.native_vlan | int <= 4094
+
+        - name: Gather actual Ethernet interfaces
+          cisco.nxos.nxos_facts:
+            gather_subset: [interfaces]
+
+        - name: Select physical Ethernet interfaces
+          ansible.builtin.set_fact:
+            nexus_detected_interfaces: "{{ ansible_net_interfaces.keys() | select('match', '^Ethernet[0-9]+/[0-9]+(/[0-9]+)?$') | list | sort }}"
+
+        - name: Verify interface overrides exist
+          ansible.builtin.assert:
+            that:
+              - item in nexus_detected_interfaces
+          loop: "{{ nexus_ports.interfaces.keys() | list }}"
+
+        - name: Configure Ethernet interface defaults and overrides
+          cisco.nxos.nxos_config:
+            parents: "interface {{ item }}"
+            lines: "{{ nexus_interface_lines }}"
+          vars:
+            nexus_interface: "{{ nexus_ports.defaults | combine(nexus_ports.interfaces.get(item, {})) }}"
+            nexus_interface_lines: >-
+              {{
+                (['description ' ~ nexus_interface.description] if nexus_interface.description is defined else [])
+                + ['switchport', 'switchport mode ' ~ nexus_interface.mode]
+                + (['switchport trunk native vlan ' ~ (nexus_interface.native_vlan | string),
+                    'switchport trunk allowed vlan ' ~ (nexus_interface.allowed_vlans | string)]
+                   if nexus_interface.mode == 'trunk' else
+                   ['switchport access vlan ' ~ (nexus_interface.access_vlan | default(1) | string)])
+                + (['no shutdown'] if nexus_interface.enabled else ['shutdown'])
+              }}
+          loop: "{{ nexus_detected_interfaces }}"
+
+        - name: Save port configuration
+          cisco.nxos.nxos_config:
+            save_when: modified
+
+    # Explicit, destructive breakout operation. Native 400G is the default.
+    # The breakout commands and hardware support must be validated on the switch.
+    - name: Apply requested physical breakout mappings
       tags:
         - never
         - breakout
       vars:
-        nexus_breakout_ports: "{{ range(1, 33) | list }}"
+        nexus_port_config_file: "{{ playbook_dir }}/nexus_ports.yml"
       block:
-        - name: Reset Ethernet1 ports to defaults
-          cisco.nxos.nxos_config:
-            lines:
-              - "default interface Ethernet1/{{ item }}"
-          loop: "{{ nexus_breakout_ports }}"
+        - name: Load breakout declarations
+          ansible.builtin.include_vars:
+            file: "{{ nexus_port_config_file }}"
+            name: nexus_ports
 
-        - name: Remove existing breakout mapping
-          cisco.nxos.nxos_config:
-            lines:
-              - "no interface breakout module 1 port {{ item }}"
-          loop: "{{ nexus_breakout_ports }}"
+        - name: Validate breakout declaration values
+          ansible.builtin.assert:
+            that:
+              - item.key is match('^Ethernet1/[0-9]+$')
+              - item.value in ['400g', '4x100g']
+          loop: "{{ nexus_ports.breakout | dict2items }}"
 
-        - name: Apply 4x100G breakout
+        - name: Reset requested physical interfaces
           cisco.nxos.nxos_config:
             lines:
-              - "interface breakout module 1 port {{ item }} map 100g-4x"
-          loop: "{{ nexus_breakout_ports }}"
+              - "default interface {{ item.key }}"
+          loop: "{{ nexus_ports.breakout | dict2items }}"
+
+        - name: Remove prior breakout mapping for requested ports
+          cisco.nxos.nxos_config:
+            lines:
+              - "no interface breakout module 1 port {{ item.key.split('/')[-1] }}"
+          loop: "{{ nexus_ports.breakout | dict2items }}"
+
+        - name: Apply requested 4x100G mappings
+          cisco.nxos.nxos_config:
+            lines:
+              - "interface breakout module 1 port {{ item.key.split('/')[-1] }} map 100g-4x"
+          loop: "{{ nexus_ports.breakout | dict2items | selectattr('value', 'equalto', '4x100g') | list }}"
 
         - name: Save breakout configuration
           cisco.nxos.nxos_config:
