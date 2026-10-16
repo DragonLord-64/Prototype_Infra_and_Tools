@@ -150,8 +150,8 @@
               - nexus_ports.interfaces is mapping
               - nexus_ports.defaults.mode in ['trunk', 'access']
               - nexus_ports.defaults.enabled is boolean
-              - nexus_ports.defaults.native_vlan | int >= 1
-              - nexus_ports.defaults.native_vlan | int <= 4094
+              - (nexus_ports.defaults.native_vlan | int) >= 1
+              - (nexus_ports.defaults.native_vlan | int) <= 4094
 
         - name: Gather actual Ethernet interfaces
           cisco.nxos.nxos_facts:
