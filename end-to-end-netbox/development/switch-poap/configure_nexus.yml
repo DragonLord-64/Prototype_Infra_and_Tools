@@ -98,3 +98,18 @@
     - name: Save configuration
       cisco.nxos.nxos_config:
         save_when: modified
+
+    # Disruptive operation: explicitly opt in with --tags breakout.
+    # Verify supported ports and breakout syntax for this NX-OS/hardware first.
+    - name: Configure optional 4x100G port breakout
+      tags:
+        - never
+        - breakout
+      block:
+        - name: Apply breakout mapping to selected ports
+          cisco.nxos.nxos_config:
+            lines:
+              - "interface breakout module 1 port {{ item }} map 100g-4x"
+          loop: "{{ nexus_breakout_ports }}"
+      vars:
+        nexus_breakout_ports: "{{ range(1, 33) | list }}"
