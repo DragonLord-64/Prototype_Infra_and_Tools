@@ -42,7 +42,7 @@
     - name: Validate Cisco type-5 password hashes
       ansible.builtin.assert:
         that:
-          - lookup('ansible.builtin.file', item) | trim is match('^\\$1\\$[^$[:space:]]+\\$[^[:space:]]+$')
+          - lookup('ansible.builtin.file', item) | trim is match('^\\$1\\$[^$\\s]+\\$[^\\s]+$')
         fail_msg: 'Each .hash file must contain one NX-OS-compatible type-5 MD5-crypt hash ($1$...).'
       loop: '{{ nexus_hash_files }}'
       loop_control:
