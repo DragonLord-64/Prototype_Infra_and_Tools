@@ -11,105 +11,150 @@
     nexus_role: network-admin
     nexus_telemetry_key: nxos_telemetry_commands
   tasks:
-    - name: Use POAP bootstrap login unless inventory overrides it
-      ansible.builtin.set_fact:
-        ansible_user: '{{ ansible_user | default("admin") }}'
-        ansible_password: '{{ ansible_password | default("admin") }}'
-      no_log: true
+    # Probe the inventory user with its SSH key first. Never use inventory passwords.
+    - name: Authenticate using inventory SSH user and key, or POAP fallback
+      tags: always
+      block:
+        - name: Try inventory SSH key
+          cisco.nxos.nxos_command:
+            commands: [show clock]
+          vars:
+            ansible_password: ""
+            ansible_ssh_pass: ""
 
-    - name: Validate hostname and credentials directory
-      ansible.builtin.assert:
-        that:
-          - inventory_hostname is match('^[A-Za-z0-9][A-Za-z0-9_.-]*$')
-          - lookup('ansible.builtin.fileglob', nexus_credentials_dir ~ '/*.hash', wantlist=True) | length > 0
-          - lookup('ansible.builtin.fileglob', nexus_credentials_dir ~ '/admin.hash', wantlist=True) | length == 1
-        fail_msg: 'Provide a valid NetBox hostname and credentials/admin.hash on the controller.'
+        - name: Keep password authentication disabled after key login
+          ansible.builtin.set_fact:
+            ansible_password: ""
+            ansible_ssh_pass: ""
+          no_log: true
+      rescue:
+        - name: Reset failed SSH connection
+          ansible.builtin.meta: reset_connection
 
-    - name: Discover credential files on the controller
-      ansible.builtin.set_fact:
-        nexus_hash_files: "{{ lookup('ansible.builtin.fileglob', nexus_credentials_dir ~ '/*.hash', wantlist=True) | sort }}"
-        nexus_key_files: "{{ lookup('ansible.builtin.fileglob', nexus_credentials_dir ~ '/*.pub', wantlist=True) | sort }}"
+        - name: Fall back to POAP admin credentials
+          ansible.builtin.set_fact:
+            ansible_user: admin
+            ansible_password: admin
+          no_log: true
 
-    - name: Validate credential filenames
-      ansible.builtin.assert:
-        that:
-          - (item | basename | regex_replace('\\.(hash|pub)$', '')) is match('^[A-Za-z][A-Za-z0-9_-]*$')
-        fail_msg: 'Credential filenames must be username.hash or username.pub.'
-      loop: '{{ nexus_hash_files + nexus_key_files }}'
-      loop_control:
-        label: '{{ item | basename }}'
+        - name: Verify POAP admin login
+          cisco.nxos.nxos_command:
+            commands: [show clock]
 
-    - name: Validate Cisco type-5 password hashes
-      ansible.builtin.assert:
-        that:
-          - lookup('ansible.builtin.file', item) | trim is match('^\\$1\\$[^$\\s]+\\$[^\\s]+$')
-        fail_msg: 'Each .hash file must contain one NX-OS-compatible type-5 MD5-crypt hash ($1$...).'
-      loop: '{{ nexus_hash_files }}'
-      loop_control:
-        label: '{{ item | basename }}'
-      no_log: true
+    - name: Provision hostname, users and telemetry
+      tags:
+        - never
+        - provision
+      block:
+        - name: Validate hostname and credentials directory
+          ansible.builtin.assert:
+            that:
+              - inventory_hostname is match('^[A-Za-z0-9][A-Za-z0-9_.-]*$')
+              - lookup('ansible.builtin.fileglob', nexus_credentials_dir ~ '/*.hash', wantlist=True) | length > 0
+              - lookup('ansible.builtin.fileglob', nexus_credentials_dir ~ '/admin.hash', wantlist=True) | length == 1
+            fail_msg: 'Provide a valid NetBox hostname and credentials/admin.hash on the controller.'
+    
+        - name: Discover credential files on the controller
+          ansible.builtin.set_fact:
+            nexus_hash_files: "{{ lookup('ansible.builtin.fileglob', nexus_credentials_dir ~ '/*.hash', wantlist=True) | sort }}"
+            nexus_key_files: "{{ lookup('ansible.builtin.fileglob', nexus_credentials_dir ~ '/*.pub', wantlist=True) | sort }}"
+    
+        - name: Validate credential filenames
+          ansible.builtin.assert:
+            that:
+              - (item | basename | regex_replace('\\.(hash|pub)$', '')) is match('^[A-Za-z][A-Za-z0-9_-]*$')
+            fail_msg: 'Credential filenames must be username.hash or username.pub.'
+          loop: '{{ nexus_hash_files + nexus_key_files }}'
+          loop_control:
+            label: '{{ item | basename }}'
+    
+        - name: Validate Cisco type-5 password hashes
+          ansible.builtin.assert:
+            that:
+              - lookup('ansible.builtin.file', item) | trim is match('^\\$1\\$[^$\\s]+\\$[^\\s]+$')
+            fail_msg: 'Each .hash file must contain one NX-OS-compatible type-5 MD5-crypt hash ($1$...).'
+          loop: '{{ nexus_hash_files }}'
+          loop_control:
+            label: '{{ item | basename }}'
+          no_log: true
+    
+        - name: Validate SSH public keys
+          ansible.builtin.assert:
+            that:
+              - (lookup('ansible.builtin.file', item).splitlines() | map('trim') | reject('equalto', '') | list | first | default('')) is match('^(ssh-rsa|ssh-ed25519) [A-Za-z0-9+/]+={0,3}( .*)?$')
+            fail_msg: 'The first non-empty line must be an OpenSSH RSA or Ed25519 public key.'
+          loop: '{{ nexus_key_files }}'
+          loop_control:
+            label: '{{ item | basename }}'
+    
+        - name: Set hostname from NetBox
+          cisco.nxos.nxos_config:
+            lines:
+              - 'hostname {{ inventory_hostname }}'
+    
+        - name: Create or update password-managed users except admin
+          cisco.nxos.nxos_config:
+            lines:
+              - "username {{ item | basename | regex_replace('\\.hash$', '') }} password 5 {{ lookup('ansible.builtin.file', item) | trim }} role {{ nexus_role }}"
+          loop: "{{ nexus_hash_files | reject('search', '/admin\\.hash$') | list }}"
+          loop_control:
+            label: '{{ item | basename }}'
+          no_log: true
+    
+        - name: Create or update SSH-key users with full privileges
+          cisco.nxos.nxos_config:
+            lines:
+              - "username {{ item | basename | regex_replace('\\.pub$', '') }} role {{ nexus_role }}"
+              - "username {{ item | basename | regex_replace('\\.pub$', '') }} sshkey {{ (lookup('ansible.builtin.file', item).splitlines() | map('trim') | reject('equalto', '') | list | first).split()[0:2] | join(' ') }}"
+          loop: '{{ nexus_key_files }}'
+          loop_control:
+            label: '{{ item | basename }}'
+    
+        - name: Apply raw telemetry commands from resolved NetBox config context
+          cisco.nxos.nxos_config:
+            lines: '{{ nexus_telemetry_lines }}'
+          vars:
+            nexus_context: "{{ config_context if config_context | default({}) is mapping else (config_context | default([{}], true) | first) }}"
+            nexus_telemetry_lines: "{{ hostvars[inventory_hostname].get(nexus_telemetry_key, nexus_context.get(nexus_telemetry_key, [])) }}"
+          when: nexus_telemetry_lines | length > 0
+    
+        - name: Update existing admin password last (never delete admin)
+          cisco.nxos.nxos_config:
+            lines:
+              - "username admin password 5 {{ lookup('ansible.builtin.file', nexus_credentials_dir ~ '/admin.hash') | trim }} role {{ nexus_role }}"
+          no_log: true
+    
+        - name: Save configuration
+          cisco.nxos.nxos_config:
+            save_when: modified
 
-    - name: Validate SSH public keys
-      ansible.builtin.assert:
-        that:
-          - (lookup('ansible.builtin.file', item).splitlines() | map('trim') | reject('equalto', '') | list | first | default('')) is match('^(ssh-rsa|ssh-ed25519) [A-Za-z0-9+/]+={0,3}( .*)?$')
-        fail_msg: 'The first non-empty line must be an OpenSSH RSA or Ed25519 public key.'
-      loop: '{{ nexus_key_files }}'
-      loop_control:
-        label: '{{ item | basename }}'
-
-    - name: Set hostname from NetBox
-      cisco.nxos.nxos_config:
-        lines:
-          - 'hostname {{ inventory_hostname }}'
-
-    - name: Create or update password-managed users except admin
-      cisco.nxos.nxos_config:
-        lines:
-          - "username {{ item | basename | regex_replace('\\.hash$', '') }} password 5 {{ lookup('ansible.builtin.file', item) | trim }} role {{ nexus_role }}"
-      loop: "{{ nexus_hash_files | reject('search', '/admin\\.hash$') | list }}"
-      loop_control:
-        label: '{{ item | basename }}'
-      no_log: true
-
-    - name: Create or update SSH-key users with full privileges
-      cisco.nxos.nxos_config:
-        lines:
-          - "username {{ item | basename | regex_replace('\\.pub$', '') }} role {{ nexus_role }}"
-          - "username {{ item | basename | regex_replace('\\.pub$', '') }} sshkey {{ (lookup('ansible.builtin.file', item).splitlines() | map('trim') | reject('equalto', '') | list | first).split()[0:2] | join(' ') }}"
-      loop: '{{ nexus_key_files }}'
-      loop_control:
-        label: '{{ item | basename }}'
-
-    - name: Apply raw telemetry commands from resolved NetBox config context
-      cisco.nxos.nxos_config:
-        lines: '{{ nexus_telemetry_lines }}'
-      vars:
-        nexus_context: "{{ config_context if config_context | default({}) is mapping else (config_context | default([{}], true) | first) }}"
-        nexus_telemetry_lines: "{{ hostvars[inventory_hostname].get(nexus_telemetry_key, nexus_context.get(nexus_telemetry_key, [])) }}"
-      when: nexus_telemetry_lines | length > 0
-
-    - name: Update existing admin password last (never delete admin)
-      cisco.nxos.nxos_config:
-        lines:
-          - "username admin password 5 {{ lookup('ansible.builtin.file', nexus_credentials_dir ~ '/admin.hash') | trim }} role {{ nexus_role }}"
-      no_log: true
-
-    - name: Save configuration
-      cisco.nxos.nxos_config:
-        save_when: modified
-
-    # Disruptive operation: explicitly opt in with --tags breakout.
-    # Verify supported ports and breakout syntax for this NX-OS/hardware first.
-    - name: Configure optional 4x100G port breakout
+    # Destructive: clears all port settings, including pre-existing breakouts.
+    # Confirm CLI support and port capabilities on the actual switch first.
+    - name: Reset physical ports and apply 4x100G breakout
       tags:
         - never
         - breakout
+      vars:
+        nexus_breakout_ports: "{{ range(1, 33) | list }}"
       block:
-        - name: Apply breakout mapping to selected ports
+        - name: Reset Ethernet1 ports to defaults
+          cisco.nxos.nxos_config:
+            lines:
+              - "default interface Ethernet1/{{ item }}"
+          loop: "{{ nexus_breakout_ports }}"
+
+        - name: Remove existing breakout mapping
+          cisco.nxos.nxos_config:
+            lines:
+              - "no interface breakout module 1 port {{ item }}"
+          loop: "{{ nexus_breakout_ports }}"
+
+        - name: Apply 4x100G breakout
           cisco.nxos.nxos_config:
             lines:
               - "interface breakout module 1 port {{ item }} map 100g-4x"
           loop: "{{ nexus_breakout_ports }}"
-      vars:
-        nexus_breakout_ports: "{{ range(1, 33) | list }}"
+
+        - name: Save breakout configuration
+          cisco.nxos.nxos_config:
+            save_when: modified
