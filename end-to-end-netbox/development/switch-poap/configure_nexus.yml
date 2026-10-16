@@ -1,49 +1,100 @@
 ---
-# Use the same NetBox inventory after POAP. mgmt0 remains on reserved DHCP.
-- name: Configure Nexus switches from their NetBox inventory
+# Post-POAP takeover. POAP owns mgmt0/IP; this playbook owns identity and telemetry.
+- name: Configure Nexus switches from NetBox
   hosts: '{{ switch_group | default("nexus") }}'
   connection: ansible.netcommon.network_cli
   gather_facts: false
   vars:
     ansible_network_os: cisco.nxos.nxos
+    # Controller-local directory. Never commit real hashes or credentials.
+    nexus_credentials_dir: "{{ playbook_dir }}/credentials"
+    nexus_role: network-admin
+    nexus_telemetry_key: nxos_telemetry_commands
   tasks:
-    - name: Default the initial login while retaining inventory authentication
+    - name: Use POAP bootstrap login unless inventory overrides it
       ansible.builtin.set_fact:
         ansible_user: '{{ ansible_user | default("admin") }}'
         ansible_password: '{{ ansible_password | default("admin") }}'
       no_log: true
 
-    - name: Require a valid hostname and enabled management interface
+    - name: Validate hostname and credentials directory
       ansible.builtin.assert:
         that:
           - inventory_hostname is match('^[A-Za-z0-9][A-Za-z0-9_.-]*$')
-          - interfaces | default([]) | selectattr('name', 'equalto', 'mgmt0') | selectattr('enabled') | list | length == 1
+          - lookup('ansible.builtin.fileglob', nexus_credentials_dir ~ '/*.hash', wantlist=True) | length > 0
+          - lookup('ansible.builtin.fileglob', nexus_credentials_dir ~ '/admin.hash', wantlist=True) | length == 1
+        fail_msg: 'Provide a valid NetBox hostname and credentials/admin.hash on the controller.'
 
-    - name: Set the NetBox device name
+    - name: Discover credential files on the controller
+      ansible.builtin.set_fact:
+        nexus_hash_files: "{{ lookup('ansible.builtin.fileglob', nexus_credentials_dir ~ '/*.hash', wantlist=True) | sort }}"
+        nexus_key_files: "{{ lookup('ansible.builtin.fileglob', nexus_credentials_dir ~ '/*.pub', wantlist=True) | sort }}"
+
+    - name: Validate credential filenames
+      ansible.builtin.assert:
+        that:
+          - (item | basename | regex_replace('\\.(hash|pub)$', '')) is match('^[A-Za-z][A-Za-z0-9_-]*$')
+        fail_msg: 'Credential filenames must be username.hash or username.pub.'
+      loop: '{{ nexus_hash_files + nexus_key_files }}'
+      loop_control:
+        label: '{{ item | basename }}'
+
+    - name: Validate Cisco type-5 password hashes
+      ansible.builtin.assert:
+        that:
+          - lookup('ansible.builtin.file', item) | trim is match('^\\$1\\$[^$[:space:]]+\\$[^[:space:]]+$')
+        fail_msg: 'Each .hash file must contain one NX-OS-compatible type-5 MD5-crypt hash ($1$...).'
+      loop: '{{ nexus_hash_files }}'
+      loop_control:
+        label: '{{ item | basename }}'
+      no_log: true
+
+    - name: Validate SSH public keys
+      ansible.builtin.assert:
+        that:
+          - lookup('ansible.builtin.file', item) | trim is match('^ssh-rsa [A-Za-z0-9+/]+={0,3}( .*)?$')
+        fail_msg: 'Use one OpenSSH RSA public key per .pub file.'
+      loop: '{{ nexus_key_files }}'
+      loop_control:
+        label: '{{ item | basename }}'
+
+    - name: Set hostname from NetBox
       cisco.nxos.nxos_config:
         lines:
           - 'hostname {{ inventory_hostname }}'
 
-    - name: Apply NetBox interface descriptions and admin state
+    - name: Create or update password-managed users except admin
       cisco.nxos.nxos_config:
-        parents: 'interface {{ item.name }}'
         lines:
-          - '{{ "description " ~ item.description if item.description | default("") | length else "no description" }}'
-          - '{{ "no shutdown" if item.enabled else "shutdown" }}'
-      # Physical ports and mgmt0 only; module-bay pseudo-ports aren't configured.
-      loop: '{{ interfaces | selectattr("name", "match", "^(mgmt0|Ethernet[0-9]+(/[0-9]+)+)$") | list }}'
+          - "username {{ item | basename | regex_replace('\\.hash$', '') }} password 5 {{ lookup('ansible.builtin.file', item) | trim }} role {{ nexus_role }}"
+      loop: "{{ nexus_hash_files | reject('search', '/admin\\.hash$') | list }}"
       loop_control:
-        label: '{{ item.name }}'
-
-    - name: Apply any additional NX-OS commands stored in NetBox config context
-      cisco.nxos.nxos_config:
-        lines: '{{ nxos_lines }}'
-      vars:
-        context: '{{ config_context if config_context | default([]) is mapping else (config_context | default([{}], true) | first) }}'
-        nxos_lines: '{{ nxos_config | default(context.get("nxos_config", [])) }}'
-      when: nxos_lines | length > 0
+        label: '{{ item | basename }}'
       no_log: true
 
-    - name: Save the resulting configuration
+    - name: Create or update SSH-key users with full privileges
+      cisco.nxos.nxos_config:
+        lines:
+          - "username {{ item | basename | regex_replace('\\.pub$', '') }} role {{ nexus_role }}"
+          - "username {{ item | basename | regex_replace('\\.pub$', '') }} sshkey {{ (lookup('ansible.builtin.file', item) | trim).split()[0:2] | join(' ') }}"
+      loop: '{{ nexus_key_files }}'
+      loop_control:
+        label: '{{ item | basename }}'
+
+    - name: Apply raw telemetry commands from resolved NetBox config context
+      cisco.nxos.nxos_config:
+        lines: '{{ nexus_telemetry_lines }}'
+      vars:
+        nexus_context: "{{ config_context if config_context | default({}) is mapping else (config_context | default([{}], true) | first) }}"
+        nexus_telemetry_lines: "{{ hostvars[inventory_hostname].get(nexus_telemetry_key, nexus_context.get(nexus_telemetry_key, [])) }}"
+      when: nexus_telemetry_lines | length > 0
+
+    - name: Update existing admin password last (never delete admin)
+      cisco.nxos.nxos_config:
+        lines:
+          - "username admin password 5 {{ lookup('ansible.builtin.file', nexus_credentials_dir ~ '/admin.hash') | trim }} role {{ nexus_role }}"
+      no_log: true
+
+    - name: Save configuration
       cisco.nxos.nxos_config:
         save_when: modified
