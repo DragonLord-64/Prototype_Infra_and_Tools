@@ -72,3 +72,23 @@ Use `-e nexus_credentials_dir=/secure/path` for another local directory.
 bootstrap credentials. Test on one switch first and verify a *new* SSH login
 using the configured key/password after running; do not rely on an existing
 SSH session. The playbook has not been tested on live NX-OS hardware.
+
+
+## Declarative Ethernet port configuration
+
+Edit `nexus_ports.yml` beside this playbook. `defaults` apply to all Ethernet
+interfaces discovered by `cisco.nxos.nxos_facts`, including breakout child
+interfaces. `interfaces` overrides are keyed by exact NX-OS names. The keys
+`mode`, `native_vlan`, `allowed_vlans`, `access_vlan`, `description`,
+and `enabled` map to `switchport mode`, `switchport trunk native vlan`,
+`switchport trunk allowed vlan`, `switchport access vlan`, `description`,
+and `shutdown`/`no shutdown` respectively.
+
+Run `--tags ports` to apply logical interface settings. This does not change
+breakout. Run `--tags breakout` only for explicitly declared entries under
+`breakout`; `400g` means remove the breakout mapping, while `4x100g`
+means map to `100g-4x`. **Breakout resets affected port configuration and is
+disruptive.** Test the NX-OS commands on your exact hardware before use.
+Run breakout first, then ports, so interface discovery sees the final layout.
+The configuration is shared across switches by default; override
+`nexus_port_config_file` for a switch-specific file.
