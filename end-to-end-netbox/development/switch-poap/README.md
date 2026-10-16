@@ -41,7 +41,7 @@ credentials/
   automation.pub
 ```
 
-- `USERNAME.pub`: one OpenSSH **RSA or Ed25519 public key** (`ssh-rsa ...` or `ssh-ed25519 ...`). Creates
+- `USERNAME.pub`: one or more OpenSSH **RSA or Ed25519 public keys**, one per line. Only the first non-empty line is used; later lines are ignored. Creates
   or updates the named user and configures its SSH key.
 - `USERNAME.hash`: one NX-OS type-5 MD5-crypt password hash beginning
   `$1$`. Sets that user's local password.
