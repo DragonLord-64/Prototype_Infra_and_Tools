@@ -1,5 +1,7 @@
 # Monitoring setup
 
+For independent synthetic Grafana experiments, see [the dashboard prototypes](dashboard-prototypes/README.md). They do not alter this deployment.
+
 A **Helm chart** contains Kubernetes resource templates. A **values file** supplies settings to a chart; it is not a deployment by itself. We use normal upstream charts for Prometheus/Telegraf and one small local [Elasticsearch/Kibana chart](charts/elasticsearch-kibana/Chart.yaml), so its required templates are right here rather than hidden in the archive.
 
 | Values | Chart |

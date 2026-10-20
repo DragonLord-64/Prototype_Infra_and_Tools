@@ -1,0 +1,1439 @@
+{
+  "uid": "vlan-net-viewer-demo",
+  "title": "Network VLAN viewer \u00b7 VCC units / FSP units",
+  "schemaVersion": 41,
+  "version": 1,
+  "editable": true,
+  "tags": [
+    "demo",
+    "synthetic",
+    "VLAN",
+    "VCCU",
+    "FSPU"
+  ],
+  "timezone": "browser",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Network VLAN viewer \u00b7 DEMO",
+      "type": "text",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 2
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "**Demo \u00b7 51 endpoint interfaces.** Select a VLAN. **Green:** directly allowed \u00b7 **Blue:** explicit translation."
+      }
+    },
+    {
+      "id": 2,
+      "title": "Inventory",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 2,
+        "w": 6,
+        "h": 3
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "server-health-demo-prometheus"
+          },
+          "expr": "count(vlan_interface_inventory)",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "decimals": 0,
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto"
+      }
+    },
+    {
+      "id": 3,
+      "title": "Matching interfaces",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 2,
+        "w": 6,
+        "h": 3
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "server-health-demo-prometheus"
+          },
+          "expr": "count(vlan_interface_match{selected_vlan=\"$vlan\"}) or vector(0)",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "decimals": 0,
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto"
+      }
+    },
+    {
+      "id": 4,
+      "title": "Direct",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 2,
+        "w": 6,
+        "h": 3
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "server-health-demo-prometheus"
+          },
+          "expr": "count(vlan_interface_match{selected_vlan=\"$vlan\",match_kind=\"direct\"}) or vector(0)",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "green"
+          },
+          "decimals": 0,
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto"
+      }
+    },
+    {
+      "id": 5,
+      "title": "Translated",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 2,
+        "w": 6,
+        "h": 3
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "server-health-demo-prometheus"
+          },
+          "expr": "count(vlan_interface_match{selected_vlan=\"$vlan\",match_kind=\"translated\"}) or vector(0)",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "decimals": 0,
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto"
+      }
+    },
+    {
+      "id": 10,
+      "title": "VCC units \u00b7 allowed interfaces",
+      "description": "Only interfaces explicitly allowing the selected VLAN, or having a configured forward translation on that exact switch/interface to an allowed local VLAN. One row per matching interface. Full allowed VLAN names are available in Inspect \u2192 Data.",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 12,
+        "h": 20
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "server-health-demo-prometheus"
+          },
+          "expr": "vlan_interface_match{selected_vlan=\"$vlan\",unit_group=\"VCCU\"}",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "actual_vlan": true,
+              "allowed_names": true,
+              "instance": true,
+              "job": true,
+              "match_kind": true,
+              "selected_vlan": true,
+              "switch": true,
+              "interface": true,
+              "unit_group": true,
+              "Value": true
+            },
+            "indexByName": {
+              "unit": 0,
+              "attachment": 1,
+              "allowed_vlans": 2,
+              "translation": 3,
+              "Value": 4
+            },
+            "renameByName": {
+              "unit": "Unit",
+              "attachment": "Switch / interface",
+              "allowed_vlans": "VLANs",
+              "translation": "Route",
+              "Value": "Match"
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "Route",
+                "desc": false
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": false,
+            "inspect": true
+          },
+          "noValue": "\u2014",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "blue",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Unit"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Switch / interface"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "VLANs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Route"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Route"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "basic",
+                  "applyToRow": true
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "Direct": {
+                        "text": "Direct",
+                        "color": "green",
+                        "index": 0
+                      },
+                      "1 \u2192 55": {
+                        "text": "1 \u2192 55",
+                        "color": "blue",
+                        "index": 1
+                      },
+                      "1 \u2192 77": {
+                        "text": "1 \u2192 77",
+                        "color": "blue",
+                        "index": 2
+                      },
+                      "1 \u2192 155": {
+                        "text": "1 \u2192 155",
+                        "color": "blue",
+                        "index": 3
+                      },
+                      "1 \u2192 255": {
+                        "text": "1 \u2192 255",
+                        "color": "blue",
+                        "index": 4
+                      },
+                      "1 \u2192 55, 77": {
+                        "text": "1 \u2192 55, 77",
+                        "color": "blue",
+                        "index": 5
+                      },
+                      "1 \u2192 55, 155": {
+                        "text": "1 \u2192 55, 155",
+                        "color": "blue",
+                        "index": 6
+                      },
+                      "1 \u2192 55, 255": {
+                        "text": "1 \u2192 55, 255",
+                        "color": "blue",
+                        "index": 7
+                      },
+                      "1 \u2192 77, 155": {
+                        "text": "1 \u2192 77, 155",
+                        "color": "blue",
+                        "index": 8
+                      },
+                      "1 \u2192 77, 255": {
+                        "text": "1 \u2192 77, 255",
+                        "color": "blue",
+                        "index": 9
+                      },
+                      "1 \u2192 155, 255": {
+                        "text": "1 \u2192 155, 255",
+                        "color": "blue",
+                        "index": 10
+                      },
+                      "1 \u2192 55, 77, 155": {
+                        "text": "1 \u2192 55, 77, 155",
+                        "color": "blue",
+                        "index": 11
+                      },
+                      "1 \u2192 55, 77, 255": {
+                        "text": "1 \u2192 55, 77, 255",
+                        "color": "blue",
+                        "index": 12
+                      },
+                      "1 \u2192 55, 155, 255": {
+                        "text": "1 \u2192 55, 155, 255",
+                        "color": "blue",
+                        "index": 13
+                      },
+                      "1 \u2192 77, 155, 255": {
+                        "text": "1 \u2192 77, 155, 255",
+                        "color": "blue",
+                        "index": 14
+                      },
+                      "1 \u2192 55, 77, 155, 255": {
+                        "text": "1 \u2192 55, 77, 155, 255",
+                        "color": "blue",
+                        "index": 15
+                      },
+                      "55 \u2192 1": {
+                        "text": "55 \u2192 1",
+                        "color": "blue",
+                        "index": 16
+                      },
+                      "55 \u2192 77": {
+                        "text": "55 \u2192 77",
+                        "color": "blue",
+                        "index": 17
+                      },
+                      "55 \u2192 155": {
+                        "text": "55 \u2192 155",
+                        "color": "blue",
+                        "index": 18
+                      },
+                      "55 \u2192 255": {
+                        "text": "55 \u2192 255",
+                        "color": "blue",
+                        "index": 19
+                      },
+                      "55 \u2192 1, 77": {
+                        "text": "55 \u2192 1, 77",
+                        "color": "blue",
+                        "index": 20
+                      },
+                      "55 \u2192 1, 155": {
+                        "text": "55 \u2192 1, 155",
+                        "color": "blue",
+                        "index": 21
+                      },
+                      "55 \u2192 1, 255": {
+                        "text": "55 \u2192 1, 255",
+                        "color": "blue",
+                        "index": 22
+                      },
+                      "55 \u2192 77, 155": {
+                        "text": "55 \u2192 77, 155",
+                        "color": "blue",
+                        "index": 23
+                      },
+                      "55 \u2192 77, 255": {
+                        "text": "55 \u2192 77, 255",
+                        "color": "blue",
+                        "index": 24
+                      },
+                      "55 \u2192 155, 255": {
+                        "text": "55 \u2192 155, 255",
+                        "color": "blue",
+                        "index": 25
+                      },
+                      "55 \u2192 1, 77, 155": {
+                        "text": "55 \u2192 1, 77, 155",
+                        "color": "blue",
+                        "index": 26
+                      },
+                      "55 \u2192 1, 77, 255": {
+                        "text": "55 \u2192 1, 77, 255",
+                        "color": "blue",
+                        "index": 27
+                      },
+                      "55 \u2192 1, 155, 255": {
+                        "text": "55 \u2192 1, 155, 255",
+                        "color": "blue",
+                        "index": 28
+                      },
+                      "55 \u2192 77, 155, 255": {
+                        "text": "55 \u2192 77, 155, 255",
+                        "color": "blue",
+                        "index": 29
+                      },
+                      "55 \u2192 1, 77, 155, 255": {
+                        "text": "55 \u2192 1, 77, 155, 255",
+                        "color": "blue",
+                        "index": 30
+                      },
+                      "77 \u2192 1": {
+                        "text": "77 \u2192 1",
+                        "color": "blue",
+                        "index": 31
+                      },
+                      "77 \u2192 55": {
+                        "text": "77 \u2192 55",
+                        "color": "blue",
+                        "index": 32
+                      },
+                      "77 \u2192 155": {
+                        "text": "77 \u2192 155",
+                        "color": "blue",
+                        "index": 33
+                      },
+                      "77 \u2192 255": {
+                        "text": "77 \u2192 255",
+                        "color": "blue",
+                        "index": 34
+                      },
+                      "77 \u2192 1, 55": {
+                        "text": "77 \u2192 1, 55",
+                        "color": "blue",
+                        "index": 35
+                      },
+                      "77 \u2192 1, 155": {
+                        "text": "77 \u2192 1, 155",
+                        "color": "blue",
+                        "index": 36
+                      },
+                      "77 \u2192 1, 255": {
+                        "text": "77 \u2192 1, 255",
+                        "color": "blue",
+                        "index": 37
+                      },
+                      "77 \u2192 55, 155": {
+                        "text": "77 \u2192 55, 155",
+                        "color": "blue",
+                        "index": 38
+                      },
+                      "77 \u2192 55, 255": {
+                        "text": "77 \u2192 55, 255",
+                        "color": "blue",
+                        "index": 39
+                      },
+                      "77 \u2192 155, 255": {
+                        "text": "77 \u2192 155, 255",
+                        "color": "blue",
+                        "index": 40
+                      },
+                      "77 \u2192 1, 55, 155": {
+                        "text": "77 \u2192 1, 55, 155",
+                        "color": "blue",
+                        "index": 41
+                      },
+                      "77 \u2192 1, 55, 255": {
+                        "text": "77 \u2192 1, 55, 255",
+                        "color": "blue",
+                        "index": 42
+                      },
+                      "77 \u2192 1, 155, 255": {
+                        "text": "77 \u2192 1, 155, 255",
+                        "color": "blue",
+                        "index": 43
+                      },
+                      "77 \u2192 55, 155, 255": {
+                        "text": "77 \u2192 55, 155, 255",
+                        "color": "blue",
+                        "index": 44
+                      },
+                      "77 \u2192 1, 55, 155, 255": {
+                        "text": "77 \u2192 1, 55, 155, 255",
+                        "color": "blue",
+                        "index": 45
+                      },
+                      "155 \u2192 1": {
+                        "text": "155 \u2192 1",
+                        "color": "blue",
+                        "index": 46
+                      },
+                      "155 \u2192 55": {
+                        "text": "155 \u2192 55",
+                        "color": "blue",
+                        "index": 47
+                      },
+                      "155 \u2192 77": {
+                        "text": "155 \u2192 77",
+                        "color": "blue",
+                        "index": 48
+                      },
+                      "155 \u2192 255": {
+                        "text": "155 \u2192 255",
+                        "color": "blue",
+                        "index": 49
+                      },
+                      "155 \u2192 1, 55": {
+                        "text": "155 \u2192 1, 55",
+                        "color": "blue",
+                        "index": 50
+                      },
+                      "155 \u2192 1, 77": {
+                        "text": "155 \u2192 1, 77",
+                        "color": "blue",
+                        "index": 51
+                      },
+                      "155 \u2192 1, 255": {
+                        "text": "155 \u2192 1, 255",
+                        "color": "blue",
+                        "index": 52
+                      },
+                      "155 \u2192 55, 77": {
+                        "text": "155 \u2192 55, 77",
+                        "color": "blue",
+                        "index": 53
+                      },
+                      "155 \u2192 55, 255": {
+                        "text": "155 \u2192 55, 255",
+                        "color": "blue",
+                        "index": 54
+                      },
+                      "155 \u2192 77, 255": {
+                        "text": "155 \u2192 77, 255",
+                        "color": "blue",
+                        "index": 55
+                      },
+                      "155 \u2192 1, 55, 77": {
+                        "text": "155 \u2192 1, 55, 77",
+                        "color": "blue",
+                        "index": 56
+                      },
+                      "155 \u2192 1, 55, 255": {
+                        "text": "155 \u2192 1, 55, 255",
+                        "color": "blue",
+                        "index": 57
+                      },
+                      "155 \u2192 1, 77, 255": {
+                        "text": "155 \u2192 1, 77, 255",
+                        "color": "blue",
+                        "index": 58
+                      },
+                      "155 \u2192 55, 77, 255": {
+                        "text": "155 \u2192 55, 77, 255",
+                        "color": "blue",
+                        "index": 59
+                      },
+                      "155 \u2192 1, 55, 77, 255": {
+                        "text": "155 \u2192 1, 55, 77, 255",
+                        "color": "blue",
+                        "index": 60
+                      },
+                      "255 \u2192 1": {
+                        "text": "255 \u2192 1",
+                        "color": "blue",
+                        "index": 61
+                      },
+                      "255 \u2192 55": {
+                        "text": "255 \u2192 55",
+                        "color": "blue",
+                        "index": 62
+                      },
+                      "255 \u2192 77": {
+                        "text": "255 \u2192 77",
+                        "color": "blue",
+                        "index": 63
+                      },
+                      "255 \u2192 155": {
+                        "text": "255 \u2192 155",
+                        "color": "blue",
+                        "index": 64
+                      },
+                      "255 \u2192 1, 55": {
+                        "text": "255 \u2192 1, 55",
+                        "color": "blue",
+                        "index": 65
+                      },
+                      "255 \u2192 1, 77": {
+                        "text": "255 \u2192 1, 77",
+                        "color": "blue",
+                        "index": 66
+                      },
+                      "255 \u2192 1, 155": {
+                        "text": "255 \u2192 1, 155",
+                        "color": "blue",
+                        "index": 67
+                      },
+                      "255 \u2192 55, 77": {
+                        "text": "255 \u2192 55, 77",
+                        "color": "blue",
+                        "index": 68
+                      },
+                      "255 \u2192 55, 155": {
+                        "text": "255 \u2192 55, 155",
+                        "color": "blue",
+                        "index": 69
+                      },
+                      "255 \u2192 77, 155": {
+                        "text": "255 \u2192 77, 155",
+                        "color": "blue",
+                        "index": 70
+                      },
+                      "255 \u2192 1, 55, 77": {
+                        "text": "255 \u2192 1, 55, 77",
+                        "color": "blue",
+                        "index": 71
+                      },
+                      "255 \u2192 1, 55, 155": {
+                        "text": "255 \u2192 1, 55, 155",
+                        "color": "blue",
+                        "index": 72
+                      },
+                      "255 \u2192 1, 77, 155": {
+                        "text": "255 \u2192 1, 77, 155",
+                        "color": "blue",
+                        "index": 73
+                      },
+                      "255 \u2192 55, 77, 155": {
+                        "text": "255 \u2192 55, 77, 155",
+                        "color": "blue",
+                        "index": 74
+                      },
+                      "255 \u2192 1, 55, 77, 155": {
+                        "text": "255 \u2192 1, 55, 77, 155",
+                        "color": "blue",
+                        "index": 75
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Route",
+            "desc": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "title": "FSP units \u00b7 allowed interfaces",
+      "description": "Only interfaces explicitly allowing the selected VLAN, or having a configured forward translation on that exact switch/interface to an allowed local VLAN. One row per matching interface. Full allowed VLAN names are available in Inspect \u2192 Data.",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 5,
+        "w": 12,
+        "h": 20
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "server-health-demo-prometheus"
+          },
+          "expr": "vlan_interface_match{selected_vlan=\"$vlan\",unit_group=\"FSPU\"}",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "actual_vlan": true,
+              "allowed_names": true,
+              "instance": true,
+              "job": true,
+              "match_kind": true,
+              "selected_vlan": true,
+              "switch": true,
+              "interface": true,
+              "unit_group": true,
+              "Value": true
+            },
+            "indexByName": {
+              "unit": 0,
+              "attachment": 1,
+              "allowed_vlans": 2,
+              "translation": 3,
+              "Value": 4
+            },
+            "renameByName": {
+              "unit": "Unit",
+              "attachment": "Switch / interface",
+              "allowed_vlans": "VLANs",
+              "translation": "Route",
+              "Value": "Match"
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "Route",
+                "desc": false
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": false,
+            "inspect": true
+          },
+          "noValue": "\u2014",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "blue",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Unit"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Switch / interface"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "VLANs"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Route"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Route"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "basic",
+                  "applyToRow": true
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "Direct": {
+                        "text": "Direct",
+                        "color": "green",
+                        "index": 0
+                      },
+                      "1 \u2192 55": {
+                        "text": "1 \u2192 55",
+                        "color": "blue",
+                        "index": 1
+                      },
+                      "1 \u2192 77": {
+                        "text": "1 \u2192 77",
+                        "color": "blue",
+                        "index": 2
+                      },
+                      "1 \u2192 155": {
+                        "text": "1 \u2192 155",
+                        "color": "blue",
+                        "index": 3
+                      },
+                      "1 \u2192 255": {
+                        "text": "1 \u2192 255",
+                        "color": "blue",
+                        "index": 4
+                      },
+                      "1 \u2192 55, 77": {
+                        "text": "1 \u2192 55, 77",
+                        "color": "blue",
+                        "index": 5
+                      },
+                      "1 \u2192 55, 155": {
+                        "text": "1 \u2192 55, 155",
+                        "color": "blue",
+                        "index": 6
+                      },
+                      "1 \u2192 55, 255": {
+                        "text": "1 \u2192 55, 255",
+                        "color": "blue",
+                        "index": 7
+                      },
+                      "1 \u2192 77, 155": {
+                        "text": "1 \u2192 77, 155",
+                        "color": "blue",
+                        "index": 8
+                      },
+                      "1 \u2192 77, 255": {
+                        "text": "1 \u2192 77, 255",
+                        "color": "blue",
+                        "index": 9
+                      },
+                      "1 \u2192 155, 255": {
+                        "text": "1 \u2192 155, 255",
+                        "color": "blue",
+                        "index": 10
+                      },
+                      "1 \u2192 55, 77, 155": {
+                        "text": "1 \u2192 55, 77, 155",
+                        "color": "blue",
+                        "index": 11
+                      },
+                      "1 \u2192 55, 77, 255": {
+                        "text": "1 \u2192 55, 77, 255",
+                        "color": "blue",
+                        "index": 12
+                      },
+                      "1 \u2192 55, 155, 255": {
+                        "text": "1 \u2192 55, 155, 255",
+                        "color": "blue",
+                        "index": 13
+                      },
+                      "1 \u2192 77, 155, 255": {
+                        "text": "1 \u2192 77, 155, 255",
+                        "color": "blue",
+                        "index": 14
+                      },
+                      "1 \u2192 55, 77, 155, 255": {
+                        "text": "1 \u2192 55, 77, 155, 255",
+                        "color": "blue",
+                        "index": 15
+                      },
+                      "55 \u2192 1": {
+                        "text": "55 \u2192 1",
+                        "color": "blue",
+                        "index": 16
+                      },
+                      "55 \u2192 77": {
+                        "text": "55 \u2192 77",
+                        "color": "blue",
+                        "index": 17
+                      },
+                      "55 \u2192 155": {
+                        "text": "55 \u2192 155",
+                        "color": "blue",
+                        "index": 18
+                      },
+                      "55 \u2192 255": {
+                        "text": "55 \u2192 255",
+                        "color": "blue",
+                        "index": 19
+                      },
+                      "55 \u2192 1, 77": {
+                        "text": "55 \u2192 1, 77",
+                        "color": "blue",
+                        "index": 20
+                      },
+                      "55 \u2192 1, 155": {
+                        "text": "55 \u2192 1, 155",
+                        "color": "blue",
+                        "index": 21
+                      },
+                      "55 \u2192 1, 255": {
+                        "text": "55 \u2192 1, 255",
+                        "color": "blue",
+                        "index": 22
+                      },
+                      "55 \u2192 77, 155": {
+                        "text": "55 \u2192 77, 155",
+                        "color": "blue",
+                        "index": 23
+                      },
+                      "55 \u2192 77, 255": {
+                        "text": "55 \u2192 77, 255",
+                        "color": "blue",
+                        "index": 24
+                      },
+                      "55 \u2192 155, 255": {
+                        "text": "55 \u2192 155, 255",
+                        "color": "blue",
+                        "index": 25
+                      },
+                      "55 \u2192 1, 77, 155": {
+                        "text": "55 \u2192 1, 77, 155",
+                        "color": "blue",
+                        "index": 26
+                      },
+                      "55 \u2192 1, 77, 255": {
+                        "text": "55 \u2192 1, 77, 255",
+                        "color": "blue",
+                        "index": 27
+                      },
+                      "55 \u2192 1, 155, 255": {
+                        "text": "55 \u2192 1, 155, 255",
+                        "color": "blue",
+                        "index": 28
+                      },
+                      "55 \u2192 77, 155, 255": {
+                        "text": "55 \u2192 77, 155, 255",
+                        "color": "blue",
+                        "index": 29
+                      },
+                      "55 \u2192 1, 77, 155, 255": {
+                        "text": "55 \u2192 1, 77, 155, 255",
+                        "color": "blue",
+                        "index": 30
+                      },
+                      "77 \u2192 1": {
+                        "text": "77 \u2192 1",
+                        "color": "blue",
+                        "index": 31
+                      },
+                      "77 \u2192 55": {
+                        "text": "77 \u2192 55",
+                        "color": "blue",
+                        "index": 32
+                      },
+                      "77 \u2192 155": {
+                        "text": "77 \u2192 155",
+                        "color": "blue",
+                        "index": 33
+                      },
+                      "77 \u2192 255": {
+                        "text": "77 \u2192 255",
+                        "color": "blue",
+                        "index": 34
+                      },
+                      "77 \u2192 1, 55": {
+                        "text": "77 \u2192 1, 55",
+                        "color": "blue",
+                        "index": 35
+                      },
+                      "77 \u2192 1, 155": {
+                        "text": "77 \u2192 1, 155",
+                        "color": "blue",
+                        "index": 36
+                      },
+                      "77 \u2192 1, 255": {
+                        "text": "77 \u2192 1, 255",
+                        "color": "blue",
+                        "index": 37
+                      },
+                      "77 \u2192 55, 155": {
+                        "text": "77 \u2192 55, 155",
+                        "color": "blue",
+                        "index": 38
+                      },
+                      "77 \u2192 55, 255": {
+                        "text": "77 \u2192 55, 255",
+                        "color": "blue",
+                        "index": 39
+                      },
+                      "77 \u2192 155, 255": {
+                        "text": "77 \u2192 155, 255",
+                        "color": "blue",
+                        "index": 40
+                      },
+                      "77 \u2192 1, 55, 155": {
+                        "text": "77 \u2192 1, 55, 155",
+                        "color": "blue",
+                        "index": 41
+                      },
+                      "77 \u2192 1, 55, 255": {
+                        "text": "77 \u2192 1, 55, 255",
+                        "color": "blue",
+                        "index": 42
+                      },
+                      "77 \u2192 1, 155, 255": {
+                        "text": "77 \u2192 1, 155, 255",
+                        "color": "blue",
+                        "index": 43
+                      },
+                      "77 \u2192 55, 155, 255": {
+                        "text": "77 \u2192 55, 155, 255",
+                        "color": "blue",
+                        "index": 44
+                      },
+                      "77 \u2192 1, 55, 155, 255": {
+                        "text": "77 \u2192 1, 55, 155, 255",
+                        "color": "blue",
+                        "index": 45
+                      },
+                      "155 \u2192 1": {
+                        "text": "155 \u2192 1",
+                        "color": "blue",
+                        "index": 46
+                      },
+                      "155 \u2192 55": {
+                        "text": "155 \u2192 55",
+                        "color": "blue",
+                        "index": 47
+                      },
+                      "155 \u2192 77": {
+                        "text": "155 \u2192 77",
+                        "color": "blue",
+                        "index": 48
+                      },
+                      "155 \u2192 255": {
+                        "text": "155 \u2192 255",
+                        "color": "blue",
+                        "index": 49
+                      },
+                      "155 \u2192 1, 55": {
+                        "text": "155 \u2192 1, 55",
+                        "color": "blue",
+                        "index": 50
+                      },
+                      "155 \u2192 1, 77": {
+                        "text": "155 \u2192 1, 77",
+                        "color": "blue",
+                        "index": 51
+                      },
+                      "155 \u2192 1, 255": {
+                        "text": "155 \u2192 1, 255",
+                        "color": "blue",
+                        "index": 52
+                      },
+                      "155 \u2192 55, 77": {
+                        "text": "155 \u2192 55, 77",
+                        "color": "blue",
+                        "index": 53
+                      },
+                      "155 \u2192 55, 255": {
+                        "text": "155 \u2192 55, 255",
+                        "color": "blue",
+                        "index": 54
+                      },
+                      "155 \u2192 77, 255": {
+                        "text": "155 \u2192 77, 255",
+                        "color": "blue",
+                        "index": 55
+                      },
+                      "155 \u2192 1, 55, 77": {
+                        "text": "155 \u2192 1, 55, 77",
+                        "color": "blue",
+                        "index": 56
+                      },
+                      "155 \u2192 1, 55, 255": {
+                        "text": "155 \u2192 1, 55, 255",
+                        "color": "blue",
+                        "index": 57
+                      },
+                      "155 \u2192 1, 77, 255": {
+                        "text": "155 \u2192 1, 77, 255",
+                        "color": "blue",
+                        "index": 58
+                      },
+                      "155 \u2192 55, 77, 255": {
+                        "text": "155 \u2192 55, 77, 255",
+                        "color": "blue",
+                        "index": 59
+                      },
+                      "155 \u2192 1, 55, 77, 255": {
+                        "text": "155 \u2192 1, 55, 77, 255",
+                        "color": "blue",
+                        "index": 60
+                      },
+                      "255 \u2192 1": {
+                        "text": "255 \u2192 1",
+                        "color": "blue",
+                        "index": 61
+                      },
+                      "255 \u2192 55": {
+                        "text": "255 \u2192 55",
+                        "color": "blue",
+                        "index": 62
+                      },
+                      "255 \u2192 77": {
+                        "text": "255 \u2192 77",
+                        "color": "blue",
+                        "index": 63
+                      },
+                      "255 \u2192 155": {
+                        "text": "255 \u2192 155",
+                        "color": "blue",
+                        "index": 64
+                      },
+                      "255 \u2192 1, 55": {
+                        "text": "255 \u2192 1, 55",
+                        "color": "blue",
+                        "index": 65
+                      },
+                      "255 \u2192 1, 77": {
+                        "text": "255 \u2192 1, 77",
+                        "color": "blue",
+                        "index": 66
+                      },
+                      "255 \u2192 1, 155": {
+                        "text": "255 \u2192 1, 155",
+                        "color": "blue",
+                        "index": 67
+                      },
+                      "255 \u2192 55, 77": {
+                        "text": "255 \u2192 55, 77",
+                        "color": "blue",
+                        "index": 68
+                      },
+                      "255 \u2192 55, 155": {
+                        "text": "255 \u2192 55, 155",
+                        "color": "blue",
+                        "index": 69
+                      },
+                      "255 \u2192 77, 155": {
+                        "text": "255 \u2192 77, 155",
+                        "color": "blue",
+                        "index": 70
+                      },
+                      "255 \u2192 1, 55, 77": {
+                        "text": "255 \u2192 1, 55, 77",
+                        "color": "blue",
+                        "index": 71
+                      },
+                      "255 \u2192 1, 55, 155": {
+                        "text": "255 \u2192 1, 55, 155",
+                        "color": "blue",
+                        "index": 72
+                      },
+                      "255 \u2192 1, 77, 155": {
+                        "text": "255 \u2192 1, 77, 155",
+                        "color": "blue",
+                        "index": 73
+                      },
+                      "255 \u2192 55, 77, 155": {
+                        "text": "255 \u2192 55, 77, 155",
+                        "color": "blue",
+                        "index": 74
+                      },
+                      "255 \u2192 1, 55, 77, 155": {
+                        "text": "255 \u2192 1, 55, 77, 155",
+                        "color": "blue",
+                        "index": 75
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Route",
+            "desc": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "title": "How this filter works",
+      "type": "text",
+      "gridPos": {
+        "x": 0,
+        "y": 25,
+        "w": 24,
+        "h": 3
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "**VLAN 55 demo:** 35 direct interfaces + 5 explicitly translated interfaces = 40 matches. Blue rows show **55 \u2192 155** or **55 \u2192 255**. Other ports allowing 155 or 255 remain excluded unless their exact switch/interface has a rule.\n\nTranslations are **directed and interface-scoped**: no automatic reverse mapping, no multi-hop inference. A direct match takes precedence. VLAN names: **1 Default \u00b7 55 Science data \u00b7 77 Management \u00b7 155 Science data \u2014 local A \u00b7 255 Science data \u2014 local B**."
+      }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "vlan",
+        "label": "VLAN",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "server-health-demo-prometheus"
+        },
+        "definition": "label_values(vlan_catalog_info, vlan)",
+        "query": {
+          "query": "label_values(vlan_catalog_info, vlan)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "sort": 3,
+        "multi": false,
+        "includeAll": false,
+        "current": {
+          "text": "55",
+          "value": "55"
+        },
+        "options": []
+      }
+    ]
+  }
+}

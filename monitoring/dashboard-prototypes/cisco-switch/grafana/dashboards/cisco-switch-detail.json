@@ -1,0 +1,3970 @@
+{
+  "uid": "cisco-switch-detail",
+  "title": "Cisco 9332D \u00b7 Port Details",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": [
+    "demo",
+    "synthetic",
+    "cisco",
+    "switch",
+    "breakout"
+  ],
+  "editable": true,
+  "refresh": "5s",
+  "timezone": "browser",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "annotations": {
+    "list": []
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "port",
+        "label": "Port(s)",
+        "type": "custom",
+        "query": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32",
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": {
+          "text": [
+            "1"
+          ],
+          "value": [
+            "1"
+          ]
+        },
+        "options": [
+          {
+            "text": "1",
+            "value": "1",
+            "selected": true
+          },
+          {
+            "text": "2",
+            "value": "2",
+            "selected": false
+          },
+          {
+            "text": "3",
+            "value": "3",
+            "selected": false
+          },
+          {
+            "text": "4",
+            "value": "4",
+            "selected": false
+          },
+          {
+            "text": "5",
+            "value": "5",
+            "selected": false
+          },
+          {
+            "text": "6",
+            "value": "6",
+            "selected": false
+          },
+          {
+            "text": "7",
+            "value": "7",
+            "selected": false
+          },
+          {
+            "text": "8",
+            "value": "8",
+            "selected": false
+          },
+          {
+            "text": "9",
+            "value": "9",
+            "selected": false
+          },
+          {
+            "text": "10",
+            "value": "10",
+            "selected": false
+          },
+          {
+            "text": "11",
+            "value": "11",
+            "selected": false
+          },
+          {
+            "text": "12",
+            "value": "12",
+            "selected": false
+          },
+          {
+            "text": "13",
+            "value": "13",
+            "selected": false
+          },
+          {
+            "text": "14",
+            "value": "14",
+            "selected": false
+          },
+          {
+            "text": "15",
+            "value": "15",
+            "selected": false
+          },
+          {
+            "text": "16",
+            "value": "16",
+            "selected": false
+          },
+          {
+            "text": "17",
+            "value": "17",
+            "selected": false
+          },
+          {
+            "text": "18",
+            "value": "18",
+            "selected": false
+          },
+          {
+            "text": "19",
+            "value": "19",
+            "selected": false
+          },
+          {
+            "text": "20",
+            "value": "20",
+            "selected": false
+          },
+          {
+            "text": "21",
+            "value": "21",
+            "selected": false
+          },
+          {
+            "text": "22",
+            "value": "22",
+            "selected": false
+          },
+          {
+            "text": "23",
+            "value": "23",
+            "selected": false
+          },
+          {
+            "text": "24",
+            "value": "24",
+            "selected": false
+          },
+          {
+            "text": "25",
+            "value": "25",
+            "selected": false
+          },
+          {
+            "text": "26",
+            "value": "26",
+            "selected": false
+          },
+          {
+            "text": "27",
+            "value": "27",
+            "selected": false
+          },
+          {
+            "text": "28",
+            "value": "28",
+            "selected": false
+          },
+          {
+            "text": "29",
+            "value": "29",
+            "selected": false
+          },
+          {
+            "text": "30",
+            "value": "30",
+            "selected": false
+          },
+          {
+            "text": "31",
+            "value": "31",
+            "selected": false
+          },
+          {
+            "text": "32",
+            "value": "32",
+            "selected": false
+          }
+        ]
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "",
+      "transparent": true,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 2
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "**PORT DETAIL \u00b7 DEMO DATA** \u2014 Shared optics appear once above each set of interfaces. [Back to all32 ports](/d/cisco-switch-demo)."
+      }
+    },
+    {
+      "id": 3,
+      "type": "canvas",
+      "title": "Ethernet1/$port \u00b7 physical port and breakout interfaces",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 2,
+        "w": 12,
+        "h": 16
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "cisco_lane_snapshot{switch=\"demo-9332d-01\",physical_port=~\"${port:regex}\"} and on(job, instance) (up{job=\"cisco-switch-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Lane {{lane}} / {{field}}"
+        },
+        {
+          "refId": "B",
+          "expr": "cisco_optic_snapshot{switch=\"demo-9332d-01\",physical_port=~\"${port:regex}\"} and on(job, instance) (up{job=\"cisco-switch-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Optics / {{field}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "N/A",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          },
+          "mappings": [
+            {
+              "type": "special",
+              "options": {
+                "match": "nan",
+                "result": {
+                  "text": "N/A",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Optics / temperature_celsius"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": null,
+                      "color": "green"
+                    },
+                    {
+                      "value": 75,
+                      "color": "orange"
+                    },
+                    {
+                      "value": 85,
+                      "color": "red"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Optics / voltage_volts"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "volt"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Optics / dom_status"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "DOM unavailable"
+                      },
+                      "1": {
+                        "text": "DOM available"
+                      },
+                      "2": {
+                        "text": "Module not fitted"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 1 / health"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Down",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "Up",
+                        "color": "green"
+                      },
+                      "2": {
+                        "text": "Admin down",
+                        "color": "#8e8e8e"
+                      },
+                      "3": {
+                        "text": "Unknown",
+                        "color": "#8e8e8e"
+                      },
+                      "4": {
+                        "text": "Up \u00b7 CRC",
+                        "color": "orange"
+                      },
+                      "5": {
+                        "text": "Up \u00b7 drops",
+                        "color": "orange"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": null,
+                      "color": "red"
+                    },
+                    {
+                      "value": 1,
+                      "color": "green"
+                    },
+                    {
+                      "value": 2,
+                      "color": "#8e8e8e"
+                    },
+                    {
+                      "value": 4,
+                      "color": "orange"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 1 / mode"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Access"
+                      },
+                      "1": {
+                        "text": "Trunk"
+                      },
+                      "2": {
+                        "text": "PVLAN host \u00b7 isolated"
+                      },
+                      "3": {
+                        "text": "PVLAN host \u00b7 community"
+                      },
+                      "4": {
+                        "text": "PVLAN trunk \u00b7 secondary"
+                      },
+                      "5": {
+                        "text": "PVLAN promiscuous"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 1 / vlan_profile"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "1": {
+                        "text": "VLANs: 30 \u00b7 Server A"
+                      },
+                      "2": {
+                        "text": "VLANs: 1 \u00b7 my VLAN 1 | 10 \u00b7 Management | 20 \u00b7 my special VLAN"
+                      },
+                      "3": {
+                        "text": "VLANs: 100 \u00b7 PVLAN primary | 101 \u00b7 Isolated secondary"
+                      },
+                      "4": {
+                        "text": "VLANs: 100 \u00b7 PVLAN primary | 102 \u00b7 Community secondary"
+                      },
+                      "5": {
+                        "text": "VLANs: 200 \u00b7 VCC | 300 \u00b7 FSP"
+                      },
+                      "6": {
+                        "text": "VLANs: 1 \u00b7 my VLAN 1 | 10 \u00b7 Management | 20 \u00b7 my special VLAN | 200 \u00b7 VCC | 300 \u00b7 FSP"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 1 / rx_bps"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bps"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 1 / tx_bps"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bps"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 1 / rx_packets_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 1 / tx_packets_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 1 / crc_errors_5m"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": null,
+                      "color": "green"
+                    },
+                    {
+                      "value": 1,
+                      "color": "orange"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 1 / crc_errors_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 1 / drops_5m"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": null,
+                      "color": "green"
+                    },
+                    {
+                      "value": 1,
+                      "color": "orange"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 1 / drops_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 2 / health"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Down",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "Up",
+                        "color": "green"
+                      },
+                      "2": {
+                        "text": "Admin down",
+                        "color": "#8e8e8e"
+                      },
+                      "3": {
+                        "text": "Unknown",
+                        "color": "#8e8e8e"
+                      },
+                      "4": {
+                        "text": "Up \u00b7 CRC",
+                        "color": "orange"
+                      },
+                      "5": {
+                        "text": "Up \u00b7 drops",
+                        "color": "orange"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": null,
+                      "color": "red"
+                    },
+                    {
+                      "value": 1,
+                      "color": "green"
+                    },
+                    {
+                      "value": 2,
+                      "color": "#8e8e8e"
+                    },
+                    {
+                      "value": 4,
+                      "color": "orange"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 2 / mode"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Access"
+                      },
+                      "1": {
+                        "text": "Trunk"
+                      },
+                      "2": {
+                        "text": "PVLAN host \u00b7 isolated"
+                      },
+                      "3": {
+                        "text": "PVLAN host \u00b7 community"
+                      },
+                      "4": {
+                        "text": "PVLAN trunk \u00b7 secondary"
+                      },
+                      "5": {
+                        "text": "PVLAN promiscuous"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 2 / vlan_profile"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "1": {
+                        "text": "VLANs: 30 \u00b7 Server A"
+                      },
+                      "2": {
+                        "text": "VLANs: 1 \u00b7 my VLAN 1 | 10 \u00b7 Management | 20 \u00b7 my special VLAN"
+                      },
+                      "3": {
+                        "text": "VLANs: 100 \u00b7 PVLAN primary | 101 \u00b7 Isolated secondary"
+                      },
+                      "4": {
+                        "text": "VLANs: 100 \u00b7 PVLAN primary | 102 \u00b7 Community secondary"
+                      },
+                      "5": {
+                        "text": "VLANs: 200 \u00b7 VCC | 300 \u00b7 FSP"
+                      },
+                      "6": {
+                        "text": "VLANs: 1 \u00b7 my VLAN 1 | 10 \u00b7 Management | 20 \u00b7 my special VLAN | 200 \u00b7 VCC | 300 \u00b7 FSP"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 2 / rx_bps"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bps"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 2 / tx_bps"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bps"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 2 / rx_packets_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 2 / tx_packets_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 2 / crc_errors_5m"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": null,
+                      "color": "green"
+                    },
+                    {
+                      "value": 1,
+                      "color": "orange"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 2 / crc_errors_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 2 / drops_5m"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": null,
+                      "color": "green"
+                    },
+                    {
+                      "value": 1,
+                      "color": "orange"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 2 / drops_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 3 / health"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Down",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "Up",
+                        "color": "green"
+                      },
+                      "2": {
+                        "text": "Admin down",
+                        "color": "#8e8e8e"
+                      },
+                      "3": {
+                        "text": "Unknown",
+                        "color": "#8e8e8e"
+                      },
+                      "4": {
+                        "text": "Up \u00b7 CRC",
+                        "color": "orange"
+                      },
+                      "5": {
+                        "text": "Up \u00b7 drops",
+                        "color": "orange"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": null,
+                      "color": "red"
+                    },
+                    {
+                      "value": 1,
+                      "color": "green"
+                    },
+                    {
+                      "value": 2,
+                      "color": "#8e8e8e"
+                    },
+                    {
+                      "value": 4,
+                      "color": "orange"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 3 / mode"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Access"
+                      },
+                      "1": {
+                        "text": "Trunk"
+                      },
+                      "2": {
+                        "text": "PVLAN host \u00b7 isolated"
+                      },
+                      "3": {
+                        "text": "PVLAN host \u00b7 community"
+                      },
+                      "4": {
+                        "text": "PVLAN trunk \u00b7 secondary"
+                      },
+                      "5": {
+                        "text": "PVLAN promiscuous"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 3 / vlan_profile"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "1": {
+                        "text": "VLANs: 30 \u00b7 Server A"
+                      },
+                      "2": {
+                        "text": "VLANs: 1 \u00b7 my VLAN 1 | 10 \u00b7 Management | 20 \u00b7 my special VLAN"
+                      },
+                      "3": {
+                        "text": "VLANs: 100 \u00b7 PVLAN primary | 101 \u00b7 Isolated secondary"
+                      },
+                      "4": {
+                        "text": "VLANs: 100 \u00b7 PVLAN primary | 102 \u00b7 Community secondary"
+                      },
+                      "5": {
+                        "text": "VLANs: 200 \u00b7 VCC | 300 \u00b7 FSP"
+                      },
+                      "6": {
+                        "text": "VLANs: 1 \u00b7 my VLAN 1 | 10 \u00b7 Management | 20 \u00b7 my special VLAN | 200 \u00b7 VCC | 300 \u00b7 FSP"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 3 / rx_bps"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bps"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 3 / tx_bps"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bps"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 3 / rx_packets_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 3 / tx_packets_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 3 / crc_errors_5m"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": null,
+                      "color": "green"
+                    },
+                    {
+                      "value": 1,
+                      "color": "orange"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 3 / crc_errors_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 3 / drops_5m"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": null,
+                      "color": "green"
+                    },
+                    {
+                      "value": 1,
+                      "color": "orange"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 3 / drops_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 4 / health"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Down",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "Up",
+                        "color": "green"
+                      },
+                      "2": {
+                        "text": "Admin down",
+                        "color": "#8e8e8e"
+                      },
+                      "3": {
+                        "text": "Unknown",
+                        "color": "#8e8e8e"
+                      },
+                      "4": {
+                        "text": "Up \u00b7 CRC",
+                        "color": "orange"
+                      },
+                      "5": {
+                        "text": "Up \u00b7 drops",
+                        "color": "orange"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": null,
+                      "color": "red"
+                    },
+                    {
+                      "value": 1,
+                      "color": "green"
+                    },
+                    {
+                      "value": 2,
+                      "color": "#8e8e8e"
+                    },
+                    {
+                      "value": 4,
+                      "color": "orange"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 4 / mode"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Access"
+                      },
+                      "1": {
+                        "text": "Trunk"
+                      },
+                      "2": {
+                        "text": "PVLAN host \u00b7 isolated"
+                      },
+                      "3": {
+                        "text": "PVLAN host \u00b7 community"
+                      },
+                      "4": {
+                        "text": "PVLAN trunk \u00b7 secondary"
+                      },
+                      "5": {
+                        "text": "PVLAN promiscuous"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 4 / vlan_profile"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "1": {
+                        "text": "VLANs: 30 \u00b7 Server A"
+                      },
+                      "2": {
+                        "text": "VLANs: 1 \u00b7 my VLAN 1 | 10 \u00b7 Management | 20 \u00b7 my special VLAN"
+                      },
+                      "3": {
+                        "text": "VLANs: 100 \u00b7 PVLAN primary | 101 \u00b7 Isolated secondary"
+                      },
+                      "4": {
+                        "text": "VLANs: 100 \u00b7 PVLAN primary | 102 \u00b7 Community secondary"
+                      },
+                      "5": {
+                        "text": "VLANs: 200 \u00b7 VCC | 300 \u00b7 FSP"
+                      },
+                      "6": {
+                        "text": "VLANs: 1 \u00b7 my VLAN 1 | 10 \u00b7 Management | 20 \u00b7 my special VLAN | 200 \u00b7 VCC | 300 \u00b7 FSP"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 4 / rx_bps"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bps"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 4 / tx_bps"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bps"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 4 / rx_packets_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 4 / tx_packets_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 4 / crc_errors_5m"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": null,
+                      "color": "green"
+                    },
+                    {
+                      "value": 1,
+                      "color": "orange"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 4 / crc_errors_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 4 / drops_5m"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "value": null,
+                      "color": "green"
+                    },
+                    {
+                      "value": 1,
+                      "color": "orange"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lane 4 / drops_total"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "inlineEditing": false,
+        "panZoom": false,
+        "zoomToContent": true,
+        "showAdvancedTypes": true,
+        "tooltip": {
+          "mode": "single"
+        },
+        "root": {
+          "name": "Root",
+          "type": "frame",
+          "elements": [
+            {
+              "name": "DOM label",
+              "type": "metric-value",
+              "placement": {
+                "left": 8,
+                "top": 3,
+                "width": 528,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 14,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "SHARED TRANSCEIVER \u00b7 parent physical port"
+                }
+              }
+            },
+            {
+              "name": "Temperature label",
+              "type": "metric-value",
+              "placement": {
+                "left": 8,
+                "top": 27,
+                "width": 90,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "Temperature"
+                }
+              }
+            },
+            {
+              "name": "Temperature",
+              "type": "metric-value",
+              "placement": {
+                "left": 100,
+                "top": 25,
+                "width": 112,
+                "height": 22
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 18,
+                "color": {
+                  "field": "Optics / temperature_celsius",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Optics / temperature_celsius",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "Voltage label",
+              "type": "metric-value",
+              "placement": {
+                "left": 225,
+                "top": 27,
+                "width": 56,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "Voltage"
+                }
+              }
+            },
+            {
+              "name": "Voltage",
+              "type": "metric-value",
+              "placement": {
+                "left": 285,
+                "top": 25,
+                "width": 100,
+                "height": 22
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 18,
+                "color": {
+                  "field": "Optics / voltage_volts",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Optics / voltage_volts",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "DOM status",
+              "type": "metric-value",
+              "placement": {
+                "left": 392,
+                "top": 25,
+                "width": 155,
+                "height": 22
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Optics / dom_status",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Optics / dom_status",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L1 box",
+              "type": "rectangle",
+              "placement": {
+                "left": 8,
+                "top": 63,
+                "width": 264,
+                "height": 231
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 14,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": ""
+                }
+              },
+              "background": {
+                "color": {
+                  "fixed": "#202226"
+                }
+              },
+              "border": {
+                "width": 1,
+                "radius": 5,
+                "color": {
+                  "fixed": "#41444c"
+                }
+              }
+            },
+            {
+              "name": "L1 title",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 68,
+                "width": 132,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 14,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "Interface /1"
+                }
+              }
+            },
+            {
+              "name": "L1 state",
+              "type": "metric-value",
+              "placement": {
+                "left": 150,
+                "top": 67,
+                "width": 112,
+                "height": 20
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "#111217"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 1 / health",
+                  "fixed": ""
+                }
+              },
+              "background": {
+                "color": {
+                  "field": "Lane 1 / health",
+                  "fixed": "#444444"
+                }
+              }
+            },
+            {
+              "name": "L1 mode",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 92,
+                "width": 244,
+                "height": 20
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 1 / mode",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 1 / mode",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L1 vlans",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 115,
+                "width": 244,
+                "height": 65
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 1 / vlan_profile",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 1 / vlan_profile",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L1 RX label",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 184,
+                "width": 86,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "RX"
+                }
+              }
+            },
+            {
+              "name": "L1 RX",
+              "type": "metric-value",
+              "placement": {
+                "left": 106,
+                "top": 184,
+                "width": 156,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 15,
+                "color": {
+                  "field": "Lane 1 / rx_bps",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 1 / rx_bps",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L1 TX label",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 207,
+                "width": 86,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "TX"
+                }
+              }
+            },
+            {
+              "name": "L1 TX",
+              "type": "metric-value",
+              "placement": {
+                "left": 106,
+                "top": 207,
+                "width": 156,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 15,
+                "color": {
+                  "field": "Lane 1 / tx_bps",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 1 / tx_bps",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L1 RX packets label",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 231,
+                "width": 86,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "RX packets"
+                }
+              }
+            },
+            {
+              "name": "L1 RX packets",
+              "type": "metric-value",
+              "placement": {
+                "left": 106,
+                "top": 231,
+                "width": 156,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 1 / rx_packets_total",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 1 / rx_packets_total",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L1 CRC label",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 271,
+                "width": 110,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 11,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "CRC 5m / total"
+                }
+              }
+            },
+            {
+              "name": "L1 drops label",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 250,
+                "width": 110,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 11,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "Drops 5m / total"
+                }
+              }
+            },
+            {
+              "name": "L1 drops recent",
+              "type": "metric-value",
+              "placement": {
+                "left": 129,
+                "top": 250,
+                "width": 42,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 1 / drops_5m",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 1 / drops_5m",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L1 drops slash",
+              "type": "metric-value",
+              "placement": {
+                "left": 174,
+                "top": 250,
+                "width": 12,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "/"
+                }
+              }
+            },
+            {
+              "name": "L1 drops total",
+              "type": "metric-value",
+              "placement": {
+                "left": 191,
+                "top": 250,
+                "width": 70,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 1 / drops_total",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 1 / drops_total",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L1 CRC recent",
+              "type": "metric-value",
+              "placement": {
+                "left": 129,
+                "top": 271,
+                "width": 42,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 1 / crc_errors_5m",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 1 / crc_errors_5m",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L1 CRC slash",
+              "type": "metric-value",
+              "placement": {
+                "left": 174,
+                "top": 271,
+                "width": 12,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "/"
+                }
+              }
+            },
+            {
+              "name": "L1 CRC total",
+              "type": "metric-value",
+              "placement": {
+                "left": 191,
+                "top": 271,
+                "width": 70,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 1 / crc_errors_total",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 1 / crc_errors_total",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L2 box",
+              "type": "rectangle",
+              "placement": {
+                "left": 284,
+                "top": 63,
+                "width": 264,
+                "height": 231
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 14,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": ""
+                }
+              },
+              "background": {
+                "color": {
+                  "fixed": "#202226"
+                }
+              },
+              "border": {
+                "width": 1,
+                "radius": 5,
+                "color": {
+                  "fixed": "#41444c"
+                }
+              }
+            },
+            {
+              "name": "L2 title",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 68,
+                "width": 132,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 14,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "Interface /2"
+                }
+              }
+            },
+            {
+              "name": "L2 state",
+              "type": "metric-value",
+              "placement": {
+                "left": 426,
+                "top": 67,
+                "width": 112,
+                "height": 20
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "#111217"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 2 / health",
+                  "fixed": ""
+                }
+              },
+              "background": {
+                "color": {
+                  "field": "Lane 2 / health",
+                  "fixed": "#444444"
+                }
+              }
+            },
+            {
+              "name": "L2 mode",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 92,
+                "width": 244,
+                "height": 20
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 2 / mode",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 2 / mode",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L2 vlans",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 115,
+                "width": 244,
+                "height": 65
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 2 / vlan_profile",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 2 / vlan_profile",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L2 RX label",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 184,
+                "width": 86,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "RX"
+                }
+              }
+            },
+            {
+              "name": "L2 RX",
+              "type": "metric-value",
+              "placement": {
+                "left": 382,
+                "top": 184,
+                "width": 156,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 15,
+                "color": {
+                  "field": "Lane 2 / rx_bps",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 2 / rx_bps",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L2 TX label",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 207,
+                "width": 86,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "TX"
+                }
+              }
+            },
+            {
+              "name": "L2 TX",
+              "type": "metric-value",
+              "placement": {
+                "left": 382,
+                "top": 207,
+                "width": 156,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 15,
+                "color": {
+                  "field": "Lane 2 / tx_bps",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 2 / tx_bps",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L2 RX packets label",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 231,
+                "width": 86,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "RX packets"
+                }
+              }
+            },
+            {
+              "name": "L2 RX packets",
+              "type": "metric-value",
+              "placement": {
+                "left": 382,
+                "top": 231,
+                "width": 156,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 2 / rx_packets_total",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 2 / rx_packets_total",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L2 CRC label",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 271,
+                "width": 110,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 11,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "CRC 5m / total"
+                }
+              }
+            },
+            {
+              "name": "L2 drops label",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 250,
+                "width": 110,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 11,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "Drops 5m / total"
+                }
+              }
+            },
+            {
+              "name": "L2 drops recent",
+              "type": "metric-value",
+              "placement": {
+                "left": 405,
+                "top": 250,
+                "width": 42,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 2 / drops_5m",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 2 / drops_5m",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L2 drops slash",
+              "type": "metric-value",
+              "placement": {
+                "left": 450,
+                "top": 250,
+                "width": 12,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "/"
+                }
+              }
+            },
+            {
+              "name": "L2 drops total",
+              "type": "metric-value",
+              "placement": {
+                "left": 467,
+                "top": 250,
+                "width": 70,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 2 / drops_total",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 2 / drops_total",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L2 CRC recent",
+              "type": "metric-value",
+              "placement": {
+                "left": 405,
+                "top": 271,
+                "width": 42,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 2 / crc_errors_5m",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 2 / crc_errors_5m",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L2 CRC slash",
+              "type": "metric-value",
+              "placement": {
+                "left": 450,
+                "top": 271,
+                "width": 12,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "/"
+                }
+              }
+            },
+            {
+              "name": "L2 CRC total",
+              "type": "metric-value",
+              "placement": {
+                "left": 467,
+                "top": 271,
+                "width": 70,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 2 / crc_errors_total",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 2 / crc_errors_total",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L3 box",
+              "type": "rectangle",
+              "placement": {
+                "left": 8,
+                "top": 301,
+                "width": 264,
+                "height": 231
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 14,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": ""
+                }
+              },
+              "background": {
+                "color": {
+                  "fixed": "#202226"
+                }
+              },
+              "border": {
+                "width": 1,
+                "radius": 5,
+                "color": {
+                  "fixed": "#41444c"
+                }
+              }
+            },
+            {
+              "name": "L3 title",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 306,
+                "width": 132,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 14,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "Interface /3"
+                }
+              }
+            },
+            {
+              "name": "L3 state",
+              "type": "metric-value",
+              "placement": {
+                "left": 150,
+                "top": 305,
+                "width": 112,
+                "height": 20
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "#111217"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 3 / health",
+                  "fixed": ""
+                }
+              },
+              "background": {
+                "color": {
+                  "field": "Lane 3 / health",
+                  "fixed": "#444444"
+                }
+              }
+            },
+            {
+              "name": "L3 mode",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 330,
+                "width": 244,
+                "height": 20
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 3 / mode",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 3 / mode",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L3 vlans",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 353,
+                "width": 244,
+                "height": 65
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 3 / vlan_profile",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 3 / vlan_profile",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L3 RX label",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 422,
+                "width": 86,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "RX"
+                }
+              }
+            },
+            {
+              "name": "L3 RX",
+              "type": "metric-value",
+              "placement": {
+                "left": 106,
+                "top": 422,
+                "width": 156,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 15,
+                "color": {
+                  "field": "Lane 3 / rx_bps",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 3 / rx_bps",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L3 TX label",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 445,
+                "width": 86,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "TX"
+                }
+              }
+            },
+            {
+              "name": "L3 TX",
+              "type": "metric-value",
+              "placement": {
+                "left": 106,
+                "top": 445,
+                "width": 156,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 15,
+                "color": {
+                  "field": "Lane 3 / tx_bps",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 3 / tx_bps",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L3 RX packets label",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 469,
+                "width": 86,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "RX packets"
+                }
+              }
+            },
+            {
+              "name": "L3 RX packets",
+              "type": "metric-value",
+              "placement": {
+                "left": 106,
+                "top": 469,
+                "width": 156,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 3 / rx_packets_total",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 3 / rx_packets_total",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L3 CRC label",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 509,
+                "width": 110,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 11,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "CRC 5m / total"
+                }
+              }
+            },
+            {
+              "name": "L3 drops label",
+              "type": "metric-value",
+              "placement": {
+                "left": 18,
+                "top": 488,
+                "width": 110,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 11,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "Drops 5m / total"
+                }
+              }
+            },
+            {
+              "name": "L3 drops recent",
+              "type": "metric-value",
+              "placement": {
+                "left": 129,
+                "top": 488,
+                "width": 42,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 3 / drops_5m",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 3 / drops_5m",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L3 drops slash",
+              "type": "metric-value",
+              "placement": {
+                "left": 174,
+                "top": 488,
+                "width": 12,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "/"
+                }
+              }
+            },
+            {
+              "name": "L3 drops total",
+              "type": "metric-value",
+              "placement": {
+                "left": 191,
+                "top": 488,
+                "width": 70,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 3 / drops_total",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 3 / drops_total",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L3 CRC recent",
+              "type": "metric-value",
+              "placement": {
+                "left": 129,
+                "top": 509,
+                "width": 42,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 3 / crc_errors_5m",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 3 / crc_errors_5m",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L3 CRC slash",
+              "type": "metric-value",
+              "placement": {
+                "left": 174,
+                "top": 509,
+                "width": 12,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "/"
+                }
+              }
+            },
+            {
+              "name": "L3 CRC total",
+              "type": "metric-value",
+              "placement": {
+                "left": 191,
+                "top": 509,
+                "width": 70,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 3 / crc_errors_total",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 3 / crc_errors_total",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L4 box",
+              "type": "rectangle",
+              "placement": {
+                "left": 284,
+                "top": 301,
+                "width": 264,
+                "height": 231
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 14,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": ""
+                }
+              },
+              "background": {
+                "color": {
+                  "fixed": "#202226"
+                }
+              },
+              "border": {
+                "width": 1,
+                "radius": 5,
+                "color": {
+                  "fixed": "#41444c"
+                }
+              }
+            },
+            {
+              "name": "L4 title",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 306,
+                "width": 132,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 14,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "Interface /4"
+                }
+              }
+            },
+            {
+              "name": "L4 state",
+              "type": "metric-value",
+              "placement": {
+                "left": 426,
+                "top": 305,
+                "width": 112,
+                "height": 20
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "#111217"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 4 / health",
+                  "fixed": ""
+                }
+              },
+              "background": {
+                "color": {
+                  "field": "Lane 4 / health",
+                  "fixed": "#444444"
+                }
+              }
+            },
+            {
+              "name": "L4 mode",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 330,
+                "width": 244,
+                "height": 20
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 4 / mode",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 4 / mode",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L4 vlans",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 353,
+                "width": 244,
+                "height": 65
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 4 / vlan_profile",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 4 / vlan_profile",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L4 RX label",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 422,
+                "width": 86,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "RX"
+                }
+              }
+            },
+            {
+              "name": "L4 RX",
+              "type": "metric-value",
+              "placement": {
+                "left": 382,
+                "top": 422,
+                "width": 156,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 15,
+                "color": {
+                  "field": "Lane 4 / rx_bps",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 4 / rx_bps",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L4 TX label",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 445,
+                "width": 86,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "TX"
+                }
+              }
+            },
+            {
+              "name": "L4 TX",
+              "type": "metric-value",
+              "placement": {
+                "left": 382,
+                "top": 445,
+                "width": 156,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 15,
+                "color": {
+                  "field": "Lane 4 / tx_bps",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 4 / tx_bps",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L4 RX packets label",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 469,
+                "width": 86,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "RX packets"
+                }
+              }
+            },
+            {
+              "name": "L4 RX packets",
+              "type": "metric-value",
+              "placement": {
+                "left": 382,
+                "top": 469,
+                "width": 156,
+                "height": 19
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 4 / rx_packets_total",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 4 / rx_packets_total",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L4 CRC label",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 509,
+                "width": 110,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 11,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "CRC 5m / total"
+                }
+              }
+            },
+            {
+              "name": "L4 drops label",
+              "type": "metric-value",
+              "placement": {
+                "left": 294,
+                "top": 488,
+                "width": 110,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 11,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "Drops 5m / total"
+                }
+              }
+            },
+            {
+              "name": "L4 drops recent",
+              "type": "metric-value",
+              "placement": {
+                "left": 405,
+                "top": 488,
+                "width": 42,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 4 / drops_5m",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 4 / drops_5m",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L4 drops slash",
+              "type": "metric-value",
+              "placement": {
+                "left": 450,
+                "top": 488,
+                "width": 12,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "/"
+                }
+              }
+            },
+            {
+              "name": "L4 drops total",
+              "type": "metric-value",
+              "placement": {
+                "left": 467,
+                "top": 488,
+                "width": 70,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 4 / drops_total",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 4 / drops_total",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L4 CRC recent",
+              "type": "metric-value",
+              "placement": {
+                "left": 405,
+                "top": 509,
+                "width": 42,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 4 / crc_errors_5m",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 4 / crc_errors_5m",
+                  "fixed": ""
+                }
+              }
+            },
+            {
+              "name": "L4 CRC slash",
+              "type": "metric-value",
+              "placement": {
+                "left": 450,
+                "top": 509,
+                "width": 12,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "fixed",
+                  "field": "",
+                  "fixed": "/"
+                }
+              }
+            },
+            {
+              "name": "L4 CRC total",
+              "type": "metric-value",
+              "placement": {
+                "left": 467,
+                "top": 509,
+                "width": 70,
+                "height": 17
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle",
+                "size": 12,
+                "color": {
+                  "field": "Lane 4 / crc_errors_total",
+                  "fixed": "text"
+                },
+                "text": {
+                  "mode": "field",
+                  "field": "Lane 4 / crc_errors_total",
+                  "fixed": ""
+                }
+              }
+            }
+          ]
+        }
+      },
+      "repeat": "port",
+      "repeatDirection": "h",
+      "maxPerRow": 2
+    }
+  ]
+}

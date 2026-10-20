@@ -1,0 +1,2127 @@
+{
+  "synthetic": true,
+  "switch": "demo-9332d-01",
+  "model": "Nexus 9332D family demo",
+  "vlan_names": {
+    "1": "my VLAN 1",
+    "10": "Management",
+    "20": "my special VLAN",
+    "30": "Server A",
+    "100": "PVLAN primary",
+    "101": "Isolated secondary",
+    "102": "Community secondary",
+    "200": "VCC",
+    "300": "FSP"
+  },
+  "vlan_profiles": {
+    "1": [
+      30
+    ],
+    "2": [
+      1,
+      10,
+      20
+    ],
+    "3": [
+      100,
+      101
+    ],
+    "4": [
+      100,
+      102
+    ],
+    "5": [
+      200,
+      300
+    ],
+    "6": [
+      1,
+      10,
+      20,
+      200,
+      300
+    ]
+  },
+  "ports": [
+    {
+      "number": 1,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 39.4,
+        "voltage_volts": 3.28,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 49000000000.0,
+          "tx_bps": 26000000000.0,
+          "rx_packets_total": 1211000000,
+          "tx_packets_total": 905700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 60000000000.0,
+          "tx_bps": 31000000000.0,
+          "rx_packets_total": 1212000000,
+          "tx_packets_total": 906400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 71000000000.0,
+          "tx_bps": 36000000000.0,
+          "rx_packets_total": 1213000000,
+          "tx_packets_total": 907100000,
+          "crc_errors_total": 218,
+          "crc_errors_5m": 12,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 82000000000.0,
+          "tx_bps": 41000000000.0,
+          "rx_packets_total": 1214000000,
+          "tx_packets_total": 907800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 39.7,
+        "voltage_volts": 3.29,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 56000000000.0,
+          "tx_bps": 29000000000.0,
+          "rx_packets_total": 1221000000,
+          "tx_packets_total": 910700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "down",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 0,
+          "tx_bps": 0,
+          "rx_packets_total": 1222000000,
+          "tx_packets_total": 911400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 78000000000.0,
+          "tx_bps": 39000000000.0,
+          "rx_packets_total": 1223000000,
+          "tx_packets_total": 912100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 84,
+          "drops_5m": 17
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 89000000000.0,
+          "tx_bps": 44000000000.0,
+          "rx_packets_total": 1224000000,
+          "tx_packets_total": 912800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 40.1,
+        "voltage_volts": 3.3,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 63000000000.0,
+          "tx_bps": 32000000000.0,
+          "rx_packets_total": 1231000000,
+          "tx_packets_total": 915700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 74000000000.0,
+          "tx_bps": 37000000000.0,
+          "rx_packets_total": 1232000000,
+          "tx_packets_total": 916400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 85000000000.0,
+          "tx_bps": 42000000000.0,
+          "rx_packets_total": 1233000000,
+          "tx_packets_total": 917100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "admin down",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 0,
+          "tx_bps": 0,
+          "rx_packets_total": 1234000000,
+          "tx_packets_total": 917800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": false,
+        "type": "Not fitted",
+        "temperature_celsius": null,
+        "voltage_volts": null,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "down",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 0,
+          "tx_bps": 0,
+          "rx_packets_total": 1241000000,
+          "tx_packets_total": 920700000,
+          "crc_errors_total": 6,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "down",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 0,
+          "tx_bps": 0,
+          "rx_packets_total": 1242000000,
+          "tx_packets_total": 921400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "down",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 0,
+          "tx_bps": 0,
+          "rx_packets_total": 1243000000,
+          "tx_packets_total": 922100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "down",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 0,
+          "tx_bps": 0,
+          "rx_packets_total": 1244000000,
+          "tx_packets_total": 922800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": null,
+        "voltage_volts": null,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 77000000000.0,
+          "tx_bps": 38000000000.0,
+          "rx_packets_total": 1251000000,
+          "tx_packets_total": 925700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 88000000000.0,
+          "tx_bps": 43000000000.0,
+          "rx_packets_total": 1252000000,
+          "tx_packets_total": 926400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 37000000000.0,
+          "tx_bps": 48000000000.0,
+          "rx_packets_total": 1253000000,
+          "tx_packets_total": 927100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 48000000000.0,
+          "tx_bps": 53000000000.0,
+          "rx_packets_total": 1254000000,
+          "tx_packets_total": 927800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 41.2,
+        "voltage_volts": 3.28,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "unknown",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 0,
+          "tx_bps": 0,
+          "rx_packets_total": 1261000000,
+          "tx_packets_total": 930700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 33000000000.0,
+          "tx_bps": 46000000000.0,
+          "rx_packets_total": 1262000000,
+          "tx_packets_total": 931400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 44000000000.0,
+          "tx_bps": 51000000000.0,
+          "rx_packets_total": 1263000000,
+          "tx_packets_total": 932100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 55000000000.0,
+          "tx_bps": 56000000000.0,
+          "rx_packets_total": 1264000000,
+          "tx_packets_total": 932800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 79.2,
+        "voltage_volts": 3.29,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 91000000000.0,
+          "tx_bps": 44000000000.0,
+          "rx_packets_total": 1271000000,
+          "tx_packets_total": 935700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 40000000000.0,
+          "tx_bps": 49000000000.0,
+          "rx_packets_total": 1272000000,
+          "tx_packets_total": 936400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 51000000000.0,
+          "tx_bps": 54000000000.0,
+          "rx_packets_total": 1273000000,
+          "tx_packets_total": 937100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 62000000000.0,
+          "tx_bps": 59000000000.0,
+          "rx_packets_total": 1274000000,
+          "tx_packets_total": 937800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 42.0,
+        "voltage_volts": 3.3,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 36000000000.0,
+          "tx_bps": 47000000000.0,
+          "rx_packets_total": 1281000000,
+          "tx_packets_total": 940700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 47000000000.0,
+          "tx_bps": 52000000000.0,
+          "rx_packets_total": 1282000000,
+          "tx_packets_total": 941400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 58000000000.0,
+          "tx_bps": 57000000000.0,
+          "rx_packets_total": 1283000000,
+          "tx_packets_total": 942100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 69000000000.0,
+          "tx_bps": 62000000000.0,
+          "rx_packets_total": 1284000000,
+          "tx_packets_total": 942800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 42.3,
+        "voltage_volts": 3.31,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 43000000000.0,
+          "tx_bps": 50000000000.0,
+          "rx_packets_total": 1291000000,
+          "tx_packets_total": 945700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 54000000000.0,
+          "tx_bps": 55000000000.0,
+          "rx_packets_total": 1292000000,
+          "tx_packets_total": 946400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 65000000000.0,
+          "tx_bps": 60000000000.0,
+          "rx_packets_total": 1293000000,
+          "tx_packets_total": 947100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 76000000000.0,
+          "tx_bps": 65000000000.0,
+          "rx_packets_total": 1294000000,
+          "tx_packets_total": 947800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 42.7,
+        "voltage_volts": 3.27,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 50000000000.0,
+          "tx_bps": 53000000000.0,
+          "rx_packets_total": 1301000000,
+          "tx_packets_total": 950700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 61000000000.0,
+          "tx_bps": 58000000000.0,
+          "rx_packets_total": 1302000000,
+          "tx_packets_total": 951400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 72000000000.0,
+          "tx_bps": 63000000000.0,
+          "rx_packets_total": 1303000000,
+          "tx_packets_total": 952100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 83000000000.0,
+          "tx_bps": 68000000000.0,
+          "rx_packets_total": 1304000000,
+          "tx_packets_total": 952800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 43.1,
+        "voltage_volts": 3.28,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 57000000000.0,
+          "tx_bps": 56000000000.0,
+          "rx_packets_total": 1311000000,
+          "tx_packets_total": 955700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 68000000000.0,
+          "tx_bps": 61000000000.0,
+          "rx_packets_total": 1312000000,
+          "tx_packets_total": 956400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 79000000000.0,
+          "tx_bps": 66000000000.0,
+          "rx_packets_total": 1313000000,
+          "tx_packets_total": 957100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 90000000000.0,
+          "tx_bps": 71000000000.0,
+          "rx_packets_total": 1314000000,
+          "tx_packets_total": 957800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 43.4,
+        "voltage_volts": 3.29,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 64000000000.0,
+          "tx_bps": 59000000000.0,
+          "rx_packets_total": 1321000000,
+          "tx_packets_total": 960700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 75000000000.0,
+          "tx_bps": 64000000000.0,
+          "rx_packets_total": 1322000000,
+          "tx_packets_total": 961400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 86000000000.0,
+          "tx_bps": 69000000000.0,
+          "rx_packets_total": 1323000000,
+          "tx_packets_total": 962100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 35000000000.0,
+          "tx_bps": 74000000000.0,
+          "rx_packets_total": 1324000000,
+          "tx_packets_total": 962800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 43.8,
+        "voltage_volts": 3.3,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 71000000000.0,
+          "tx_bps": 62000000000.0,
+          "rx_packets_total": 1331000000,
+          "tx_packets_total": 965700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 82000000000.0,
+          "tx_bps": 67000000000.0,
+          "rx_packets_total": 1332000000,
+          "tx_packets_total": 966400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 31000000000.0,
+          "tx_bps": 72000000000.0,
+          "rx_packets_total": 1333000000,
+          "tx_packets_total": 967100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 42000000000.0,
+          "tx_bps": 20000000000.0,
+          "rx_packets_total": 1334000000,
+          "tx_packets_total": 967800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 44.2,
+        "voltage_volts": 3.31,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 78000000000.0,
+          "tx_bps": 65000000000.0,
+          "rx_packets_total": 1341000000,
+          "tx_packets_total": 970700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 89000000000.0,
+          "tx_bps": 70000000000.0,
+          "rx_packets_total": 1342000000,
+          "tx_packets_total": 971400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 38000000000.0,
+          "tx_bps": 18000000000.0,
+          "rx_packets_total": 1343000000,
+          "tx_packets_total": 972100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 49000000000.0,
+          "tx_bps": 23000000000.0,
+          "rx_packets_total": 1344000000,
+          "tx_packets_total": 972800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 44.5,
+        "voltage_volts": 3.27,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 85000000000.0,
+          "tx_bps": 68000000000.0,
+          "rx_packets_total": 1351000000,
+          "tx_packets_total": 975700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 34000000000.0,
+          "tx_bps": 73000000000.0,
+          "rx_packets_total": 1352000000,
+          "tx_packets_total": 976400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 45000000000.0,
+          "tx_bps": 21000000000.0,
+          "rx_packets_total": 1353000000,
+          "tx_packets_total": 977100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 56000000000.0,
+          "tx_bps": 26000000000.0,
+          "rx_packets_total": 1354000000,
+          "tx_packets_total": 977800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 16,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 44.9,
+        "voltage_volts": 3.28,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 92000000000.0,
+          "tx_bps": 71000000000.0,
+          "rx_packets_total": 1361000000,
+          "tx_packets_total": 980700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 41000000000.0,
+          "tx_bps": 19000000000.0,
+          "rx_packets_total": 1362000000,
+          "tx_packets_total": 981400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 52000000000.0,
+          "tx_bps": 24000000000.0,
+          "rx_packets_total": 1363000000,
+          "tx_packets_total": 982100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 63000000000.0,
+          "tx_bps": 29000000000.0,
+          "rx_packets_total": 1364000000,
+          "tx_packets_total": 982800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 45.3,
+        "voltage_volts": 3.29,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 37000000000.0,
+          "tx_bps": 74000000000.0,
+          "rx_packets_total": 1371000000,
+          "tx_packets_total": 985700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 48000000000.0,
+          "tx_bps": 22000000000.0,
+          "rx_packets_total": 1372000000,
+          "tx_packets_total": 986400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 59000000000.0,
+          "tx_bps": 27000000000.0,
+          "rx_packets_total": 1373000000,
+          "tx_packets_total": 987100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 70000000000.0,
+          "tx_bps": 32000000000.0,
+          "rx_packets_total": 1374000000,
+          "tx_packets_total": 987800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 45.7,
+        "voltage_volts": 3.3,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 44000000000.0,
+          "tx_bps": 20000000000.0,
+          "rx_packets_total": 1381000000,
+          "tx_packets_total": 990700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 55000000000.0,
+          "tx_bps": 25000000000.0,
+          "rx_packets_total": 1382000000,
+          "tx_packets_total": 991400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 66000000000.0,
+          "tx_bps": 30000000000.0,
+          "rx_packets_total": 1383000000,
+          "tx_packets_total": 992100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 77000000000.0,
+          "tx_bps": 35000000000.0,
+          "rx_packets_total": 1384000000,
+          "tx_packets_total": 992800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 46.0,
+        "voltage_volts": 3.31,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 51000000000.0,
+          "tx_bps": 23000000000.0,
+          "rx_packets_total": 1391000000,
+          "tx_packets_total": 995700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 62000000000.0,
+          "tx_bps": 28000000000.0,
+          "rx_packets_total": 1392000000,
+          "tx_packets_total": 996400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 73000000000.0,
+          "tx_bps": 33000000000.0,
+          "rx_packets_total": 1393000000,
+          "tx_packets_total": 997100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 84000000000.0,
+          "tx_bps": 38000000000.0,
+          "rx_packets_total": 1394000000,
+          "tx_packets_total": 997800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 20,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 46.4,
+        "voltage_volts": 3.27,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 58000000000.0,
+          "tx_bps": 26000000000.0,
+          "rx_packets_total": 1401000000,
+          "tx_packets_total": 1000700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 69000000000.0,
+          "tx_bps": 31000000000.0,
+          "rx_packets_total": 1402000000,
+          "tx_packets_total": 1001400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 80000000000.0,
+          "tx_bps": 36000000000.0,
+          "rx_packets_total": 1403000000,
+          "tx_packets_total": 1002100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 91000000000.0,
+          "tx_bps": 41000000000.0,
+          "rx_packets_total": 1404000000,
+          "tx_packets_total": 1002800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 46.8,
+        "voltage_volts": 3.28,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 65000000000.0,
+          "tx_bps": 29000000000.0,
+          "rx_packets_total": 1411000000,
+          "tx_packets_total": 1005700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 76000000000.0,
+          "tx_bps": 34000000000.0,
+          "rx_packets_total": 1412000000,
+          "tx_packets_total": 1006400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 87000000000.0,
+          "tx_bps": 39000000000.0,
+          "rx_packets_total": 1413000000,
+          "tx_packets_total": 1007100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 36000000000.0,
+          "tx_bps": 44000000000.0,
+          "rx_packets_total": 1414000000,
+          "tx_packets_total": 1007800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 22,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 47.1,
+        "voltage_volts": 3.29,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 72000000000.0,
+          "tx_bps": 32000000000.0,
+          "rx_packets_total": 1421000000,
+          "tx_packets_total": 1010700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 83000000000.0,
+          "tx_bps": 37000000000.0,
+          "rx_packets_total": 1422000000,
+          "tx_packets_total": 1011400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 32000000000.0,
+          "tx_bps": 42000000000.0,
+          "rx_packets_total": 1423000000,
+          "tx_packets_total": 1012100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 43000000000.0,
+          "tx_bps": 47000000000.0,
+          "rx_packets_total": 1424000000,
+          "tx_packets_total": 1012800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 23,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 47.5,
+        "voltage_volts": 3.3,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 79000000000.0,
+          "tx_bps": 35000000000.0,
+          "rx_packets_total": 1431000000,
+          "tx_packets_total": 1015700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 90000000000.0,
+          "tx_bps": 40000000000.0,
+          "rx_packets_total": 1432000000,
+          "tx_packets_total": 1016400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 39000000000.0,
+          "tx_bps": 45000000000.0,
+          "rx_packets_total": 1433000000,
+          "tx_packets_total": 1017100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 50000000000.0,
+          "tx_bps": 50000000000.0,
+          "rx_packets_total": 1434000000,
+          "tx_packets_total": 1017800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 47.9,
+        "voltage_volts": 3.31,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 86000000000.0,
+          "tx_bps": 38000000000.0,
+          "rx_packets_total": 1441000000,
+          "tx_packets_total": 1020700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 35000000000.0,
+          "tx_bps": 43000000000.0,
+          "rx_packets_total": 1442000000,
+          "tx_packets_total": 1021400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 46000000000.0,
+          "tx_bps": 48000000000.0,
+          "rx_packets_total": 1443000000,
+          "tx_packets_total": 1022100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 57000000000.0,
+          "tx_bps": 53000000000.0,
+          "rx_packets_total": 1444000000,
+          "tx_packets_total": 1022800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 25,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 48.2,
+        "voltage_volts": 3.27,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 31000000000.0,
+          "tx_bps": 41000000000.0,
+          "rx_packets_total": 1451000000,
+          "tx_packets_total": 1025700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 42000000000.0,
+          "tx_bps": 46000000000.0,
+          "rx_packets_total": 1452000000,
+          "tx_packets_total": 1026400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 53000000000.0,
+          "tx_bps": 51000000000.0,
+          "rx_packets_total": 1453000000,
+          "tx_packets_total": 1027100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 64000000000.0,
+          "tx_bps": 56000000000.0,
+          "rx_packets_total": 1454000000,
+          "tx_packets_total": 1027800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 26,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 48.6,
+        "voltage_volts": 3.28,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 38000000000.0,
+          "tx_bps": 44000000000.0,
+          "rx_packets_total": 1461000000,
+          "tx_packets_total": 1030700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 49000000000.0,
+          "tx_bps": 49000000000.0,
+          "rx_packets_total": 1462000000,
+          "tx_packets_total": 1031400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 60000000000.0,
+          "tx_bps": 54000000000.0,
+          "rx_packets_total": 1463000000,
+          "tx_packets_total": 1032100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 71000000000.0,
+          "tx_bps": 59000000000.0,
+          "rx_packets_total": 1464000000,
+          "tx_packets_total": 1032800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 27,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 49.0,
+        "voltage_volts": 3.29,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 45000000000.0,
+          "tx_bps": 47000000000.0,
+          "rx_packets_total": 1471000000,
+          "tx_packets_total": 1035700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 56000000000.0,
+          "tx_bps": 52000000000.0,
+          "rx_packets_total": 1472000000,
+          "tx_packets_total": 1036400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 67000000000.0,
+          "tx_bps": 57000000000.0,
+          "rx_packets_total": 1473000000,
+          "tx_packets_total": 1037100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 78000000000.0,
+          "tx_bps": 62000000000.0,
+          "rx_packets_total": 1474000000,
+          "tx_packets_total": 1037800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 28,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 49.4,
+        "voltage_volts": 3.3,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 52000000000.0,
+          "tx_bps": 50000000000.0,
+          "rx_packets_total": 1481000000,
+          "tx_packets_total": 1040700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 63000000000.0,
+          "tx_bps": 55000000000.0,
+          "rx_packets_total": 1482000000,
+          "tx_packets_total": 1041400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 74000000000.0,
+          "tx_bps": 60000000000.0,
+          "rx_packets_total": 1483000000,
+          "tx_packets_total": 1042100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 85000000000.0,
+          "tx_bps": 65000000000.0,
+          "rx_packets_total": 1484000000,
+          "tx_packets_total": 1042800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 29,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 49.7,
+        "voltage_volts": 3.31,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 59000000000.0,
+          "tx_bps": 53000000000.0,
+          "rx_packets_total": 1491000000,
+          "tx_packets_total": 1045700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 70000000000.0,
+          "tx_bps": 58000000000.0,
+          "rx_packets_total": 1492000000,
+          "tx_packets_total": 1046400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 81000000000.0,
+          "tx_bps": 63000000000.0,
+          "rx_packets_total": 1493000000,
+          "tx_packets_total": 1047100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 92000000000.0,
+          "tx_bps": 68000000000.0,
+          "rx_packets_total": 1494000000,
+          "tx_packets_total": 1047800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 30,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 50.1,
+        "voltage_volts": 3.27,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 66000000000.0,
+          "tx_bps": 56000000000.0,
+          "rx_packets_total": 1501000000,
+          "tx_packets_total": 1050700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 77000000000.0,
+          "tx_bps": 61000000000.0,
+          "rx_packets_total": 1502000000,
+          "tx_packets_total": 1051400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 88000000000.0,
+          "tx_bps": 66000000000.0,
+          "rx_packets_total": 1503000000,
+          "tx_packets_total": 1052100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 5,
+          "rx_bps": 37000000000.0,
+          "tx_bps": 71000000000.0,
+          "rx_packets_total": 1504000000,
+          "tx_packets_total": 1052800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 31,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 50.5,
+        "voltage_volts": 3.28,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 73000000000.0,
+          "tx_bps": 59000000000.0,
+          "rx_packets_total": 1511000000,
+          "tx_packets_total": 1055700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 84000000000.0,
+          "tx_bps": 64000000000.0,
+          "rx_packets_total": 1512000000,
+          "tx_packets_total": 1056400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 33000000000.0,
+          "tx_bps": 69000000000.0,
+          "rx_packets_total": 1513000000,
+          "tx_packets_total": 1057100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 44000000000.0,
+          "tx_bps": 74000000000.0,
+          "rx_packets_total": 1514000000,
+          "tx_packets_total": 1057800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    },
+    {
+      "number": 32,
+      "breakout": "4x100G",
+      "transceiver": {
+        "present": true,
+        "type": "QSFP-DD \u00b7 demo",
+        "temperature_celsius": 50.8,
+        "voltage_volts": 3.29,
+        "temperature_limit_celsius": 75
+      },
+      "lanes": [
+        {
+          "state": "up",
+          "mode": "access",
+          "vlan_profile": 1,
+          "rx_bps": 80000000000.0,
+          "tx_bps": 62000000000.0,
+          "rx_packets_total": 1521000000,
+          "tx_packets_total": 1060700000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "trunk",
+          "vlan_profile": 2,
+          "rx_bps": 91000000000.0,
+          "tx_bps": 67000000000.0,
+          "rx_packets_total": 1522000000,
+          "tx_packets_total": 1061400000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan host isolated",
+          "vlan_profile": 3,
+          "rx_bps": 40000000000.0,
+          "tx_bps": 72000000000.0,
+          "rx_packets_total": 1523000000,
+          "tx_packets_total": 1062100000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        },
+        {
+          "state": "up",
+          "mode": "private-vlan trunk secondary",
+          "vlan_profile": 3,
+          "rx_bps": 51000000000.0,
+          "tx_bps": 20000000000.0,
+          "rx_packets_total": 1524000000,
+          "tx_packets_total": 1062800000,
+          "crc_errors_total": 0,
+          "crc_errors_5m": 0,
+          "drops_total": 0,
+          "drops_5m": 0
+        }
+      ]
+    }
+  ]
+}

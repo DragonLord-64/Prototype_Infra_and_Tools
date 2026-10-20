@@ -1,0 +1,146 @@
+{
+  "synthetic": true,
+  "server": "demo-server-01",
+  "components": {
+    "fpga-1": {
+      "temperature_celsius": 57,
+      "link_up": 1
+    },
+    "fpga-2": {
+      "temperature_celsius": 55,
+      "link_up": 1
+    },
+    "psu-1": {
+      "power_watts": 310,
+      "temperature_celsius": 39,
+      "voltage_volts": 12,
+      "current_amperes": 25.833333333333332
+    },
+    "psu-2": {
+      "power_watts": 305,
+      "temperature_celsius": 38,
+      "voltage_volts": 12,
+      "current_amperes": 25.416666666666668
+    },
+    "nic-1": {
+      "temperature_celsius": 43,
+      "link_up": 1
+    },
+    "fan-1": {
+      "fan_rpm": 8200
+    },
+    "fan-2": {
+      "fan_rpm": 8150
+    },
+    "fan-3": {
+      "fan_rpm": 8250
+    },
+    "fan-4": {
+      "fan_rpm": 5100
+    },
+    "fan-5": {
+      "fan_rpm": 8300
+    },
+    "fan-6": {
+      "fan_rpm": 8180
+    },
+    "motherboard": {
+      "temperature_celsius": 41
+    },
+    "bmc": {
+      "temperature_celsius": 42
+    },
+    "network-lan": {
+      "link_up": 1
+    }
+  },
+  "limits": {
+    "temperature_celsius": {
+      "warning_above": 75,
+      "failed_above": 90
+    },
+    "fan_rpm": {
+      "warning_below": 6000,
+      "failed_below": 3000
+    },
+    "power_watts": {
+      "warning_above": 450,
+      "failed_above": 550
+    },
+    "voltage_volts": {
+      "warning_below": 11.4,
+      "warning_above": 12.6,
+      "failed_below": 10.8,
+      "failed_above": 13.2
+    },
+    "current_amperes": {
+      "warning_above": 37.5,
+      "failed_above": 45.83
+    },
+    "link_up": {
+      "failed_equals": 0
+    }
+  },
+  "misc_readings": [
+    {
+      "reading": "Ambient inlet temperature",
+      "value": 24,
+      "unit": "\u00b0C",
+      "notes": "Demo \u00b7 air entering the chassis"
+    },
+    {
+      "reading": "Chassis exhaust temperature",
+      "value": 37,
+      "unit": "\u00b0C",
+      "notes": "Demo \u00b7 auxiliary exhaust sensor"
+    },
+    {
+      "reading": "CPU utilization",
+      "value": 23,
+      "unit": "%",
+      "notes": "Demo \u00b7 host workload snapshot"
+    },
+    {
+      "reading": "Memory utilization",
+      "value": 61,
+      "unit": "%",
+      "notes": "Demo \u00b7 host memory in use"
+    },
+    {
+      "reading": "Root filesystem used",
+      "value": 42,
+      "unit": "%",
+      "notes": "Demo \u00b7 local storage capacity"
+    },
+    {
+      "reading": "Clock synchronization offset",
+      "value": 1.2,
+      "unit": "ms",
+      "notes": "Demo \u00b7 offset from the time source"
+    },
+    {
+      "reading": "Host uptime",
+      "value": 72,
+      "unit": "hours",
+      "notes": "Demo \u00b7 time since last boot"
+    },
+    {
+      "reading": "System event log entries",
+      "value": 8,
+      "unit": "entries",
+      "notes": "Demo \u00b7 retained entries; not necessarily faults"
+    },
+    {
+      "reading": "Chassis intrusion switch",
+      "value": 0,
+      "unit": "0 / 1",
+      "notes": "Demo \u00b7 0 closed, 1 open"
+    },
+    {
+      "reading": "Uncorrected memory errors",
+      "value": 0,
+      "unit": "errors",
+      "notes": "Demo \u00b7 auxiliary diagnostic counter"
+    }
+  ]
+}

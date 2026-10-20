@@ -1,0 +1,51 @@
+name: grafana-dashboard-prototypes
+services:
+  grafana:
+    image: grafana/grafana@sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f
+    ports:
+      - "127.0.0.1:${GRAFANA_DEMO_PORT:-3002}:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./server-health/grafana/dashboards:/var/lib/grafana/dashboards/server-health:ro
+      - ./cisco-switch/grafana/dashboards:/var/lib/grafana/dashboards/cisco-switch:ro
+      - ./vccu-fspu/grafana/dashboards:/var/lib/grafana/dashboards/vccu-fspu:ro
+      - ./vlan-net-viewer/grafana/dashboards:/var/lib/grafana/dashboards/vlan-net-viewer:ro
+    depends_on:
+      - prometheus
+  prometheus:
+    image: prom/prometheus@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=2d
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+  server-health-demo-exporter:
+    image: &python_image python@sha256:6857d2dae63e052057f2db389a7061188ac9a92a3fa8d402bde68f36df6fada1
+    working_dir: /app
+    command: [python, -B, exporter.py]
+    volumes:
+      - ./server-health:/app:ro
+  cisco-switch-demo-exporter:
+    image: *python_image
+    working_dir: /app
+    command: [python, -B, exporter.py]
+    volumes:
+      - ./cisco-switch:/app:ro
+  vccu-fspu-demo-exporter:
+    image: *python_image
+    working_dir: /app
+    command: [python, -B, exporter.py]
+    volumes:
+      - ./vccu-fspu:/app:ro
+  vlan-net-viewer-demo-exporter:
+    image: *python_image
+    working_dir: /app
+    command: [python, -B, exporter.py]
+    volumes:
+      - ./vlan-net-viewer:/app:ro
+volumes:
+  grafana-data:
+  prometheus-data:

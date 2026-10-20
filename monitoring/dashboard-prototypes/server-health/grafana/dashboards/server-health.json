@@ -1,0 +1,3075 @@
+{
+  "uid": "server-health-demo",
+  "title": "Server Health \u00b7 Demo",
+  "tags": [
+    "demo",
+    "server-health",
+    "synthetic"
+  ],
+  "description": "Synthetic 14-component server health dashboard. Values are demo scenarios, not real hardware telemetry. Overall is worst component, unknown if any component/source is unavailable.",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "timezone": "browser",
+  "refresh": "5s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "",
+      "type": "text",
+      "transparent": true,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 2
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "**DEMO SERVER 01 \u00b7 SYNTHETIC DATA** \u2014 14 components \u00b7 Green: healthy \u00b7 Amber: degraded \u00b7 Red: failed \u00b7 Gray: unknown. Status at left; key readings at right. Edit `mock-health.json` to try a scenario."
+      }
+    },
+    {
+      "id": 2,
+      "title": "Overall health",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 2,
+        "w": 8,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(vector(2) and on() (count((server_component_health{server=\"demo-server-01\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) == 2) > 0)) or on() (max((server_component_health{server=\"demo-server-01\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1))) and on() (count((server_component_health{server=\"demo-server-01\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1))) == 14)) or on() vector(3)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 3,
+      "title": "Healthy",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 2,
+        "w": 4,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "count((server_component_health{server=\"demo-server-01\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) == 0) or on() vector(0)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "green"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 4,
+      "title": "Degraded",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 2,
+        "w": 4,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "count((server_component_health{server=\"demo-server-01\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) == 1) or on() vector(0)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 5,
+      "title": "Failed",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 2,
+        "w": 4,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "count((server_component_health{server=\"demo-server-01\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) == 2) or on() vector(0)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "red"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 6,
+      "title": "Unknown / missing",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 2,
+        "w": 4,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "14 - (count((server_component_health{server=\"demo-server-01\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) < 3) or on() vector(0))",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#8e8e8e"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true
+      }
+    },
+    {
+      "id": 7,
+      "title": "COMPONENT HEALTH \u00b7 STATUS + KEY READINGS",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 8,
+      "title": "",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 6,
+        "w": 2,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(server_component_health{server=\"demo-server-01\",component=\"fpga-1\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) or on() vector(3)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "text": {
+          "valueSize": 12,
+          "titleSize": 11
+        }
+      }
+    },
+    {
+      "id": 9,
+      "title": "Component 1 \u00b7 readings",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 2,
+        "y": 6,
+        "w": 10,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "server_component_temperature_celsius{server=\"demo-server-01\",component=\"fpga-1\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Temperature"
+        },
+        {
+          "refId": "B",
+          "expr": "server_component_link_up{server=\"demo-server-01\",component=\"fpga-1\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Link"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Link"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Down",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "Up",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 20,
+          "titleSize": 11
+        },
+        "wideLayout": false
+      }
+    },
+    {
+      "id": 10,
+      "title": "",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 6,
+        "w": 2,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(server_component_health{server=\"demo-server-01\",component=\"fan-1\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) or on() vector(3)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "text": {
+          "valueSize": 12,
+          "titleSize": 11
+        }
+      }
+    },
+    {
+      "id": 11,
+      "title": "Fan 1 \u00b7 readings",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 6,
+        "w": 10,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "server_component_fan_rpm{server=\"demo-server-01\",component=\"fan-1\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Speed"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Speed"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "suffix: RPM"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 20,
+          "titleSize": 11
+        },
+        "wideLayout": false
+      }
+    },
+    {
+      "id": 12,
+      "title": "",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 2,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(server_component_health{server=\"demo-server-01\",component=\"fpga-2\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) or on() vector(3)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "text": {
+          "valueSize": 12,
+          "titleSize": 11
+        }
+      }
+    },
+    {
+      "id": 13,
+      "title": "Component 2 \u00b7 readings",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 2,
+        "y": 9,
+        "w": 10,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "server_component_temperature_celsius{server=\"demo-server-01\",component=\"fpga-2\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Temperature"
+        },
+        {
+          "refId": "B",
+          "expr": "server_component_link_up{server=\"demo-server-01\",component=\"fpga-2\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Link"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Link"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Down",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "Up",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 20,
+          "titleSize": 11
+        },
+        "wideLayout": false
+      }
+    },
+    {
+      "id": 14,
+      "title": "",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 9,
+        "w": 2,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(server_component_health{server=\"demo-server-01\",component=\"fan-2\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) or on() vector(3)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "text": {
+          "valueSize": 12,
+          "titleSize": 11
+        }
+      }
+    },
+    {
+      "id": 15,
+      "title": "Fan 2 \u00b7 readings",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 9,
+        "w": 10,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "server_component_fan_rpm{server=\"demo-server-01\",component=\"fan-2\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Speed"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Speed"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "suffix: RPM"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 20,
+          "titleSize": 11
+        },
+        "wideLayout": false
+      }
+    },
+    {
+      "id": 16,
+      "title": "",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 12,
+        "w": 2,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(server_component_health{server=\"demo-server-01\",component=\"psu-1\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) or on() vector(3)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "text": {
+          "valueSize": 12,
+          "titleSize": 11
+        }
+      }
+    },
+    {
+      "id": 17,
+      "title": "PSU 1 \u00b7 readings",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 2,
+        "y": 12,
+        "w": 10,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "server_component_temperature_celsius{server=\"demo-server-01\",component=\"psu-1\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Temperature"
+        },
+        {
+          "refId": "B",
+          "expr": "server_component_power_watts{server=\"demo-server-01\",component=\"psu-1\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Power"
+        },
+        {
+          "refId": "C",
+          "expr": "server_component_voltage_volts{server=\"demo-server-01\",component=\"psu-1\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Voltage"
+        },
+        {
+          "refId": "D",
+          "expr": "server_component_current_amperes{server=\"demo-server-01\",component=\"psu-1\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Current"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Power"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "watt"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Voltage"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "volt"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Current"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "amp"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 20,
+          "titleSize": 11
+        },
+        "wideLayout": false
+      }
+    },
+    {
+      "id": 18,
+      "title": "",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 12,
+        "w": 2,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(server_component_health{server=\"demo-server-01\",component=\"fan-3\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) or on() vector(3)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "text": {
+          "valueSize": 12,
+          "titleSize": 11
+        }
+      }
+    },
+    {
+      "id": 19,
+      "title": "Fan 3 \u00b7 readings",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 12,
+        "w": 10,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "server_component_fan_rpm{server=\"demo-server-01\",component=\"fan-3\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Speed"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Speed"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "suffix: RPM"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 20,
+          "titleSize": 11
+        },
+        "wideLayout": false
+      }
+    },
+    {
+      "id": 20,
+      "title": "",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 15,
+        "w": 2,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(server_component_health{server=\"demo-server-01\",component=\"psu-2\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) or on() vector(3)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "text": {
+          "valueSize": 12,
+          "titleSize": 11
+        }
+      }
+    },
+    {
+      "id": 21,
+      "title": "PSU 2 \u00b7 readings",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 2,
+        "y": 15,
+        "w": 10,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "server_component_temperature_celsius{server=\"demo-server-01\",component=\"psu-2\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Temperature"
+        },
+        {
+          "refId": "B",
+          "expr": "server_component_power_watts{server=\"demo-server-01\",component=\"psu-2\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Power"
+        },
+        {
+          "refId": "C",
+          "expr": "server_component_voltage_volts{server=\"demo-server-01\",component=\"psu-2\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Voltage"
+        },
+        {
+          "refId": "D",
+          "expr": "server_component_current_amperes{server=\"demo-server-01\",component=\"psu-2\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Current"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Power"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "watt"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Voltage"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "volt"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Current"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "amp"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 20,
+          "titleSize": 11
+        },
+        "wideLayout": false
+      }
+    },
+    {
+      "id": 22,
+      "title": "",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 15,
+        "w": 2,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(server_component_health{server=\"demo-server-01\",component=\"fan-4\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) or on() vector(3)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "text": {
+          "valueSize": 12,
+          "titleSize": 11
+        }
+      }
+    },
+    {
+      "id": 23,
+      "title": "Fan 4 \u00b7 readings",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 15,
+        "w": 10,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "server_component_fan_rpm{server=\"demo-server-01\",component=\"fan-4\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Speed"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Speed"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "suffix: RPM"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 20,
+          "titleSize": 11
+        },
+        "wideLayout": false
+      }
+    },
+    {
+      "id": 24,
+      "title": "",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 2,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(server_component_health{server=\"demo-server-01\",component=\"nic-1\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) or on() vector(3)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "text": {
+          "valueSize": 12,
+          "titleSize": 11
+        }
+      }
+    },
+    {
+      "id": 25,
+      "title": "NIC \u00b7 readings",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 2,
+        "y": 18,
+        "w": 10,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "server_component_temperature_celsius{server=\"demo-server-01\",component=\"nic-1\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Temperature"
+        },
+        {
+          "refId": "B",
+          "expr": "server_component_link_up{server=\"demo-server-01\",component=\"nic-1\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Link"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Link"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Down",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "Up",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 20,
+          "titleSize": 11
+        },
+        "wideLayout": false
+      }
+    },
+    {
+      "id": 26,
+      "title": "",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 18,
+        "w": 2,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(server_component_health{server=\"demo-server-01\",component=\"fan-5\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) or on() vector(3)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "text": {
+          "valueSize": 12,
+          "titleSize": 11
+        }
+      }
+    },
+    {
+      "id": 27,
+      "title": "Fan 5 \u00b7 readings",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 18,
+        "w": 10,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "server_component_fan_rpm{server=\"demo-server-01\",component=\"fan-5\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Speed"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Speed"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "suffix: RPM"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 20,
+          "titleSize": 11
+        },
+        "wideLayout": false
+      }
+    },
+    {
+      "id": 28,
+      "title": "",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 21,
+        "w": 2,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(server_component_health{server=\"demo-server-01\",component=\"motherboard\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) or on() vector(3)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "text": {
+          "valueSize": 12,
+          "titleSize": 11
+        }
+      }
+    },
+    {
+      "id": 29,
+      "title": "Motherboard \u00b7 readings",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 2,
+        "y": 21,
+        "w": 10,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "server_component_temperature_celsius{server=\"demo-server-01\",component=\"motherboard\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Temperature"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 20,
+          "titleSize": 11
+        },
+        "wideLayout": false
+      }
+    },
+    {
+      "id": 30,
+      "title": "",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 21,
+        "w": 2,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(server_component_health{server=\"demo-server-01\",component=\"fan-6\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) or on() vector(3)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "text": {
+          "valueSize": 12,
+          "titleSize": 11
+        }
+      }
+    },
+    {
+      "id": 31,
+      "title": "Fan 6 \u00b7 readings",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 21,
+        "w": 10,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "server_component_fan_rpm{server=\"demo-server-01\",component=\"fan-6\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Speed"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Speed"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "suffix: RPM"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 20,
+          "titleSize": 11
+        },
+        "wideLayout": false
+      }
+    },
+    {
+      "id": 32,
+      "title": "",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 2,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(server_component_health{server=\"demo-server-01\",component=\"bmc\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) or on() vector(3)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "text": {
+          "valueSize": 12,
+          "titleSize": 11
+        }
+      }
+    },
+    {
+      "id": 33,
+      "title": "BMC \u00b7 readings",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 2,
+        "y": 24,
+        "w": 10,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "server_component_temperature_celsius{server=\"demo-server-01\",component=\"bmc\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Temperature"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 20,
+          "titleSize": 11
+        },
+        "wideLayout": false
+      }
+    },
+    {
+      "id": 34,
+      "title": "",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 24,
+        "w": 2,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(server_component_health{server=\"demo-server-01\",component=\"network-lan\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)) or on() vector(3)",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "textMode": "value",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": true,
+        "text": {
+          "valueSize": 12,
+          "titleSize": 11
+        }
+      }
+    },
+    {
+      "id": 35,
+      "title": "Network LAN \u00b7 readings",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 24,
+        "w": 10,
+        "h": 3
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "server_component_link_up{server=\"demo-server-01\",component=\"network-lan\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Link"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Link"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Down",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "Up",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "textMode": "value_and_name",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 20,
+          "titleSize": 11
+        },
+        "wideLayout": false
+      }
+    },
+    {
+      "id": 36,
+      "title": "EVERYTHING ELSE",
+      "type": "row",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 27,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 37,
+      "title": "Everything else",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "server-health-demo-prometheus"
+      },
+      "description": "Synthetic miscellaneous readings for reference. These informational rows do not change the 14-component health summary.",
+      "gridPos": {
+        "x": 0,
+        "y": 28,
+        "w": 24,
+        "h": 12
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "server_misc_reading{server=\"demo-server-01\"} and on(job, instance) (up{job=\"server-health-demo\"} == 1)",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "instance": true,
+              "job": true,
+              "server": true
+            },
+            "indexByName": {
+              "reading": 0,
+              "Value": 1,
+              "unit": 2,
+              "notes": 3
+            },
+            "renameByName": {
+              "reading": "Reading",
+              "Value": "Value",
+              "unit": "Unit",
+              "notes": "Notes"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          },
+          "decimals": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Reading"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 290
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Unit"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "sortBy": [
+          {
+            "displayName": "Reading",
+            "desc": false
+          }
+        ]
+      }
+    }
+  ]
+}

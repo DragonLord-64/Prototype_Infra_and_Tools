@@ -1,0 +1,555 @@
+{
+  "synthetic": true,
+  "assumption": "51 endpoint attachments: one logical switch interface per unit; not a complete real network inventory. Add interface records as required.",
+  "vlans": {
+    "1": "Default",
+    "55": "Science data",
+    "77": "Management",
+    "155": "Science data \u2014 local A",
+    "255": "Science data \u2014 local B"
+  },
+  "interfaces": [
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 01",
+      "switch": "SW-A",
+      "interface": "Eth1/01",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 02",
+      "switch": "SW-A",
+      "interface": "Eth1/02",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 03",
+      "switch": "SW-A",
+      "interface": "Eth1/03",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 04",
+      "switch": "SW-A",
+      "interface": "Eth1/04",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 05",
+      "switch": "SW-A",
+      "interface": "Eth1/05",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 06",
+      "switch": "SW-A",
+      "interface": "Eth1/06",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 07",
+      "switch": "SW-A",
+      "interface": "Eth1/07",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 08",
+      "switch": "SW-A",
+      "interface": "Eth1/08",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 09",
+      "switch": "SW-A",
+      "interface": "Eth1/09",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 10",
+      "switch": "SW-A",
+      "interface": "Eth1/10",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 11",
+      "switch": "SW-A",
+      "interface": "Eth1/11",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 12",
+      "switch": "SW-A",
+      "interface": "Eth1/12",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 13",
+      "switch": "SW-A",
+      "interface": "Eth1/13",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 14",
+      "switch": "SW-A",
+      "interface": "Eth1/14",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 15",
+      "switch": "SW-A",
+      "interface": "Eth1/15",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 16",
+      "switch": "SW-A",
+      "interface": "Eth1/16",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 17",
+      "switch": "SW-A",
+      "interface": "Eth1/17",
+      "allowed_vlans": [
+        1,
+        155
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 18",
+      "switch": "SW-A",
+      "interface": "Eth1/18",
+      "allowed_vlans": [
+        1,
+        155
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 19",
+      "switch": "SW-A",
+      "interface": "Eth1/19",
+      "allowed_vlans": [
+        1,
+        155
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 20",
+      "switch": "SW-A",
+      "interface": "Eth1/20",
+      "allowed_vlans": [
+        1,
+        155
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 21",
+      "switch": "SW-A",
+      "interface": "Eth1/21",
+      "allowed_vlans": [
+        1,
+        77
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 22",
+      "switch": "SW-A",
+      "interface": "Eth1/22",
+      "allowed_vlans": [
+        1,
+        77
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 23",
+      "switch": "SW-A",
+      "interface": "Eth1/23",
+      "allowed_vlans": [
+        1,
+        77
+      ]
+    },
+    {
+      "unit_group": "VCCU",
+      "unit": "VCCU 24",
+      "switch": "SW-A",
+      "interface": "Eth1/24",
+      "allowed_vlans": [
+        1,
+        77
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 01",
+      "switch": "SW-B",
+      "interface": "Eth1/01",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 02",
+      "switch": "SW-B",
+      "interface": "Eth1/02",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 03",
+      "switch": "SW-B",
+      "interface": "Eth1/03",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 04",
+      "switch": "SW-B",
+      "interface": "Eth1/04",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 05",
+      "switch": "SW-B",
+      "interface": "Eth1/05",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 06",
+      "switch": "SW-B",
+      "interface": "Eth1/06",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 07",
+      "switch": "SW-B",
+      "interface": "Eth1/07",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 08",
+      "switch": "SW-B",
+      "interface": "Eth1/08",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 09",
+      "switch": "SW-B",
+      "interface": "Eth1/09",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 10",
+      "switch": "SW-B",
+      "interface": "Eth1/10",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 11",
+      "switch": "SW-B",
+      "interface": "Eth1/11",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 12",
+      "switch": "SW-B",
+      "interface": "Eth1/12",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 13",
+      "switch": "SW-B",
+      "interface": "Eth1/13",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 14",
+      "switch": "SW-B",
+      "interface": "Eth1/14",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 15",
+      "switch": "SW-B",
+      "interface": "Eth1/15",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 16",
+      "switch": "SW-B",
+      "interface": "Eth1/16",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 17",
+      "switch": "SW-B",
+      "interface": "Eth1/17",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 18",
+      "switch": "SW-B",
+      "interface": "Eth1/18",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 19",
+      "switch": "SW-B",
+      "interface": "Eth1/19",
+      "allowed_vlans": [
+        1,
+        55
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 20",
+      "switch": "SW-B",
+      "interface": "Eth1/20",
+      "allowed_vlans": [
+        1,
+        255
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 21",
+      "switch": "SW-B",
+      "interface": "Eth1/21",
+      "allowed_vlans": [
+        1,
+        255
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 22",
+      "switch": "SW-B",
+      "interface": "Eth1/22",
+      "allowed_vlans": [
+        1,
+        255
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 23",
+      "switch": "SW-B",
+      "interface": "Eth1/23",
+      "allowed_vlans": [
+        1,
+        255
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 24",
+      "switch": "SW-B",
+      "interface": "Eth1/24",
+      "allowed_vlans": [
+        1,
+        255
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 25",
+      "switch": "SW-B",
+      "interface": "Eth1/25",
+      "allowed_vlans": [
+        1,
+        77
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 26",
+      "switch": "SW-B",
+      "interface": "Eth1/26",
+      "allowed_vlans": [
+        1,
+        77
+      ]
+    },
+    {
+      "unit_group": "FSPU",
+      "unit": "FSPU 27",
+      "switch": "SW-B",
+      "interface": "Eth1/27",
+      "allowed_vlans": [
+        1,
+        77
+      ]
+    }
+  ],
+  "translations": [
+    {
+      "switch": "SW-A",
+      "interface": "Eth1/17",
+      "selected_vlan": 55,
+      "local_vlan": 155
+    },
+    {
+      "switch": "SW-A",
+      "interface": "Eth1/18",
+      "selected_vlan": 55,
+      "local_vlan": 155
+    },
+    {
+      "switch": "SW-B",
+      "interface": "Eth1/20",
+      "selected_vlan": 55,
+      "local_vlan": 255
+    },
+    {
+      "switch": "SW-B",
+      "interface": "Eth1/21",
+      "selected_vlan": 55,
+      "local_vlan": 255
+    },
+    {
+      "switch": "SW-B",
+      "interface": "Eth1/22",
+      "selected_vlan": 55,
+      "local_vlan": 255
+    }
+  ]
+}

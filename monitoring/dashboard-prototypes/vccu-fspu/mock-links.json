@@ -1,0 +1,4541 @@
+{
+  "description": "SYNTHETIC DEMO. Fixed VCCU-to-FSPU rates, one-way VCCU to FSPU only.",
+  "links": [
+    {
+      "vccu": "01",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 45.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 52.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 59.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 66.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 73.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 80.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 87.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 19.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 26.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 33.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 40.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 47.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 54.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 61.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 68.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 75.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 82.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 89.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 21.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 28.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 35.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 42.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 49.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 56.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 63.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "01",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 70.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 51.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 58.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 65.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 72.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 79.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 86.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 18.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 25.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 32.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 39.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 46.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 53.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 60.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 67.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 74.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 81.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 88.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 20.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 27.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 34.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 41.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 48.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 55.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 62.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 69.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 76.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "02",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 83.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 64.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 71.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 78.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 85.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 92.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 24.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 31.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 38.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 45.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 52.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 59.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 66.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 73.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 80.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 87.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 19.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 26.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 33.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 40.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 47.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 54.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 61.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 68.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 75.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 82.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 89.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "03",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 21.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 77.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 84.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 91.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 23.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 30.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 37.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 44.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 51.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 58.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 65.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 72.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 79.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 86.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 18.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 25.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 32.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 39.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 46.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 53.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 60.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 67.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 74.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 81.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 88.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 20.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 27.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "04",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 34.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 90.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 22.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 29.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 36.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 43.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 50.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 57.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 64.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 71.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 78.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 85.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 92.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 24.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 31.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 38.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 45.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 52.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 59.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 66.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 73.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 80.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 87.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 19.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 26.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 33.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 40.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "05",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 47.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 28.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 35.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 42.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 49.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 56.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 63.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 70.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 77.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 84.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 91.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 23.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 30.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 37.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 44.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 51.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 58.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 65.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 72.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 79.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 86.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 18.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 25.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 32.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 39.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 46.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 53.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "06",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 60.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "01",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "02",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "03",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "04",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "05",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "06",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "07",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "08",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "09",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "10",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "11",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "12",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "13",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "14",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "15",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "16",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "17",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "18",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "19",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "20",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "21",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "22",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "23",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "24",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "25",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "26",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "07",
+      "fspu": "27",
+      "state": "down",
+      "rate_gbps": 0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 54.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 61.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 68.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 75.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 82.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 89.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 21.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 28.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 35.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 42.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 49.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 56.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 63.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 70.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 77.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 84.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 91.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 23.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 30.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 37.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 44.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 51.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 58.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 65.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 72.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 79.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "08",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 86.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 67.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 74.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 81.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 88.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 20.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 27.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 34.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 41.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 48.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 55.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 62.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 69.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 76.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 83.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 90.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 22.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 29.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 36.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 43.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 50.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 57.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 64.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 71.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 78.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 85.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 92.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "09",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 24.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 80.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 87.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 19.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 26.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 33.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 40.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 47.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 54.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 61.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 68.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 75.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 82.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 89.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 21.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 28.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 35.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 42.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 49.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 56.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 63.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 70.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 77.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 84.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 91.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 23.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 30.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "10",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 37.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 18.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 25.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 32.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 39.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 46.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 53.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 60.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 67.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 74.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 81.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 88.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 20.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 27.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 34.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 41.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 48.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 55.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 62.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 69.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 76.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 83.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 90.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 22.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 29.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 36.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 43.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "11",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 50.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 31.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 38.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 45.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 52.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 59.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 66.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 73.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 80.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 87.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 19.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 26.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 33.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 40.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 47.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 54.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 61.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 68.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 75.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "19",
+      "state": "degraded",
+      "rate_gbps": 82.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 89.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 21.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 28.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 35.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 42.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 49.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 56.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "12",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 63.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 44.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 51.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 58.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 65.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 72.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 79.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 86.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 18.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 25.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 32.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 39.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 46.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 53.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 60.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 67.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 74.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 81.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 88.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "19",
+      "state": "degraded",
+      "rate_gbps": 20.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 27.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 34.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 41.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 48.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 55.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 62.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 69.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "13",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 76.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 57.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 64.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 71.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 78.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 85.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 92.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 24.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 31.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 38.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 45.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 52.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 59.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 66.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 73.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 80.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 87.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 19.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 26.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "19",
+      "state": "degraded",
+      "rate_gbps": 33.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 40.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 47.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 54.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 61.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 68.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 75.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 82.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "14",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 89.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 70.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 77.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 84.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 91.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 23.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 30.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 37.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 44.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 51.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 58.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 65.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 72.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 79.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 86.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 18.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 25.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 32.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 39.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 46.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 53.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 60.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 67.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 74.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 81.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 88.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 20.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "15",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 27.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 83.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 90.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 22.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 29.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 36.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 43.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 50.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 57.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 64.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 71.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 78.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 85.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 92.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 24.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 31.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 38.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 45.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 52.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 59.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 66.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 73.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 80.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 87.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 19.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 26.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 33.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "16",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 40.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 21.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 28.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 35.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 42.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 49.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 56.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 63.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 70.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 77.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 84.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 91.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 23.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 30.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 37.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 44.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 51.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 58.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 65.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 72.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 79.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 86.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 18.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 25.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 32.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 39.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 46.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "17",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 53.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 34.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 41.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 48.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 55.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 62.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 69.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 76.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 83.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 90.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 22.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 29.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 36.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 43.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 50.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 57.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 64.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 71.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 78.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 85.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 92.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 24.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "22",
+      "state": "degraded",
+      "rate_gbps": 31.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 38.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 45.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 52.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 59.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "18",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 66.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 47.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 54.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 61.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 68.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 75.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 82.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 89.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 21.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 28.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 35.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 42.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 49.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 56.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 63.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 70.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 77.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 84.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 91.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 23.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 30.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 37.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 44.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 51.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 58.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 65.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 72.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "19",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 79.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 60.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 67.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 74.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 81.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 88.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 20.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 27.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 34.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 41.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 48.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 55.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 62.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 69.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 76.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 83.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 90.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 22.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 29.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 36.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 43.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 50.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 57.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 64.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 71.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 78.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 85.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "20",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 92.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 73.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 80.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 87.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 19.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 26.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 33.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 40.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 47.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 54.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 61.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 68.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 75.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 82.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 89.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 21.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 28.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 35.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 42.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 49.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 56.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 63.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 70.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 77.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 84.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 91.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 23.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "21",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 30.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 86.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 18.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 25.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 32.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 39.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 46.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 53.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 60.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "09",
+      "state": "unknown",
+      "rate_gbps": null,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 74.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 81.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 88.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 20.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 27.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 34.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 41.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 48.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 55.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 62.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 69.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 76.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 83.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 90.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 22.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 29.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 36.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "22",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 43.2,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 24.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 31.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 38.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 45.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 52.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 59.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 66.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 73.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 80.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 87.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 19.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 26.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 33.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 40.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 47.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 54.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 61.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 68.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 75.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 82.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 89.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 21.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 28.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 35.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 42.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 49.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "23",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 56.4,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "01",
+      "state": "up",
+      "rate_gbps": 37.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "02",
+      "state": "up",
+      "rate_gbps": 44.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "03",
+      "state": "up",
+      "rate_gbps": 51.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "04",
+      "state": "up",
+      "rate_gbps": 58.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "05",
+      "state": "up",
+      "rate_gbps": 65.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "06",
+      "state": "up",
+      "rate_gbps": 72.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "07",
+      "state": "up",
+      "rate_gbps": 79.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "08",
+      "state": "up",
+      "rate_gbps": 86.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "09",
+      "state": "up",
+      "rate_gbps": 18.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "10",
+      "state": "up",
+      "rate_gbps": 25.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "11",
+      "state": "up",
+      "rate_gbps": 32.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "12",
+      "state": "up",
+      "rate_gbps": 39.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "13",
+      "state": "up",
+      "rate_gbps": 46.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "14",
+      "state": "up",
+      "rate_gbps": 53.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "15",
+      "state": "up",
+      "rate_gbps": 60.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "16",
+      "state": "up",
+      "rate_gbps": 67.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "17",
+      "state": "up",
+      "rate_gbps": 74.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "18",
+      "state": "up",
+      "rate_gbps": 81.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "19",
+      "state": "up",
+      "rate_gbps": 88.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "20",
+      "state": "up",
+      "rate_gbps": 20.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "21",
+      "state": "up",
+      "rate_gbps": 27.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "22",
+      "state": "up",
+      "rate_gbps": 34.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "23",
+      "state": "up",
+      "rate_gbps": 41.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "24",
+      "state": "up",
+      "rate_gbps": 48.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "25",
+      "state": "up",
+      "rate_gbps": 55.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "26",
+      "state": "up",
+      "rate_gbps": 62.0,
+      "capacity_gbps": 100
+    },
+    {
+      "vccu": "24",
+      "fspu": "27",
+      "state": "up",
+      "rate_gbps": 69.0,
+      "capacity_gbps": 100
+    }
+  ]
+}

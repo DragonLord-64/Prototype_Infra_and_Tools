@@ -1,0 +1,151 @@
+{
+  "captured_date": "2026-10-19",
+  "description": "Synthetic dashboard prototypes; source bytes preserved except deployment configuration and new documentation.",
+  "files": [
+    {
+      "source": "Grafana-Server-Health-Demo/exporter.py",
+      "path": "server-health/exporter.py",
+      "sha256": "c2e00ed0b34cd58644f096adeccf5588895f927630755dff84f25d835a82bd08"
+    },
+    {
+      "source": "Grafana-Server-Health-Demo/generate_dashboard.py",
+      "path": "server-health/generate_dashboard.py",
+      "sha256": "1dda0aae10178e6de6d3bf54b205ca49eeb3ccb1b3790e2dfee098c24e600d24"
+    },
+    {
+      "source": "Grafana-Server-Health-Demo/mock-health.json",
+      "path": "server-health/mock-health.json",
+      "sha256": "e9160ea3a68eefdbc5527101c119f0f066e1a0c33d05622574ef0e3af26823b2"
+    },
+    {
+      "source": "Grafana-Server-Health-Demo/EXPORTER.md",
+      "path": "server-health/EXPORTER.md",
+      "sha256": "3ec0fc39eb7c04767747f4f4587be7724943a966336c3837ee384b5ecacd2661"
+    },
+    {
+      "source": "Grafana-Server-Health-Demo/grafana/dashboards/server-health.json",
+      "path": "server-health/grafana/dashboards/server-health.json",
+      "sha256": "28fa256f2773a9e6218afe2f3dfd5d5779a967bc21f1ce6a41867f65e3a5d4b3"
+    },
+    {
+      "source": "Grafana-Cisco-Switch-Demo/exporter.py",
+      "path": "cisco-switch/exporter.py",
+      "sha256": "c7239d6d1a2707f0a40f1f9dc39e3b3b0c23c8697f9fae6d9d2f7f1c37eb0366"
+    },
+    {
+      "source": "Grafana-Cisco-Switch-Demo/generate_dashboard.py",
+      "path": "cisco-switch/generate_dashboard.py",
+      "sha256": "9d4f0a82189a1b4753005ba372a52fbdf20c82a0731665ce6062ff69df0df2ec"
+    },
+    {
+      "source": "Grafana-Cisco-Switch-Demo/mock-switch.json",
+      "path": "cisco-switch/mock-switch.json",
+      "sha256": "713d7267d2dc472be8f1adb6651bfed9400765731eee226ecf9e3c9a25544a68"
+    },
+    {
+      "source": "Grafana-Cisco-Switch-Demo/make_mock.py",
+      "path": "cisco-switch/make_mock.py",
+      "sha256": "9bd2e538d49e5e6bc4408eccc33a9e23a58c03de732dedde6475bb6b11dca2c1"
+    },
+    {
+      "source": "Grafana-Cisco-Switch-Demo/grafana/dashboards/cisco-switch-detail.json",
+      "path": "cisco-switch/grafana/dashboards/cisco-switch-detail.json",
+      "sha256": "f48f93831074159dc2dd018a2e2910f5af60f1b9ecd04e917021a9209e116495"
+    },
+    {
+      "source": "Grafana-Cisco-Switch-Demo/grafana/dashboards/cisco-switch.json",
+      "path": "cisco-switch/grafana/dashboards/cisco-switch.json",
+      "sha256": "c1220023920a23cf8b22f41cfee785bedf0fcf01dacf204adee791b625a5a442"
+    },
+    {
+      "source": "Grafana-VCCU-FSPU-Demo/exporter.py",
+      "path": "vccu-fspu/exporter.py",
+      "sha256": "2f39f62b06844b7584e857411c97089f430f9c4eefe8fff197c4cfae7be8287e"
+    },
+    {
+      "source": "Grafana-VCCU-FSPU-Demo/generate_dashboard.py",
+      "path": "vccu-fspu/generate_dashboard.py",
+      "sha256": "4f10878bd816f770ca971d0cf71e6283ec5946270c84e7f35f41aa042a324f33"
+    },
+    {
+      "source": "Grafana-VCCU-FSPU-Demo/mock-links.json",
+      "path": "vccu-fspu/mock-links.json",
+      "sha256": "d22e619e31c34868ef876a3c84b795a00996b8dbe2093651a9cae666b3ca7053"
+    },
+    {
+      "source": "Grafana-VCCU-FSPU-Demo/grafana/dashboards/vccu-fspu.json",
+      "path": "vccu-fspu/grafana/dashboards/vccu-fspu.json",
+      "sha256": "cbf1e2d50ba2ad697be5dba9a71062379296175359747472ccecab712ad8c403"
+    },
+    {
+      "source": "Grafana-VLAN-Net-Viewer-Demo/exporter.py",
+      "path": "vlan-net-viewer/exporter.py",
+      "sha256": "eb766bd9c996f5a4b130ebc394170defb9b7ce562679b46efbf8eddebb2d4408"
+    },
+    {
+      "source": "Grafana-VLAN-Net-Viewer-Demo/build.py",
+      "path": "vlan-net-viewer/build.py",
+      "sha256": "0ecd70f585e8d311f43cde839e8ab9bd7e1d05b492b40e8272988d61df3b911b"
+    },
+    {
+      "source": "Grafana-VLAN-Net-Viewer-Demo/refine_dashboard.py",
+      "path": "vlan-net-viewer/refine_dashboard.py",
+      "sha256": "34b46930b34f9f9a9b704402565634a1f727d2529acf32ae9cf5b9169ac56d6e"
+    },
+    {
+      "source": "Grafana-VLAN-Net-Viewer-Demo/mock-network.json",
+      "path": "vlan-net-viewer/mock-network.json",
+      "sha256": "0763a7aebaa9460978fe703ee44c1c815a716ea6b1a52300d50d0731c1a5f8ab"
+    },
+    {
+      "source": "Grafana-VLAN-Net-Viewer-Demo/test_exporter.py",
+      "path": "vlan-net-viewer/test_exporter.py",
+      "sha256": "961319088f5f76f190d8b6415846eea066058116ad9d1b9e0db68455f79780c9"
+    },
+    {
+      "source": "Grafana-VLAN-Net-Viewer-Demo/grafana/dashboards/vlan-net-viewer.json",
+      "path": "vlan-net-viewer/grafana/dashboards/vlan-net-viewer.json",
+      "sha256": "3e3c3627e97a83e4b265b236f0468059bcad8d61cad8b953a013e0f531dfb269"
+    },
+    {
+      "source": "Grafana-Server-Health-Demo/screenshots/updated-overview.jpg",
+      "path": "server-health/screenshots/updated-overview.jpg",
+      "sha256": "da19c146684beacd8eedb2a4c6855f20128c92b04d04dfa3d6953842f16463d4"
+    },
+    {
+      "source": "Grafana-Server-Health-Demo/screenshots/updated-components.jpg",
+      "path": "server-health/screenshots/updated-components.jpg",
+      "sha256": "acbc2673c4ef28d997e4ed48b90da9a09155944e2ca77e0b3f4fc14cc42a1f18"
+    },
+    {
+      "source": "Grafana-Server-Health-Demo/screenshots/everything-else.jpg",
+      "path": "server-health/screenshots/everything-else.jpg",
+      "sha256": "7be37d9dd670171c23ae539b02d10e3da3a51015b1adcc1e2d67d4c553b2933d"
+    },
+    {
+      "source": "Grafana-Cisco-Switch-Demo/screenshots/compact-overview.jpg",
+      "path": "cisco-switch/screenshots/compact-overview.jpg",
+      "sha256": "6f7a29b80daf9f72d00f6ea93a9ec5de25f049a05304afe3ca96a1e9fdc4b19a"
+    },
+    {
+      "source": "Grafana-VCCU-FSPU-Demo/screenshots/matrix.jpg",
+      "path": "vccu-fspu/screenshots/matrix.jpg",
+      "sha256": "1ad5bf18d0427535d535ba50f7e72bc3c10735c2cbc43f1be43ff00467b422d3"
+    },
+    {
+      "source": "Grafana-VCCU-FSPU-Demo/screenshots/selected-link.jpg",
+      "path": "vccu-fspu/screenshots/selected-link.jpg",
+      "sha256": "09846da57b680f3d7162846dc348f37c16a85661bc9dfb45c1bb26eed13ea7c7"
+    },
+    {
+      "source": "Grafana-VLAN-Net-Viewer-Demo/screenshots/overview.jpg",
+      "path": "vlan-net-viewer/screenshots/overview.jpg",
+      "sha256": "2e69d209905e28200fed2c2f38d42c2ba5182edd9be2f6af74388e9f26bea703"
+    },
+    {
+      "source": "Grafana-VLAN-Net-Viewer-Demo/screenshots/vlan77.jpg",
+      "path": "vlan-net-viewer/screenshots/vlan77.jpg",
+      "sha256": "057474430dbd841409334b6f99b086f74efc9acc836074a83e0236c3407beb43"
+    }
+  ]
+}
