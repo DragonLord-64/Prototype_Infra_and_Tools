@@ -15,6 +15,7 @@ additional instructions.
 | NetBox cabling | [Template guide](netbox-cabling-template/README.md) | [Excel interface connections](netbox-cabling-template/NetBox-Cable-Template.xlsx) |
 | Monitoring | [Beginner guide](monitoring/README.md) | [Component values and active chart](monitoring/) |
 | Dashboard prototypes | [Demo guide](monitoring/dashboard-prototypes/README.md) | [Synthetic sources, dashboards and screenshots](monitoring/dashboard-prototypes/) |
+| Export-backed dashboards | [Launch and validation](monitoring/export-backed-dashboards/README.md) | [FHS](monitoring/export-backed-dashboards/fhs/README.md) · [Switch](monitoring/export-backed-dashboards/switch/README.md) |
 | Host Filebeat | [Standalone role](monitoring/ansible/README.md) | [Role defaults](monitoring/ansible/roles/filebeat/defaults/main.yml) |
 | Historical prototypes | [Archive overview](archive/README.md) | [Original overview](archive/ORIGINAL_REPOSITORY_README.md) |
 

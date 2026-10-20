@@ -153,3 +153,23 @@ Evidence: six focused tests pass for placement bounds/overlap, geometry, absent-
 ## 2026-10-20 — Excel cabling template
 
 Added [the NetBox cabling template](netbox-cabling-template/README.md), containing an Excel workbook and matching CSV with six synthetic interface-pair examples. The guide explains exact device/interface Name lookups, `dcim.interface`, breakout child interfaces, BMC Ethernet, duplicate avoidance and CSV export/import. Endpoint and optional cable columns were verified against upstream NetBox 4.4/4.5 CableImportForm. Visual review covered both worksheets; saved-file checks verified six example rows, matching CSV, unique endpoints, frozen headers, filters and type validation. No live NetBox write was made. The workbook and rack-view prototype are included in the user-requested scoped push.
+
+## 2026-10-20 — Export-backed FHS and switch dashboards
+
+Added [an independent export-backed lab](monitoring/export-backed-dashboards/README.md)
+from the three Prometheus API snapshots supplied in FHS bare-metal development
+`6569833`. Sanitized fixtures preserve exact metric names, label keys and numeric
+values for 103 FHS, 9,989 Node Exporter and 8,641 switch series. Native Grafana
+views retain the component tiles and compact port layout, while showing actual
+coverage gaps instead of inventing sensors, VLAN names or DOM health. Generators
+also create live-source definitions for the original scrape jobs. Source identity
+mappings and raw private exports are not published.
+
+Evidence: [verification record](monitoring/export-backed-dashboards/VALIDATION.md)
+records 24 passing tests, successful actual-PromQL health scenarios, 79 executable
+replay queries, three UP targets, exact series counts and browser-verified port
+click-through/selection. Docker CLI launch on loopback 3003/9093 was verified;
+Compose YAML validates but Compose execution was unavailable. Existing prototypes
+remain running. Snapshot counters are static, flags/illustrative limits need
+operational confirmation, and no production deployment was performed. Included
+in the user's requested scoped commit and push.

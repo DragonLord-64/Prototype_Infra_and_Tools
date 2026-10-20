@@ -1,0 +1,11 @@
+apiVersion: 1
+providers:
+  - name: Export-backed dashboards
+    orgId: 1
+    folder: Export-backed lab
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 5
+    allowUiUpdates: false
+    options:
+      path: /var/lib/grafana/dashboards

@@ -1,0 +1,18 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+scrape_configs:
+  # Keep the captured job/instance identity. Scrape-generated metrics retain
+  # replay-* identities, separately from captured exporter up/scrape_* samples.
+  - job_name: replay-fhs
+    honor_labels: true
+    static_configs:
+      - targets: ['fhs:9100']
+  - job_name: replay-node
+    honor_labels: true
+    static_configs:
+      - targets: ['node:9100']
+  - job_name: replay-switch
+    honor_labels: true
+    static_configs:
+      - targets: ['switch:9100']

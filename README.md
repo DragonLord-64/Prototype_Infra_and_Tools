@@ -10,7 +10,8 @@ The active work is the portable Ansible/NetBox inventory pipeline and the monito
 | [Cabling template](netbox-cabling-template/README.md) | Excel and CSV examples for connecting NetBox interfaces |
 | [Portable development bundle](end-to-end-netbox/development/README.md) | Latest reviewed imports, role layout, and offline tests to copy to FHS Baremetal |
 | [Monitoring](monitoring/README.md) | Five visible values files and the required active Elastic chart |
-| [Dashboard prototypes](monitoring/dashboard-prototypes/README.md) | Four synthetic Grafana views with an independent local demo stack |
+| [Dashboard prototypes](monitoring/dashboard-prototypes/README.md) | Five synthetic Grafana views with an independent local demo stack |
+| [Export-backed dashboards](monitoring/export-backed-dashboards/README.md) | FHS and switch views using faithful, sanitized replay of the three exporter snapshots |
 | [Historical archive](archive/README.md) | Previous platform, workloads, host automation, utilities, and default environment |
 
 Only source and wiki documents were relocated. Ignored credentials, environments, generated output, and runtime data remain at their original paths. No running service was restarted or redeployed. Some historical directory names may therefore still exist locally.

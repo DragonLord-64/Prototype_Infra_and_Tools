@@ -2,6 +2,10 @@
 
 For independent synthetic Grafana experiments, see [the dashboard prototypes](dashboard-prototypes/README.md). They do not alter this deployment.
 
+For FHS and switch views built against the three supplied exporter schemas, see
+[the export-backed dashboard lab](export-backed-dashboards/README.md). It includes
+sanitized test sources, an isolated Docker stack and live-Prometheus generation.
+
 A **Helm chart** contains Kubernetes resource templates. A **values file** supplies settings to a chart; it is not a deployment by itself. We use normal upstream charts for Prometheus/Telegraf and one small local [Elasticsearch/Kibana chart](charts/elasticsearch-kibana/Chart.yaml), so its required templates are right here rather than hidden in the archive.
 
 | Values | Chart |
