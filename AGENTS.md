@@ -12,6 +12,7 @@ additional instructions.
 | Area | Index | Overview |
 | --- | --- | --- |
 | Active Ansible/NetBox | [Pipeline index](end-to-end-netbox/AGENTS.md) | [Latest portable bundle](end-to-end-netbox/development/README.md) |
+| NetBox cabling | [Template guide](netbox-cabling-template/README.md) | [Excel interface connections](netbox-cabling-template/NetBox-Cable-Template.xlsx) |
 | Monitoring | [Beginner guide](monitoring/README.md) | [Component values and active chart](monitoring/) |
 | Dashboard prototypes | [Demo guide](monitoring/dashboard-prototypes/README.md) | [Synthetic sources, dashboards and screenshots](monitoring/dashboard-prototypes/) |
 | Host Filebeat | [Standalone role](monitoring/ansible/README.md) | [Role defaults](monitoring/ansible/roles/filebeat/defaults/main.yml) |

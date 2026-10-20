@@ -21,3 +21,8 @@ scrape_configs:
     scrape_timeout: 3s
     static_configs:
       - targets: ['vlan-net-viewer-demo-exporter:9103']
+
+  - job_name: rack-view-demo
+    scrape_timeout: 3s
+    static_configs:
+      - targets: ['rack-view-demo-exporter:9104']

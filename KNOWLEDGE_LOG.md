@@ -143,3 +143,13 @@ Evidence: exact hashes match 29 copied Desktop source files; all exporters rende
 ## 2026-10-20 — Dashboard container launch instructions
 
 Expanded [the prototype launch guide](monitoring/dashboard-prototypes/README.md#launch-the-containers) with repository-root commands for the verified Python/Docker launcher, direct dashboard links, container status and scoped stop commands, custom-port selection, and the alternative Compose workflow. The launchers use separate instances; choose one to avoid port collisions. Runtime evidence remains the successful port-3002 validation recorded above; no new deployment was required for this documentation change.
+
+## 2026-10-20 — Standalone rack elevation prototype
+
+Added [rack-view](monitoring/dashboard-prototypes/rack-view/README.md) with 16 synthetic per-server textfile inventory records, independent reloadable health and two 42U Grafana front elevations. Rack position/height controls fixed geometry; absent health retains placement and displays Unknown. The banner provides an explicit shared synthetic server-detail link; configured server-box one-click navigation remains unverified. Extended Docker CLI/Compose launch definitions and appended a dedicated Prometheus scrape job, preserving the original four views. No NetBox runtime requests or FHS provisioning changes.
+
+Evidence: six focused tests pass for placement bounds/overlap, geometry, absent-health retention and independent health; Prometheus config validates and all five targets report up. Live queries return 16 metadata records, 15 health samples and Unknown for the omitted sample. Native Grafana browser inspection confirms two Fault boxes and one Unknown box at correct positions. Real device telemetry and metadata integration remain deferred.
+
+## 2026-10-20 — Excel cabling template
+
+Added [the NetBox cabling template](netbox-cabling-template/README.md), containing an Excel workbook and matching CSV with six synthetic interface-pair examples. The guide explains exact device/interface Name lookups, `dcim.interface`, breakout child interfaces, BMC Ethernet, duplicate avoidance and CSV export/import. Endpoint and optional cable columns were verified against upstream NetBox 4.4/4.5 CableImportForm. Visual review covered both worksheets; saved-file checks verified six example rows, matching CSV, unique endpoints, frozen headers, filters and type validation. No live NetBox write was made. The workbook and rack-view prototype are included in the user-requested scoped push.

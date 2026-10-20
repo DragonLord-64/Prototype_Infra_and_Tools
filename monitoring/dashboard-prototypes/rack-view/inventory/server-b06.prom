@@ -1,0 +1,2 @@
+# Provisioned sample: synthetic server-local metadata, not a NetBox connection.
+server_rack_info{server_id="server-b06",rack="rack-b",position_u="27",height_u="4",face="front"} 1

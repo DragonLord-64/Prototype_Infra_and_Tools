@@ -11,6 +11,7 @@ services:
       - ./cisco-switch/grafana/dashboards:/var/lib/grafana/dashboards/cisco-switch:ro
       - ./vccu-fspu/grafana/dashboards:/var/lib/grafana/dashboards/vccu-fspu:ro
       - ./vlan-net-viewer/grafana/dashboards:/var/lib/grafana/dashboards/vlan-net-viewer:ro
+      - ./rack-view/grafana/dashboards:/var/lib/grafana/dashboards/rack-view:ro
     depends_on:
       - prometheus
   prometheus:
@@ -46,6 +47,12 @@ services:
     command: [python, -B, exporter.py]
     volumes:
       - ./vlan-net-viewer:/app:ro
+  rack-view-demo-exporter:
+    image: *python_image
+    working_dir: /app
+    command: [python, -B, exporter.py]
+    volumes:
+      - ./rack-view:/app:ro
 volumes:
   grafana-data:
   prometheus-data:

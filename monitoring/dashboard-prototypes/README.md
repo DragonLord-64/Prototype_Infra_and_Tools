@@ -1,12 +1,13 @@
 # Grafana dashboard prototypes
 
-Four synthetic monitoring views, captured on 2026-10-19. These are independent examples, separate from the repository's infrastructure monitoring deployment. No real hardware connection or production compatibility is claimed.
+Five synthetic monitoring views; the original four were captured on 2026-10-19, with rack elevation added on 2026-10-20. These are independent examples, separate from the repository's infrastructure monitoring deployment. No real hardware connection or production compatibility is claimed.
 
 | View | Dashboard UID | Source and screenshot |
 | --- | --- | --- |
 | Server health | `server-health-demo` | [Source](server-health/) · [Overview](server-health/screenshots/updated-overview.jpg) |
 | Cisco switch overview and port detail | `cisco-switch-demo`, `cisco-switch-detail` | [Source](cisco-switch/) · [All ports](cisco-switch/screenshots/compact-overview.jpg) |
 | VCCU–FSPU link matrix | `vccu-fspu-demo` | [Source](vccu-fspu/) · [Matrix](vccu-fspu/screenshots/matrix.jpg) |
+| Rack elevation | `rack-view-demo` | [Source](rack-view/) · [Overview](rack-view/screenshots/overview.jpg) |
 | Network VLAN viewer | `vlan-net-viewer-demo` | [Source](vlan-net-viewer/) · [VLAN 55](vlan-net-viewer/screenshots/overview.jpg) |
 
 ## Launch the containers
@@ -18,7 +19,7 @@ cd monitoring/dashboard-prototypes
 python3 run.py
 ```
 
-This is the launcher verified on the current machine, which does not have the Compose plugin installed. It starts Grafana, Prometheus and four mock exporters in the background. Re-running it starts any stopped containers belonging to this prototype; it does not replace existing containers or apply changed launcher settings.
+This is the launcher verified on the current machine, which does not have the Compose plugin installed. It starts Grafana, Prometheus and five mock exporters in the background. Re-running it starts any stopped containers belonging to this prototype; it does not replace existing containers or apply changed launcher settings.
 
 Open http://localhost:3002 and follow Grafana's normal first-run login flow. Dashboard links:
 
@@ -26,6 +27,7 @@ Open http://localhost:3002 and follow Grafana's normal first-run login flow. Das
 - [Switch ports](http://localhost:3002/d/cisco-switch-demo)
 - [VCCU–FSPU matrix](http://localhost:3002/d/vccu-fspu-demo)
 - [VLAN viewer](http://localhost:3002/d/vlan-net-viewer-demo?var-vlan=55)
+- [Rack elevation](http://localhost:3002/d/rack-view-demo)
 
 Check running containers:
 
@@ -55,7 +57,7 @@ Use one launcher per instance. Compose has separate container names, network and
 
 ## Edit the samples
 
-Each exporter reloads its adjacent `mock-*.json` every five seconds. Edit those files directly to preserve your scenarios. The source generators can overwrite sample data: `cisco-switch/make_mock.py` and `vlan-net-viewer/build.py` reset their respective fixtures. Existing dashboard JSON is ready to use; generation is optional.
+The original exporters reload their adjacent `mock-*.json` every five seconds. Rack-view reloads textfile inventory and its independent health fixture on each scrape; placement changes require regenerating its dashboard. Edit those files directly to preserve your scenarios. The source generators can overwrite sample data: `cisco-switch/make_mock.py` and `vlan-net-viewer/build.py` reset their respective fixtures. Existing dashboard JSON is ready to use; generation is optional.
 
 Run `generate_dashboard.py` from the server, switch or matrix directory after changing layout. For VLAN names/routes, run `vlan-net-viewer/refine_dashboard.py`; it reads the current fixture without replacing it. Mounted dashboard files reload automatically. Changes to provisioning may require `docker compose restart grafana`.
 
@@ -75,8 +77,14 @@ Run `generate_dashboard.py` from the server, switch or matrix directory after ch
 
 24 VCCU and 27 FSPU attachments, with one logical switch interface per unit across two demo switches. VCC units are on the left and FSP units on the right. Green means directly allowed; blue means an explicitly configured directed translation on that exact switch and interface. No inverse/transitive inference is performed. VLAN 55 matches 35 direct and five translated interfaces. Additional interface records can represent multiple or transit attachments. This is configured allowance, not proof of an operational end-to-end path.
 
+### Rack elevation
+
+Two 42U racks with 16 synthetic servers at provisioned 1U/2U/4U positions. Server-local `.prom` files supply rack metadata; independent health supplies OK/Fault/Unknown. Missing health preserves placement. The banner links to shared demo server detail; server-box one-click navigation remains unverified. No runtime NetBox connection or FHS integration. See [rack source and regeneration instructions](rack-view/README.md).
+
 ## Validation and deferred work
 
-The Desktop originals were visually checked in Grafana, including switch/matrix click-through and VLAN dropdown filtering. Component screenshots capture those originals. The copied stack was started with `python3 run.py` on port 3002 and its switch overview was visually verified; [running repo screenshot](screenshots/repository-switch-online.jpg). All five dashboard definitions are available through Grafana, and all four Prometheus targets report up. Verified series counts: 14 server components, 128 switch interfaces, 648 matrix links, and 40 VLAN-55 matches. YAML and mount paths validate; the Compose plugin is unavailable on this host, so Compose itself was not executed. Seven existing VLAN tests pass. [SOURCE_MANIFEST.json](SOURCE_MANIFEST.json) records the exact copied sources and SHA-256 hashes. Packaging validation is recorded in the repository knowledge log.
+The Desktop originals were visually checked in Grafana, including switch/matrix click-through and VLAN dropdown filtering. Component screenshots capture those originals. The copied stack was started with `python3 run.py` on port 3002 and its switch overview was visually verified; [running repo screenshot](screenshots/repository-switch-online.jpg). The original five dashboard definitions were available through Grafana, and all four original Prometheus targets reported up. Verified series counts: 14 server components, 128 switch interfaces, 648 matrix links, and 40 VLAN-55 matches. YAML and mount paths validate; the Compose plugin is unavailable on this host, so Compose itself was not executed. Seven existing VLAN tests pass. [SOURCE_MANIFEST.json](SOURCE_MANIFEST.json) records the exact copied sources and SHA-256 hashes. Packaging validation is recorded in the repository knowledge log.
+
+Rack elevation was added on 2026-10-20: six focused tests pass, all five scrape targets report up, and live queries return 16 rack placement records and 15 independent health samples. Native Grafana inspection confirms two Fault boxes and one Unknown box in their fixed positions; [running rack screenshot](rack-view/screenshots/overview.jpg). Compose YAML validates, but Compose execution is still unverified.
 
 Device-data freshness was discussed but is deliberately deferred. A future collector should export last successful device collection timestamps; scrape success alone does not establish device freshness. Other review findings: improve the matrix's small-text contrast, agree error/drop thresholds and fault duration, expose fault reasons and sensor histories in detail views, and test real hardware telemetry. These remain prototype limitations.

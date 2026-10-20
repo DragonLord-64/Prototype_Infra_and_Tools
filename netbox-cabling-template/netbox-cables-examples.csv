@@ -1,0 +1,7 @@
+﻿"side_a_device","side_a_type","side_a_name","side_b_device","side_b_type","side_b_name","label","description"
+"demo-switch-01","dcim.interface","Ethernet1/1","demo-server-01","dcim.interface","eno1","EXAMPLE-01","Example: server NIC 1"
+"demo-switch-01","dcim.interface","Ethernet1/2","demo-server-01","dcim.interface","eno2","EXAMPLE-02","Example: second NIC on the same server"
+"demo-switch-01","dcim.interface","Ethernet1/3/1","demo-vccu-01","dcim.interface","enp65s0f0np0","EXAMPLE-03","Example: first interface of a 4-way breakout"
+"demo-switch-01","dcim.interface","Ethernet1/3/2","demo-fspu-01","dcim.interface","enp65s0f0np0","EXAMPLE-04","Example: second interface of that breakout"
+"demo-switch-01","dcim.interface","Ethernet1/4","demo-server-01","dcim.interface","bmc0","EXAMPLE-05","Example: BMC management Ethernet interface"
+"demo-switch-01","dcim.interface","Ethernet1/32","demo-switch-02","dcim.interface","Ethernet1/32","EXAMPLE-06","Example: switch-to-switch uplink"

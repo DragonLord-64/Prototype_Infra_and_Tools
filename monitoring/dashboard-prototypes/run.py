@@ -43,6 +43,7 @@ def main():
         ('cisco-switch', 'cisco-switch-demo-exporter'),
         ('vccu-fspu', 'vccu-fspu-demo-exporter'),
         ('vlan-net-viewer', 'vlan-net-viewer-demo-exporter'),
+        ('rack-view', 'rack-view-demo-exporter'),
     ]:
         start(service, PYTHON, [*mount(folder, '/app'), '-w', '/app'], ['python', '-B', 'exporter.py'])
     start('prometheus', PROMETHEUS,
@@ -52,9 +53,16 @@ def main():
            '--storage.tsdb.retention.time=2d'])
     args = ['-p', f'127.0.0.1:{port}:3000', '-v', PREFIX + '-grafana-data:/var/lib/grafana',
             *mount('grafana/provisioning', '/etc/grafana/provisioning')]
-    for folder in ['server-health', 'cisco-switch', 'vccu-fspu', 'vlan-net-viewer']:
+    for folder in ['server-health', 'cisco-switch', 'vccu-fspu', 'vlan-net-viewer', 'rack-view']:
         args += mount(folder + '/grafana/dashboards', '/var/lib/grafana/dashboards/' + folder)
     start('grafana', GRAFANA, args)
+    # Older instances have no dedicated mount for this newly added dashboard.
+    grafana_name = PREFIX + '-grafana'
+    info = json.loads(docker('inspect', grafana_name).stdout)[0]
+    destination = '/var/lib/grafana/dashboards/rack-view'
+    if not any(m['Destination'] == destination for m in info['Mounts']):
+        docker('exec', '--user', '0', grafana_name, 'mkdir', '-p', destination)
+        docker('cp', str(ROOT / 'rack-view/grafana/dashboards') + '/.', grafana_name + ':' + destination)
     print(f'Open http://localhost:{port}')
     print('Existing containers are started without changing their configuration. Use Compose for managed updates, or recreate only these labelled demo containers after changing launcher settings.')
 
