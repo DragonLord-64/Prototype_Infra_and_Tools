@@ -2,7 +2,8 @@
 
 This native Grafana dashboard keeps the component status square and wider readings
 panel from the server-health prototype. It queries the captured FHS and node
-exporter schemas directly, using datasource UID `export-backed-prometheus`.
+exporter schemas directly, using datasource UID `export-backed-prometheus` in the replay lab. The
+[portable live copy](../live-import/README.md) uses the selected Prometheus datasource.
 The **Server** selector uses `node_name`: FHS and node exporter use different
 `instance` ports, so joining them by `instance` would be incorrect.
 
@@ -15,12 +16,13 @@ the original hardware has just been contacted.
 
 | Display | Source label / actual metric names | Coverage |
 | --- | --- | --- |
-| Component 1 / 2 | `FPGA0` / `FPGA1`; `fpga_temperature_celcius`, fabric/F-tile/card-BMC temperatures, `total_input_power_watts` | Source reports 3 / 6 unavailable readings. |
+| FPGA 0 / 1 | `FPGA0` / `FPGA1`; `fpga_temperature_celcius`, fabric/F-tile/card-BMC temperatures, `total_input_power_watts` | Source reports 3 / 6 unavailable readings. |
 | PSU 1 / 2 | `PSU1` / `PSU2`; `sts_psu1`, fan and AC-lost flags (and PSU2 equivalents) | Source reports 5 unavailable readings each; no PSU temperature/power/current/voltage samples exist. |
 | Fan 1 / 2 | `FAN`; `fan1_rpm`, `fan2_rpm`, `fsc_temperature_celcius` | Source reports 5 unavailable readings. Fan 3–6 are not invented. |
 | CPU | `CPU`; `cpu_temperature_celcius`, PROCHOT/trip/MCE flags | Temperature is available; flag encoding is unverified. |
-| Memory | `DIMM`; eight `ddr5_*1_temperature_celcius` readings | Hottest DIMM shown; all eight are required for complete coverage. |
-| NIC | `NIC`; `nic_temperature_celcius` | No `num_metrics_unavailable` coverage gauge is present for this source. |
+| Eight DIMMs | `DIMM`; individual A1, B1, C1, E1, G1, H1, I1, K1 `ddr5_*1_temperature_celcius` readings | Each DIMM has its own temperature and sensor status. |
+| NVMe 0 / 1 | Node Exporter `node_nvme_info`, `node_hwmon_temp_celsius`, disk read/write byte counters | Individual controller state, composite/hottest temperatures, plus I/O rates. Missing telemetry remains Unknown. |
+| NIC | `NIC`; `nic_temperature_celcius` | The supplied capture includes total/unavailable coverage gauges; a complete cool reading can be OK. |
 | Network LAN | `LAN`; `lan_temperature_celcius` | Temperature only; there is no asserted mapping to an OS interface. |
 | Motherboard | `x550_bmc`; board/outlet temperatures | Board temperature health, with source completeness required. |
 | BMC telemetry | `x550_bmc`; voltage rails, watchdog/chassis flags | No separate BMC die temperature is supplied; raw flags remain unverified. |
@@ -28,7 +30,13 @@ the original hardware has just been contacted.
 
 Metric names intentionally preserve the exporter spelling **`celcius`**. Raw tables
 below show FHS values and a filterable subset of node values, including readings
-that do not fit the component cards. The Node metric textbox accepts a metric-name
+that do not fit the component cards. OS interfaces are discovered for the selected node endpoint rather than fixed
+to seven/eight names. The supplied snapshot contains three non-loopback OS
+interfaces; FPGA or BMC ports absent from Node Exporter require additional
+telemetry and a verified mapping. `node_network_up` is operational state; it is
+not treated as administrative configuration.
+
+The Node metric textbox accepts a metric-name
 regular expression for the raw node table.
 
 ## Health policy and limits
@@ -42,36 +50,29 @@ after changing them:
 python3 fhs/generate_dashboard.py
 ```
 
-For an actual Prometheus datasource, generate a **separate** live-source copy:
-
-```bash
-python3 fhs/generate_dashboard.py --live --output-dir /tmp/fhs-live-dashboards
-```
-
-Import `/tmp/fhs-live-dashboards/fhs-export-backed.json` into the destination
-Grafana. Its Prometheus datasource must have UID `export-backed-prometheus`;
-alternatively replace that UID in the generated JSON with the destination
-datasource's actual UID. The live queries expect `job="fhs-exporter"` and
-`job="node"`, with the same `node_name` label attached to both scrape targets
-including their `up` metric. Adjust those job strings in the generator if your
-Prometheus scrape jobs differ. Live mode checks those real source-UP metrics,
-removes capture-only text, and does not overwrite the default replay JSON when
-the separate output directory above is used. The live/replay copies share a UID,
-so import live mode into a separate Grafana or intentionally replace the replay.
-Live mode retains the conservative health policy and illustrative limits.
+For an actual Prometheus datasource, import the checked-in
+[live dashboard](../live-import/fhs-export-backed.json) and choose Datasource,
+FHS job, Nodename and FHS instance. Node job and Node instance follow that same
+Nodename using their own endpoint. All dropdowns discover values from Prometheus;
+no private server identity, replay job, or lab datasource UID is embedded in the
+live definition. See the [import guide](../live-import/README.md) for details.
+Regenerate it with `python3 fhs/generate_dashboard.py --live` from the parent
+folder; the default destination is `live-import/`.
 
 A known temperature/fan failure takes precedence over missing data. Otherwise,
-all displayed required readings must exist, the source availability count must be
-zero, and a positive total count must exist before Healthy/Degraded is possible.
-The memory group additionally requires all eight supplied DIMM metric names.
+all displayed required readings must exist. FHS cards additionally require a zero
+unavailable count and positive total for their source. Each DIMM uses its own
+temperature; the shared DIMM coverage count still signals incomplete source
+telemetry. NVMe cards use Node Exporter controller state and hwmon temperatures
+instead of FHS coverage counters. A non-live observed NVMe controller is Failed.
+Healthy/Degraded describes these sensor checks, not a comprehensive diagnostic.
 Incomplete data becomes **Unknown** rather than Healthy. A reachable exporter
 alone never proves a component is healthy.
 
 The sample and repository do not establish flag bit meanings. PSU, CPU and BMC
 aggregate states therefore remain Unknown unless a separate observed temperature
-failure proves failure. Raw flag values remain visible. NIC temperature alone is
-also insufficient to assert complete NIC health; its status is Unknown while the
-reading remains visible. Confirm flag encoding and equipment limits before using
+failure proves failure. Raw flag values remain visible. NIC status uses temperature and the supplied coverage gauges;
+that status describes reported sensor readings rather than all possible NIC faults. Confirm flag encoding and equipment limits before using
 this policy operationally. No bitstream-present value is represented as link UP.
 
 The unavailable-reading summary sums the exporter's per-source reported numbers;

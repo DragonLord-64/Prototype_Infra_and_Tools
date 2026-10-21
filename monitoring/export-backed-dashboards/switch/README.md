@@ -53,17 +53,17 @@ python3 switch/generate_dashboard.py
 python3 switch/generate_dashboard.py --live --output-dir /tmp/fhs-switch-live
 ```
 
-The default writes the two provisioned replay dashboards. The live command
-writes separate import files with live banners and availability checks against
-the original `switch-telegraf` scrape job. The check joins `up` to the selected
-switch's interface series on `instance,job`. Keep those labels consistent; adapt
-the job name in the generator if the production scrape configuration differs.
+The default writes the two provisioned replay dashboards. `--live` defaults to
+`live-import/` and generates portable imports with Datasource, Job, Switch and
+Instance dropdowns. Both the data queries and source availability check use the
+selected job/endpoint. All panels and query variables use `${ds}`, with no
+required datasource UID. The selected datasource/job/switch/instance travel with
+the links between overview and port details; relative links retain a deployed
+Grafana URL subpath. See the [import guide](../live-import/README.md).
 
-Import both generated files into Grafana and use a Prometheus datasource whose
-UID is `export-backed-prometheus`, or change that UID in the generator before
-regenerating. Choose the actual source in the Switch dropdown. The same UIDs
-are used in live and replay output, so use a separate Grafana instance/folder
-workflow if keeping both variants. Grafana dashboard UIDs are instance-wide.
+Import both live files. Their UIDs match the replay dashboards, so importing can
+replace a replay definition with that UID. The static Canvas geometry still
+comes from the fixture topology; regenerate it for a different physical layout.
 
 Enable Grafana's `canvasPanelPanZoom` feature toggle for the Canvas panel's
 automatic fit-to-content behavior, for example

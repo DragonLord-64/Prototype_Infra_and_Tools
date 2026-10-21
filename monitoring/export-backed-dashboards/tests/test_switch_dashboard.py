@@ -84,7 +84,26 @@ class SwitchDashboardTests(unittest.TestCase):
             for panel in dashboard["panels"]:
                 for target in panel["targets"]:
                     self.assertNotIn("replay-switch",target["expr"])
-                    self.assertIn('up{job="switch-telegraf"} and on(instance,job)',target["expr"])
+                    self.assertIn('up{job=~"$job",instance=~"$instance"}',target["expr"])
+                    self.assertEqual(panel["datasource"]["uid"], "${ds}")
+
+    def test_live_filters_and_detail_links_preserve_selection(self):
+        for dashboard in switch.build(self.ports, live=True):
+            names = [v["name"] for v in dashboard["templating"]["list"]]
+            self.assertEqual(names[:4], ["ds", "job", "switch", "instance"])
+            serialized = json.dumps(dashboard)
+            self.assertNotIn("demo-switch-01", serialized)
+            self.assertNotRegex(serialized, r"\$\{(?:switch|job|instance):regex\}")
+            self.assertIn("./d/switch-export-", serialized)
+            self.assertIn('target="_blank"', dashboard["panels"][0]["options"]["content"])
+            for panel in dashboard["panels"]:
+                if panel["type"] == "canvas":
+                    self.assertTrue(all(link["targetBlank"] for el in panel["options"]["root"]["elements"] for link in el.get("links", [])))
+            self.assertNotIn("../switch-export-", serialized)
+            self.assertIn("var-ds=${ds:percentencode}", serialized)
+            self.assertIn("var-instance=${instance:percentencode}", serialized)
+            self.assertNotRegex(serialized, r'(?<!\.)/d/switch-export-')
+            self.assertEqual(dashboard, json.loads((ROOT / "live-import" / (dashboard["uid"]+".json")).read_text()))
 
     def test_canvas_fits_view_and_backgrounds_have_no_placeholder_text(self):
         board=next(p for p in self.overview["panels"] if p["type"]=="canvas")

@@ -7,6 +7,7 @@ import re
 
 ROOT = Path(__file__).resolve().parent
 DS = {"type": "prometheus", "uid": "export-backed-prometheus"}
+LIVE = False
 GRAY = "#707681"
 DN = r"sys/intf/phys-\\[([^]]+)\\]/.*"
 REPLAY_GATE = '(max(up{job="replay-switch"}) == 1)'
@@ -30,6 +31,8 @@ def normalized(expr):
 
 
 def selector(metric, extra=""):
+    if LIVE:
+        return f'{metric}{{source=~"$switch",job=~"$job",instance=~"$instance"{"," + extra if extra else ""}}}'
     return f'{metric}{{source=~"$switch"{"," + extra if extra else ""}}}'
 
 
@@ -103,6 +106,31 @@ def switch_var():
 
 
 def build(ports, live=False):
+    global LIVE, DS
+    previous_live, previous_ds = LIVE, DS
+    LIVE = live
+    if live:
+        DS = {"type": "prometheus", "uid": "${ds}"}
+    try:
+        return _build(ports, live)
+    finally:
+        LIVE, DS = previous_live, previous_ds
+
+
+def live_variables():
+    def variable(name, label, expression):
+        return {"name": name, "label": label, "type": "query", "datasource": DS,
+                "definition": expression, "query": {"query": expression, "refId": name},
+                "refresh": 1, "sort": 1, "multi": False, "includeAll": False, "options": []}
+    return [
+        {"name": "ds", "label": "Datasource", "type": "datasource", "query": "prometheus", "refresh": 1, "options": []},
+        variable("job", "Job", 'label_values(nexus_interfaces_ifIndex, job)'),
+        variable("switch", "Switch", 'label_values(nexus_interfaces_ifIndex{job=~"$job"}, source)'),
+        variable("instance", "Instance", 'label_values(nexus_interfaces_ifIndex{job=~"$job",source=~"$switch"}, instance)'),
+    ]
+
+
+def _build(ports, live=False):
     dash = {"uid": "switch-export-backed", "title": "FHS · Switch ports (export replay)", "schemaVersion": 39,
             "version": 1, "tags": ["fhs", "switch", "export-backed", "replay"], "editable": True,
             "refresh": "5s", "timezone": "browser", "time": {"from": "now-15m", "to": "now"},
@@ -113,7 +141,7 @@ def build(ports, live=False):
         f"**EXPORT REPLAY · {len(ports)} ports / {sum(map(len, ports.values()))} interfaces** — "
         "Port: red = recent CRC/drop; gray = Unknown (no DOM). Link: exported `operSt`. "
         "Quality: Error > Drop > Good over 5 minutes; frozen replay becomes zero after warm-up. "
-        "[Open port details](/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1)."}
+        "[Open port details](/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1)."}
     p.append(notice)
     expressions = [
         ("Interfaces", f'count({selector("nexus_interfaces_ifIndex")})'),
@@ -150,7 +178,7 @@ def build(ports, live=False):
                           mapping(f"{interface} quality", {"0": {"text": "Good", "color": "green"}, "1": {"text": "Error", "color": "red"}, "2": {"text": "Drop", "color": "orange"}, "3": {"text": "Unknown", "color": GRAY}})]
         for el in elements[first:]:
             el["oneClickMode"] = "link"
-            el["links"] = [{"title": f"Port {port} details", "url": f"/d/switch-export-detail?var-switch=${{switch:percentencode}}&var-port={port}", "oneClick": True, "targetBlank": False}]
+            el["links"] = [{"title": f"Port {port} details", "url": f"/d/switch-export-detail/port-details?var-switch=${{switch:percentencode}}&var-port={port}", "oneClick": True, "targetBlank": True}]
     board["options"] = {"inlineEditing": False, "panZoom": True, "zoomToContent": True,
                         "tooltip": {"mode": "single"}, "root": {"name": "Root", "type": "frame", "elements": elements}}
     board["fieldConfig"]["overrides"] = overrides
@@ -169,7 +197,7 @@ def build(ports, live=False):
     detail["templating"]["list"].append({"name": "port", "label": "Physical port", "type": "custom", "query": ",".join(map(str,ports)), "current": {"text": "1", "value": "1"}, "multi": False, "includeAll": False})
     detail["panels"] = []
     note = panel(1,"text","",0,0,24,3)
-    note["options"] = {"mode":"markdown","content":"[← All ports](/d/switch-export-backed?var-switch=${switch:percentencode}) · **EXPORT REPLAY**. RX/TX are measured counter rates; frozen counters produce zero after warm-up. Link/mode/VLAN IDs come directly from interface labels. VLAN names and per-port optic DOM are absent; no names, temperatures or voltages are invented."}
+    note["options"] = {"mode":"markdown","content":"[← All ports](/d/switch-export-backed/switch-ports?var-switch=${switch:percentencode}) · **EXPORT REPLAY**. RX/TX are measured counter rates; frozen counters produce zero after warm-up. Link/mode/VLAN IDs come directly from interface labels. VLAN names and per-port optic DOM are absent; no names, temperatures or voltages are invented."}
     detail["panels"].append(note)
     port_re = r'dn=~"sys/intf/phys-\\[eth1/${port:regex}(/[0-9]+)?\\]/.*"'
     metadata = panel(2,"table","Interface configuration and operational state",0,3,24,7,
@@ -194,10 +222,21 @@ def build(ports, live=False):
         recent["options"]={"legend":{"displayMode":"list","placement":"bottom"},"tooltip":{"mode":"multi"}}
         detail["panels"].append(recent)
     if live:
-        live_gate = '(max(up{job="switch-telegraf"} and on(instance,job) '+selector("nexus_interfaces_ifIndex")+') == 1)'
+        live_gate = '(max(up{job=~"$job",instance=~"$instance"}) == 1)'
         for dashboard in (dash, detail):
             dashboard["title"] = dashboard["title"].replace("export replay", "live metrics")
             dashboard["tags"] = [tag for tag in dashboard["tags"] if tag != "replay"]
+            dashboard["templating"]["list"] = live_variables() + dashboard["templating"]["list"][1:]
+            # Relative links retain Grafana's configured URL subpath. Carry the
+            # selection so detail panels query exactly the same source endpoint.
+            def links(value):
+                if isinstance(value, dict):
+                    return {key: links(item) for key, item in value.items()}
+                if isinstance(value, list):
+                    return [links(item) for item in value]
+                if isinstance(value, str):
+                    return value.replace('/d/switch-export-', './d/switch-export-').replace('?var-switch=', '?var-ds=${ds:percentencode}&var-job=${job:percentencode}&var-instance=${instance:percentencode}&var-switch=')
+                return value
             for current_panel in dashboard["panels"]:
                 for target in current_panel["targets"]:
                     target["expr"] = target["expr"].replace(REPLAY_GATE, live_gate)
@@ -207,6 +246,11 @@ def build(ports, live=False):
                     content = content.replace("; frozen replay becomes zero after warm-up", "")
                     content = content.replace("; frozen counters produce zero after warm-up", "")
                     current_panel["options"]["content"] = content
+            dashboard["panels"] = links(dashboard["panels"])
+            for current_panel in dashboard["panels"]:
+                if current_panel["type"] == "text":
+                    current_panel["options"]["content"] = re.sub(r"\[([^]]+)\]\((\./d/[^)]+)\)",
+                        r'<a href="\2" target="_blank" rel="noopener">\1</a>', current_panel["options"]["content"])
     return dash, detail
 
 
@@ -214,16 +258,18 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--fixture",type=Path,default=ROOT.parent/"sources/fixtures/switch.json")
     parser.add_argument("--live",action="store_true",help="Gate on the original switch-telegraf target, not the replay job")
-    parser.add_argument("--output-dir",type=Path,default=ROOT/"grafana/dashboards")
+    parser.add_argument("--output-dir",type=Path,help="Defaults to ../live-import for --live, otherwise the replay dashboard directory")
     args=parser.parse_args()
     data=json.loads(args.fixture.read_text())
     results=data["data"]["result"]
     ports=topology(results)
+    output_dir = args.output_dir or (ROOT.parent/"live-import" if args.live else ROOT/"grafana/dashboards")
     for dashboard in build(ports,live=args.live):
-        destination=args.output_dir/(dashboard["uid"]+".json")
+        destination=output_dir/(dashboard["uid"]+".json")
         destination.parent.mkdir(parents=True,exist_ok=True)
         destination.write_text(json.dumps(dashboard,indent=2)+"\n")
-    (ROOT/"topology.json").write_text(json.dumps(ports,indent=2)+"\n")
+    if not args.live:
+        (ROOT/"topology.json").write_text(json.dumps(ports,indent=2)+"\n")
     print(f"Generated {len(ports)} parent ports / {sum(map(len,ports.values()))} interfaces")
 
 

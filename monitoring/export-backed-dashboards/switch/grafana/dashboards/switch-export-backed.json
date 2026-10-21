@@ -68,7 +68,7 @@
       },
       "options": {
         "mode": "markdown",
-        "content": "**EXPORT REPLAY \u00b7 34 ports / 62 interfaces** \u2014 Port: red = recent CRC/drop; gray = Unknown (no DOM). Link: exported `operSt`. Quality: Error > Drop > Good over 5 minutes; frozen replay becomes zero after warm-up. [Open port details](/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1)."
+        "content": "**EXPORT REPLAY \u00b7 34 ports / 62 interfaces** \u2014 Port: red = recent CRC/drop; gray = Unknown (no DOM). Link: exported `operSt`. Quality: Error > Drop > Good over 5 minutes; frozen replay becomes zero after warm-up. [Open port details](/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1)."
       }
     },
     {
@@ -5209,9 +5209,9 @@
               "links": [
                 {
                   "title": "Port 1 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5245,9 +5245,9 @@
               "links": [
                 {
                   "title": "Port 1 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5281,9 +5281,9 @@
               "links": [
                 {
                   "title": "Port 1 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5329,9 +5329,9 @@
               "links": [
                 {
                   "title": "Port 1 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5366,9 +5366,9 @@
               "links": [
                 {
                   "title": "Port 1 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5403,9 +5403,9 @@
               "links": [
                 {
                   "title": "Port 1 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5451,9 +5451,9 @@
               "links": [
                 {
                   "title": "Port 1 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5488,9 +5488,9 @@
               "links": [
                 {
                   "title": "Port 1 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5525,9 +5525,9 @@
               "links": [
                 {
                   "title": "Port 1 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5573,9 +5573,9 @@
               "links": [
                 {
                   "title": "Port 1 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5610,9 +5610,9 @@
               "links": [
                 {
                   "title": "Port 1 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5647,9 +5647,9 @@
               "links": [
                 {
                   "title": "Port 1 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5695,9 +5695,9 @@
               "links": [
                 {
                   "title": "Port 1 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5732,9 +5732,9 @@
               "links": [
                 {
                   "title": "Port 1 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5769,9 +5769,9 @@
               "links": [
                 {
                   "title": "Port 1 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=1",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=1",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5818,9 +5818,9 @@
               "links": [
                 {
                   "title": "Port 2 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=2",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=2",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5854,9 +5854,9 @@
               "links": [
                 {
                   "title": "Port 2 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=2",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=2",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5890,9 +5890,9 @@
               "links": [
                 {
                   "title": "Port 2 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=2",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=2",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5938,9 +5938,9 @@
               "links": [
                 {
                   "title": "Port 2 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=2",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=2",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -5975,9 +5975,9 @@
               "links": [
                 {
                   "title": "Port 2 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=2",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=2",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6012,9 +6012,9 @@
               "links": [
                 {
                   "title": "Port 2 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=2",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=2",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6061,9 +6061,9 @@
               "links": [
                 {
                   "title": "Port 3 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=3",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=3",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6097,9 +6097,9 @@
               "links": [
                 {
                   "title": "Port 3 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=3",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=3",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6133,9 +6133,9 @@
               "links": [
                 {
                   "title": "Port 3 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=3",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=3",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6181,9 +6181,9 @@
               "links": [
                 {
                   "title": "Port 3 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=3",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=3",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6218,9 +6218,9 @@
               "links": [
                 {
                   "title": "Port 3 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=3",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=3",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6255,9 +6255,9 @@
               "links": [
                 {
                   "title": "Port 3 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=3",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=3",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6303,9 +6303,9 @@
               "links": [
                 {
                   "title": "Port 3 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=3",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=3",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6340,9 +6340,9 @@
               "links": [
                 {
                   "title": "Port 3 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=3",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=3",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6377,9 +6377,9 @@
               "links": [
                 {
                   "title": "Port 3 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=3",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=3",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6426,9 +6426,9 @@
               "links": [
                 {
                   "title": "Port 4 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=4",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=4",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6462,9 +6462,9 @@
               "links": [
                 {
                   "title": "Port 4 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=4",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=4",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6498,9 +6498,9 @@
               "links": [
                 {
                   "title": "Port 4 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=4",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=4",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6546,9 +6546,9 @@
               "links": [
                 {
                   "title": "Port 4 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=4",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=4",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6583,9 +6583,9 @@
               "links": [
                 {
                   "title": "Port 4 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=4",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=4",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6620,9 +6620,9 @@
               "links": [
                 {
                   "title": "Port 4 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=4",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=4",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6669,9 +6669,9 @@
               "links": [
                 {
                   "title": "Port 5 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=5",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=5",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6705,9 +6705,9 @@
               "links": [
                 {
                   "title": "Port 5 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=5",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=5",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6741,9 +6741,9 @@
               "links": [
                 {
                   "title": "Port 5 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=5",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=5",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6789,9 +6789,9 @@
               "links": [
                 {
                   "title": "Port 5 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=5",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=5",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6826,9 +6826,9 @@
               "links": [
                 {
                   "title": "Port 5 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=5",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=5",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6863,9 +6863,9 @@
               "links": [
                 {
                   "title": "Port 5 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=5",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=5",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6912,9 +6912,9 @@
               "links": [
                 {
                   "title": "Port 6 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=6",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=6",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6948,9 +6948,9 @@
               "links": [
                 {
                   "title": "Port 6 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=6",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=6",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -6984,9 +6984,9 @@
               "links": [
                 {
                   "title": "Port 6 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=6",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=6",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7032,9 +7032,9 @@
               "links": [
                 {
                   "title": "Port 6 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=6",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=6",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7069,9 +7069,9 @@
               "links": [
                 {
                   "title": "Port 6 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=6",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=6",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7106,9 +7106,9 @@
               "links": [
                 {
                   "title": "Port 6 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=6",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=6",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7154,9 +7154,9 @@
               "links": [
                 {
                   "title": "Port 6 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=6",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=6",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7191,9 +7191,9 @@
               "links": [
                 {
                   "title": "Port 6 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=6",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=6",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7228,9 +7228,9 @@
               "links": [
                 {
                   "title": "Port 6 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=6",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=6",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7276,9 +7276,9 @@
               "links": [
                 {
                   "title": "Port 6 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=6",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=6",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7313,9 +7313,9 @@
               "links": [
                 {
                   "title": "Port 6 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=6",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=6",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7350,9 +7350,9 @@
               "links": [
                 {
                   "title": "Port 6 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=6",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=6",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7398,9 +7398,9 @@
               "links": [
                 {
                   "title": "Port 6 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=6",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=6",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7435,9 +7435,9 @@
               "links": [
                 {
                   "title": "Port 6 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=6",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=6",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7472,9 +7472,9 @@
               "links": [
                 {
                   "title": "Port 6 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=6",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=6",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7521,9 +7521,9 @@
               "links": [
                 {
                   "title": "Port 7 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=7",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=7",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7557,9 +7557,9 @@
               "links": [
                 {
                   "title": "Port 7 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=7",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=7",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7593,9 +7593,9 @@
               "links": [
                 {
                   "title": "Port 7 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=7",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=7",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7641,9 +7641,9 @@
               "links": [
                 {
                   "title": "Port 7 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=7",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=7",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7678,9 +7678,9 @@
               "links": [
                 {
                   "title": "Port 7 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=7",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=7",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7715,9 +7715,9 @@
               "links": [
                 {
                   "title": "Port 7 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=7",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=7",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7764,9 +7764,9 @@
               "links": [
                 {
                   "title": "Port 8 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=8",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=8",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7800,9 +7800,9 @@
               "links": [
                 {
                   "title": "Port 8 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=8",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=8",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7836,9 +7836,9 @@
               "links": [
                 {
                   "title": "Port 8 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=8",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=8",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7884,9 +7884,9 @@
               "links": [
                 {
                   "title": "Port 8 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=8",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=8",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7921,9 +7921,9 @@
               "links": [
                 {
                   "title": "Port 8 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=8",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=8",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -7958,9 +7958,9 @@
               "links": [
                 {
                   "title": "Port 8 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=8",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=8",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8007,9 +8007,9 @@
               "links": [
                 {
                   "title": "Port 9 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=9",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=9",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8043,9 +8043,9 @@
               "links": [
                 {
                   "title": "Port 9 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=9",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=9",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8079,9 +8079,9 @@
               "links": [
                 {
                   "title": "Port 9 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=9",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=9",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8127,9 +8127,9 @@
               "links": [
                 {
                   "title": "Port 9 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=9",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=9",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8164,9 +8164,9 @@
               "links": [
                 {
                   "title": "Port 9 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=9",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=9",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8201,9 +8201,9 @@
               "links": [
                 {
                   "title": "Port 9 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=9",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=9",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8250,9 +8250,9 @@
               "links": [
                 {
                   "title": "Port 10 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=10",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=10",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8286,9 +8286,9 @@
               "links": [
                 {
                   "title": "Port 10 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=10",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=10",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8322,9 +8322,9 @@
               "links": [
                 {
                   "title": "Port 10 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=10",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=10",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8370,9 +8370,9 @@
               "links": [
                 {
                   "title": "Port 10 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=10",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=10",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8407,9 +8407,9 @@
               "links": [
                 {
                   "title": "Port 10 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=10",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=10",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8444,9 +8444,9 @@
               "links": [
                 {
                   "title": "Port 10 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=10",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=10",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8493,9 +8493,9 @@
               "links": [
                 {
                   "title": "Port 11 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=11",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=11",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8529,9 +8529,9 @@
               "links": [
                 {
                   "title": "Port 11 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=11",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=11",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8565,9 +8565,9 @@
               "links": [
                 {
                   "title": "Port 11 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=11",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=11",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8613,9 +8613,9 @@
               "links": [
                 {
                   "title": "Port 11 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=11",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=11",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8650,9 +8650,9 @@
               "links": [
                 {
                   "title": "Port 11 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=11",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=11",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8687,9 +8687,9 @@
               "links": [
                 {
                   "title": "Port 11 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=11",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=11",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8735,9 +8735,9 @@
               "links": [
                 {
                   "title": "Port 11 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=11",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=11",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8772,9 +8772,9 @@
               "links": [
                 {
                   "title": "Port 11 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=11",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=11",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8809,9 +8809,9 @@
               "links": [
                 {
                   "title": "Port 11 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=11",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=11",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8857,9 +8857,9 @@
               "links": [
                 {
                   "title": "Port 11 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=11",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=11",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8894,9 +8894,9 @@
               "links": [
                 {
                   "title": "Port 11 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=11",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=11",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8931,9 +8931,9 @@
               "links": [
                 {
                   "title": "Port 11 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=11",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=11",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -8979,9 +8979,9 @@
               "links": [
                 {
                   "title": "Port 11 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=11",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=11",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9016,9 +9016,9 @@
               "links": [
                 {
                   "title": "Port 11 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=11",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=11",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9053,9 +9053,9 @@
               "links": [
                 {
                   "title": "Port 11 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=11",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=11",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9102,9 +9102,9 @@
               "links": [
                 {
                   "title": "Port 12 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=12",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=12",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9138,9 +9138,9 @@
               "links": [
                 {
                   "title": "Port 12 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=12",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=12",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9174,9 +9174,9 @@
               "links": [
                 {
                   "title": "Port 12 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=12",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=12",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9222,9 +9222,9 @@
               "links": [
                 {
                   "title": "Port 12 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=12",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=12",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9259,9 +9259,9 @@
               "links": [
                 {
                   "title": "Port 12 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=12",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=12",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9296,9 +9296,9 @@
               "links": [
                 {
                   "title": "Port 12 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=12",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=12",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9344,9 +9344,9 @@
               "links": [
                 {
                   "title": "Port 12 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=12",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=12",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9381,9 +9381,9 @@
               "links": [
                 {
                   "title": "Port 12 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=12",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=12",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9418,9 +9418,9 @@
               "links": [
                 {
                   "title": "Port 12 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=12",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=12",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9466,9 +9466,9 @@
               "links": [
                 {
                   "title": "Port 12 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=12",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=12",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9503,9 +9503,9 @@
               "links": [
                 {
                   "title": "Port 12 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=12",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=12",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9540,9 +9540,9 @@
               "links": [
                 {
                   "title": "Port 12 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=12",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=12",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9588,9 +9588,9 @@
               "links": [
                 {
                   "title": "Port 12 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=12",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=12",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9625,9 +9625,9 @@
               "links": [
                 {
                   "title": "Port 12 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=12",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=12",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9662,9 +9662,9 @@
               "links": [
                 {
                   "title": "Port 12 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=12",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=12",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9711,9 +9711,9 @@
               "links": [
                 {
                   "title": "Port 13 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=13",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=13",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9747,9 +9747,9 @@
               "links": [
                 {
                   "title": "Port 13 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=13",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=13",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9783,9 +9783,9 @@
               "links": [
                 {
                   "title": "Port 13 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=13",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=13",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9831,9 +9831,9 @@
               "links": [
                 {
                   "title": "Port 13 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=13",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=13",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9868,9 +9868,9 @@
               "links": [
                 {
                   "title": "Port 13 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=13",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=13",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9905,9 +9905,9 @@
               "links": [
                 {
                   "title": "Port 13 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=13",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=13",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9953,9 +9953,9 @@
               "links": [
                 {
                   "title": "Port 13 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=13",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=13",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -9990,9 +9990,9 @@
               "links": [
                 {
                   "title": "Port 13 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=13",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=13",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10027,9 +10027,9 @@
               "links": [
                 {
                   "title": "Port 13 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=13",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=13",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10076,9 +10076,9 @@
               "links": [
                 {
                   "title": "Port 14 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=14",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=14",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10112,9 +10112,9 @@
               "links": [
                 {
                   "title": "Port 14 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=14",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=14",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10148,9 +10148,9 @@
               "links": [
                 {
                   "title": "Port 14 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=14",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=14",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10196,9 +10196,9 @@
               "links": [
                 {
                   "title": "Port 14 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=14",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=14",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10233,9 +10233,9 @@
               "links": [
                 {
                   "title": "Port 14 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=14",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=14",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10270,9 +10270,9 @@
               "links": [
                 {
                   "title": "Port 14 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=14",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=14",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10318,9 +10318,9 @@
               "links": [
                 {
                   "title": "Port 14 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=14",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=14",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10355,9 +10355,9 @@
               "links": [
                 {
                   "title": "Port 14 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=14",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=14",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10392,9 +10392,9 @@
               "links": [
                 {
                   "title": "Port 14 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=14",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=14",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10441,9 +10441,9 @@
               "links": [
                 {
                   "title": "Port 15 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=15",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=15",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10477,9 +10477,9 @@
               "links": [
                 {
                   "title": "Port 15 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=15",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=15",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10513,9 +10513,9 @@
               "links": [
                 {
                   "title": "Port 15 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=15",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=15",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10561,9 +10561,9 @@
               "links": [
                 {
                   "title": "Port 15 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=15",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=15",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10598,9 +10598,9 @@
               "links": [
                 {
                   "title": "Port 15 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=15",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=15",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10635,9 +10635,9 @@
               "links": [
                 {
                   "title": "Port 15 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=15",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=15",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10683,9 +10683,9 @@
               "links": [
                 {
                   "title": "Port 15 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=15",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=15",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10720,9 +10720,9 @@
               "links": [
                 {
                   "title": "Port 15 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=15",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=15",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10757,9 +10757,9 @@
               "links": [
                 {
                   "title": "Port 15 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=15",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=15",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10806,9 +10806,9 @@
               "links": [
                 {
                   "title": "Port 16 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=16",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=16",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10842,9 +10842,9 @@
               "links": [
                 {
                   "title": "Port 16 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=16",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=16",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10878,9 +10878,9 @@
               "links": [
                 {
                   "title": "Port 16 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=16",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=16",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10926,9 +10926,9 @@
               "links": [
                 {
                   "title": "Port 16 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=16",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=16",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -10963,9 +10963,9 @@
               "links": [
                 {
                   "title": "Port 16 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=16",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=16",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11000,9 +11000,9 @@
               "links": [
                 {
                   "title": "Port 16 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=16",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=16",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11048,9 +11048,9 @@
               "links": [
                 {
                   "title": "Port 16 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=16",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=16",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11085,9 +11085,9 @@
               "links": [
                 {
                   "title": "Port 16 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=16",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=16",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11122,9 +11122,9 @@
               "links": [
                 {
                   "title": "Port 16 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=16",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=16",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11171,9 +11171,9 @@
               "links": [
                 {
                   "title": "Port 17 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=17",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=17",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11207,9 +11207,9 @@
               "links": [
                 {
                   "title": "Port 17 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=17",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=17",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11243,9 +11243,9 @@
               "links": [
                 {
                   "title": "Port 17 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=17",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=17",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11291,9 +11291,9 @@
               "links": [
                 {
                   "title": "Port 17 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=17",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=17",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11328,9 +11328,9 @@
               "links": [
                 {
                   "title": "Port 17 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=17",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=17",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11365,9 +11365,9 @@
               "links": [
                 {
                   "title": "Port 17 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=17",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=17",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11413,9 +11413,9 @@
               "links": [
                 {
                   "title": "Port 17 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=17",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=17",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11450,9 +11450,9 @@
               "links": [
                 {
                   "title": "Port 17 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=17",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=17",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11487,9 +11487,9 @@
               "links": [
                 {
                   "title": "Port 17 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=17",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=17",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11536,9 +11536,9 @@
               "links": [
                 {
                   "title": "Port 18 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=18",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=18",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11572,9 +11572,9 @@
               "links": [
                 {
                   "title": "Port 18 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=18",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=18",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11608,9 +11608,9 @@
               "links": [
                 {
                   "title": "Port 18 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=18",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=18",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11656,9 +11656,9 @@
               "links": [
                 {
                   "title": "Port 18 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=18",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=18",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11693,9 +11693,9 @@
               "links": [
                 {
                   "title": "Port 18 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=18",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=18",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11730,9 +11730,9 @@
               "links": [
                 {
                   "title": "Port 18 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=18",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=18",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11778,9 +11778,9 @@
               "links": [
                 {
                   "title": "Port 18 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=18",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=18",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11815,9 +11815,9 @@
               "links": [
                 {
                   "title": "Port 18 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=18",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=18",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11852,9 +11852,9 @@
               "links": [
                 {
                   "title": "Port 18 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=18",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=18",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11901,9 +11901,9 @@
               "links": [
                 {
                   "title": "Port 19 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=19",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=19",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11937,9 +11937,9 @@
               "links": [
                 {
                   "title": "Port 19 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=19",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=19",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -11973,9 +11973,9 @@
               "links": [
                 {
                   "title": "Port 19 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=19",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=19",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12021,9 +12021,9 @@
               "links": [
                 {
                   "title": "Port 19 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=19",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=19",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12058,9 +12058,9 @@
               "links": [
                 {
                   "title": "Port 19 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=19",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=19",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12095,9 +12095,9 @@
               "links": [
                 {
                   "title": "Port 19 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=19",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=19",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12143,9 +12143,9 @@
               "links": [
                 {
                   "title": "Port 19 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=19",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=19",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12180,9 +12180,9 @@
               "links": [
                 {
                   "title": "Port 19 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=19",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=19",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12217,9 +12217,9 @@
               "links": [
                 {
                   "title": "Port 19 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=19",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=19",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12266,9 +12266,9 @@
               "links": [
                 {
                   "title": "Port 20 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=20",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=20",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12302,9 +12302,9 @@
               "links": [
                 {
                   "title": "Port 20 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=20",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=20",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12338,9 +12338,9 @@
               "links": [
                 {
                   "title": "Port 20 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=20",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=20",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12386,9 +12386,9 @@
               "links": [
                 {
                   "title": "Port 20 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=20",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=20",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12423,9 +12423,9 @@
               "links": [
                 {
                   "title": "Port 20 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=20",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=20",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12460,9 +12460,9 @@
               "links": [
                 {
                   "title": "Port 20 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=20",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=20",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12508,9 +12508,9 @@
               "links": [
                 {
                   "title": "Port 20 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=20",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=20",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12545,9 +12545,9 @@
               "links": [
                 {
                   "title": "Port 20 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=20",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=20",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12582,9 +12582,9 @@
               "links": [
                 {
                   "title": "Port 20 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=20",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=20",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12631,9 +12631,9 @@
               "links": [
                 {
                   "title": "Port 21 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=21",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=21",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12667,9 +12667,9 @@
               "links": [
                 {
                   "title": "Port 21 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=21",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=21",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12703,9 +12703,9 @@
               "links": [
                 {
                   "title": "Port 21 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=21",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=21",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12751,9 +12751,9 @@
               "links": [
                 {
                   "title": "Port 21 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=21",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=21",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12788,9 +12788,9 @@
               "links": [
                 {
                   "title": "Port 21 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=21",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=21",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12825,9 +12825,9 @@
               "links": [
                 {
                   "title": "Port 21 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=21",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=21",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12873,9 +12873,9 @@
               "links": [
                 {
                   "title": "Port 21 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=21",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=21",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12910,9 +12910,9 @@
               "links": [
                 {
                   "title": "Port 21 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=21",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=21",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12947,9 +12947,9 @@
               "links": [
                 {
                   "title": "Port 21 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=21",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=21",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -12996,9 +12996,9 @@
               "links": [
                 {
                   "title": "Port 22 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=22",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=22",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13032,9 +13032,9 @@
               "links": [
                 {
                   "title": "Port 22 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=22",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=22",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13068,9 +13068,9 @@
               "links": [
                 {
                   "title": "Port 22 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=22",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=22",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13116,9 +13116,9 @@
               "links": [
                 {
                   "title": "Port 22 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=22",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=22",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13153,9 +13153,9 @@
               "links": [
                 {
                   "title": "Port 22 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=22",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=22",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13190,9 +13190,9 @@
               "links": [
                 {
                   "title": "Port 22 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=22",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=22",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13238,9 +13238,9 @@
               "links": [
                 {
                   "title": "Port 22 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=22",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=22",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13275,9 +13275,9 @@
               "links": [
                 {
                   "title": "Port 22 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=22",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=22",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13312,9 +13312,9 @@
               "links": [
                 {
                   "title": "Port 22 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=22",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=22",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13361,9 +13361,9 @@
               "links": [
                 {
                   "title": "Port 23 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=23",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=23",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13397,9 +13397,9 @@
               "links": [
                 {
                   "title": "Port 23 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=23",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=23",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13433,9 +13433,9 @@
               "links": [
                 {
                   "title": "Port 23 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=23",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=23",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13481,9 +13481,9 @@
               "links": [
                 {
                   "title": "Port 23 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=23",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=23",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13518,9 +13518,9 @@
               "links": [
                 {
                   "title": "Port 23 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=23",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=23",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13555,9 +13555,9 @@
               "links": [
                 {
                   "title": "Port 23 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=23",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=23",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13603,9 +13603,9 @@
               "links": [
                 {
                   "title": "Port 23 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=23",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=23",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13640,9 +13640,9 @@
               "links": [
                 {
                   "title": "Port 23 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=23",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=23",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13677,9 +13677,9 @@
               "links": [
                 {
                   "title": "Port 23 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=23",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=23",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13726,9 +13726,9 @@
               "links": [
                 {
                   "title": "Port 24 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=24",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=24",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13762,9 +13762,9 @@
               "links": [
                 {
                   "title": "Port 24 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=24",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=24",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13798,9 +13798,9 @@
               "links": [
                 {
                   "title": "Port 24 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=24",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=24",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13846,9 +13846,9 @@
               "links": [
                 {
                   "title": "Port 24 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=24",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=24",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13883,9 +13883,9 @@
               "links": [
                 {
                   "title": "Port 24 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=24",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=24",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13920,9 +13920,9 @@
               "links": [
                 {
                   "title": "Port 24 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=24",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=24",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -13968,9 +13968,9 @@
               "links": [
                 {
                   "title": "Port 24 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=24",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=24",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14005,9 +14005,9 @@
               "links": [
                 {
                   "title": "Port 24 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=24",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=24",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14042,9 +14042,9 @@
               "links": [
                 {
                   "title": "Port 24 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=24",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=24",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14091,9 +14091,9 @@
               "links": [
                 {
                   "title": "Port 25 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=25",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=25",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14127,9 +14127,9 @@
               "links": [
                 {
                   "title": "Port 25 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=25",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=25",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14163,9 +14163,9 @@
               "links": [
                 {
                   "title": "Port 25 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=25",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=25",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14211,9 +14211,9 @@
               "links": [
                 {
                   "title": "Port 25 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=25",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=25",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14248,9 +14248,9 @@
               "links": [
                 {
                   "title": "Port 25 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=25",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=25",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14285,9 +14285,9 @@
               "links": [
                 {
                   "title": "Port 25 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=25",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=25",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14333,9 +14333,9 @@
               "links": [
                 {
                   "title": "Port 25 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=25",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=25",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14370,9 +14370,9 @@
               "links": [
                 {
                   "title": "Port 25 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=25",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=25",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14407,9 +14407,9 @@
               "links": [
                 {
                   "title": "Port 25 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=25",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=25",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14455,9 +14455,9 @@
               "links": [
                 {
                   "title": "Port 25 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=25",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=25",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14492,9 +14492,9 @@
               "links": [
                 {
                   "title": "Port 25 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=25",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=25",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14529,9 +14529,9 @@
               "links": [
                 {
                   "title": "Port 25 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=25",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=25",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14577,9 +14577,9 @@
               "links": [
                 {
                   "title": "Port 25 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=25",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=25",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14614,9 +14614,9 @@
               "links": [
                 {
                   "title": "Port 25 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=25",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=25",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14651,9 +14651,9 @@
               "links": [
                 {
                   "title": "Port 25 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=25",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=25",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14700,9 +14700,9 @@
               "links": [
                 {
                   "title": "Port 26 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=26",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=26",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14736,9 +14736,9 @@
               "links": [
                 {
                   "title": "Port 26 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=26",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=26",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14772,9 +14772,9 @@
               "links": [
                 {
                   "title": "Port 26 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=26",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=26",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14820,9 +14820,9 @@
               "links": [
                 {
                   "title": "Port 26 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=26",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=26",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14857,9 +14857,9 @@
               "links": [
                 {
                   "title": "Port 26 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=26",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=26",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14894,9 +14894,9 @@
               "links": [
                 {
                   "title": "Port 26 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=26",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=26",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14943,9 +14943,9 @@
               "links": [
                 {
                   "title": "Port 27 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=27",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=27",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -14979,9 +14979,9 @@
               "links": [
                 {
                   "title": "Port 27 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=27",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=27",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15015,9 +15015,9 @@
               "links": [
                 {
                   "title": "Port 27 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=27",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=27",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15063,9 +15063,9 @@
               "links": [
                 {
                   "title": "Port 27 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=27",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=27",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15100,9 +15100,9 @@
               "links": [
                 {
                   "title": "Port 27 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=27",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=27",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15137,9 +15137,9 @@
               "links": [
                 {
                   "title": "Port 27 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=27",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=27",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15186,9 +15186,9 @@
               "links": [
                 {
                   "title": "Port 28 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=28",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=28",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15222,9 +15222,9 @@
               "links": [
                 {
                   "title": "Port 28 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=28",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=28",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15258,9 +15258,9 @@
               "links": [
                 {
                   "title": "Port 28 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=28",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=28",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15306,9 +15306,9 @@
               "links": [
                 {
                   "title": "Port 28 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=28",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=28",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15343,9 +15343,9 @@
               "links": [
                 {
                   "title": "Port 28 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=28",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=28",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15380,9 +15380,9 @@
               "links": [
                 {
                   "title": "Port 28 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=28",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=28",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15429,9 +15429,9 @@
               "links": [
                 {
                   "title": "Port 29 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=29",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=29",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15465,9 +15465,9 @@
               "links": [
                 {
                   "title": "Port 29 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=29",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=29",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15501,9 +15501,9 @@
               "links": [
                 {
                   "title": "Port 29 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=29",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=29",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15549,9 +15549,9 @@
               "links": [
                 {
                   "title": "Port 29 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=29",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=29",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15586,9 +15586,9 @@
               "links": [
                 {
                   "title": "Port 29 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=29",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=29",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15623,9 +15623,9 @@
               "links": [
                 {
                   "title": "Port 29 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=29",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=29",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15672,9 +15672,9 @@
               "links": [
                 {
                   "title": "Port 30 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=30",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=30",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15708,9 +15708,9 @@
               "links": [
                 {
                   "title": "Port 30 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=30",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=30",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15744,9 +15744,9 @@
               "links": [
                 {
                   "title": "Port 30 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=30",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=30",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15792,9 +15792,9 @@
               "links": [
                 {
                   "title": "Port 30 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=30",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=30",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15829,9 +15829,9 @@
               "links": [
                 {
                   "title": "Port 30 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=30",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=30",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15866,9 +15866,9 @@
               "links": [
                 {
                   "title": "Port 30 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=30",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=30",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15915,9 +15915,9 @@
               "links": [
                 {
                   "title": "Port 31 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=31",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=31",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15951,9 +15951,9 @@
               "links": [
                 {
                   "title": "Port 31 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=31",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=31",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -15987,9 +15987,9 @@
               "links": [
                 {
                   "title": "Port 31 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=31",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=31",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16035,9 +16035,9 @@
               "links": [
                 {
                   "title": "Port 31 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=31",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=31",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16072,9 +16072,9 @@
               "links": [
                 {
                   "title": "Port 31 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=31",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=31",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16109,9 +16109,9 @@
               "links": [
                 {
                   "title": "Port 31 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=31",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=31",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16158,9 +16158,9 @@
               "links": [
                 {
                   "title": "Port 32 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=32",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=32",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16194,9 +16194,9 @@
               "links": [
                 {
                   "title": "Port 32 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=32",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=32",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16230,9 +16230,9 @@
               "links": [
                 {
                   "title": "Port 32 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=32",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=32",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16278,9 +16278,9 @@
               "links": [
                 {
                   "title": "Port 32 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=32",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=32",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16315,9 +16315,9 @@
               "links": [
                 {
                   "title": "Port 32 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=32",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=32",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16352,9 +16352,9 @@
               "links": [
                 {
                   "title": "Port 32 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=32",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=32",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16401,9 +16401,9 @@
               "links": [
                 {
                   "title": "Port 33 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=33",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=33",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16437,9 +16437,9 @@
               "links": [
                 {
                   "title": "Port 33 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=33",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=33",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16473,9 +16473,9 @@
               "links": [
                 {
                   "title": "Port 33 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=33",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=33",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16521,9 +16521,9 @@
               "links": [
                 {
                   "title": "Port 33 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=33",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=33",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16558,9 +16558,9 @@
               "links": [
                 {
                   "title": "Port 33 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=33",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=33",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16595,9 +16595,9 @@
               "links": [
                 {
                   "title": "Port 33 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=33",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=33",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16644,9 +16644,9 @@
               "links": [
                 {
                   "title": "Port 34 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=34",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=34",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16680,9 +16680,9 @@
               "links": [
                 {
                   "title": "Port 34 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=34",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=34",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16716,9 +16716,9 @@
               "links": [
                 {
                   "title": "Port 34 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=34",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=34",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16764,9 +16764,9 @@
               "links": [
                 {
                   "title": "Port 34 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=34",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=34",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16801,9 +16801,9 @@
               "links": [
                 {
                   "title": "Port 34 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=34",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=34",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             },
@@ -16838,9 +16838,9 @@
               "links": [
                 {
                   "title": "Port 34 details",
-                  "url": "/d/switch-export-detail?var-switch=${switch:percentencode}&var-port=34",
+                  "url": "/d/switch-export-detail/port-details?var-switch=${switch:percentencode}&var-port=34",
                   "oneClick": true,
-                  "targetBlank": false
+                  "targetBlank": true
                 }
               ]
             }

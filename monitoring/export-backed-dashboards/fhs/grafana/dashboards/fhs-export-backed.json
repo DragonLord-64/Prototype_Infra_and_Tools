@@ -63,7 +63,7 @@
       },
       "options": {
         "mode": "markdown",
-        "content": "**FHS \u00b7 EXPORT REPLAY** \u2014 Real metric names and captured values; synthetic identities. Component 1/2 are source FPGA0/1. Gray means incomplete or unverified health. **Illustrative limits:** temperature 70/85 \u00b0C; fan 4,000/1,000 RPM. PSU/CPU/BMC flag meanings are unverified, so their overall health stays Unknown. [Switch overview](/d/switch-export-backed) \u00b7 Raw metric tables below."
+        "content": "**FHS \u00b7 EXPORT REPLAY** \u2014 Captured readings with synthetic identities. Separate FPGA, DIMM and NVMe cards. Gray means incomplete or unverified readings. **Illustrative limits:** temperature 70/85 \u00b0C; fan 4,000/1,000 RPM. Status covers displayed sensors; PSU/CPU/BMC flag meanings are unverified. <a href=\"./d/switch-export-backed/switch-ports\" target=\"_blank\" rel=\"noopener\">Switch overview</a> \u00b7 Raw metric tables below."
       },
       "id": 1
     },
@@ -295,7 +295,7 @@
     },
     {
       "title": "",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: FPGA0. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: FPGA0. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -310,7 +310,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "(vector(2) and on() ((max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))))) or on() (vector(0) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))))) or on() vector(3)",
+          "expr": "(vector(2) and on() ((max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() (vector(0) and on() ((max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA0\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() vector(3)",
           "instant": true,
           "range": false,
           "legendFormat": ""
@@ -350,8 +350,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#8e8e8e",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "orange",
@@ -390,8 +394,8 @@
       "id": 6
     },
     {
-      "title": "Component 1",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: FPGA0. Flags are raw, not asserted to mean healthy/faulty.",
+      "title": "FPGA 0",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: FPGA0. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -577,7 +581,7 @@
     },
     {
       "title": "",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: FPGA1. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: FPGA1. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -592,7 +596,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "(vector(2) and on() ((max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))))) or on() (vector(0) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))))) or on() vector(3)",
+          "expr": "(vector(2) and on() ((max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() (vector(0) and on() ((max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((front_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_fabric_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_ftile_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fpga_bmc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((total_input_power_watts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FPGA1\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() vector(3)",
           "instant": true,
           "range": false,
           "legendFormat": ""
@@ -632,8 +636,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#8e8e8e",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "orange",
@@ -672,8 +680,8 @@
       "id": 8
     },
     {
-      "title": "Component 2",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: FPGA1. Flags are raw, not asserted to mean healthy/faulty.",
+      "title": "FPGA 1",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: FPGA1. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -859,7 +867,7 @@
     },
     {
       "title": "",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: PSU1. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: PSU1. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -874,7 +882,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "(vector(0) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((sts_psu1{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_psu1{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((sts_psu1_fan{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_psu1_fan{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((sts_psu1_ac_lost{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_psu1_ac_lost{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (vector(0) == 1))) or on() vector(3)",
+          "expr": "(vector(0) and on() ((max((sts_psu1{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_psu1{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((sts_psu1_fan{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_psu1_fan{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((sts_psu1_ac_lost{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_psu1_ac_lost{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU1\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (vector(0) == 1))) or on() vector(3)",
           "instant": true,
           "range": false,
           "legendFormat": ""
@@ -914,8 +922,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#8e8e8e",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "orange",
@@ -955,7 +967,7 @@
     },
     {
       "title": "PSU 1",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: PSU1. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: PSU1. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -1072,7 +1084,7 @@
     },
     {
       "title": "",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: PSU2. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: PSU2. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -1087,7 +1099,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "(vector(0) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((sts_psu2{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_psu2{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((sts_psu2_fan{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_psu2_fan{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((sts_psu2_ac_lost{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_psu2_ac_lost{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (vector(0) == 1))) or on() vector(3)",
+          "expr": "(vector(0) and on() ((max((sts_psu2{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_psu2{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((sts_psu2_fan{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_psu2_fan{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((sts_psu2_ac_lost{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_psu2_ac_lost{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"PSU2\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (vector(0) == 1))) or on() vector(3)",
           "instant": true,
           "range": false,
           "legendFormat": ""
@@ -1127,8 +1139,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#8e8e8e",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "orange",
@@ -1168,7 +1184,7 @@
     },
     {
       "title": "PSU 2",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: PSU2. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: PSU2. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -1285,7 +1301,7 @@
     },
     {
       "title": "",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: FAN. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: FAN. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -1300,7 +1316,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "(vector(2) and on() ((max((fan1_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) < 1000) or on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((fan1_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) < 4000) or on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((fan1_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fan1_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))))) or on() (vector(0) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((fan1_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fan1_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))))) or on() vector(3)",
+          "expr": "(vector(2) and on() ((max((fan1_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) < 1000) or on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((fan1_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) < 4000) or on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((fan1_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fan1_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() (vector(0) and on() ((max((fan1_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fan1_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() vector(3)",
           "instant": true,
           "range": false,
           "legendFormat": ""
@@ -1340,8 +1356,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#8e8e8e",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "orange",
@@ -1381,7 +1401,7 @@
     },
     {
       "title": "Fan 1",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: FAN. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: FAN. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -1475,7 +1495,7 @@
     },
     {
       "title": "",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: FAN. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: FAN. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -1490,7 +1510,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "(vector(2) and on() ((max((fan2_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) < 1000) or on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((fan2_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) < 4000) or on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((fan2_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fan2_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))))) or on() (vector(0) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((fan2_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fan2_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))))) or on() vector(3)",
+          "expr": "(vector(2) and on() ((max((fan2_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) < 1000) or on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((fan2_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) < 4000) or on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((fan2_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fan2_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() (vector(0) and on() ((max((fan2_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fan2_rpm{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((fsc_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"FAN\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() vector(3)",
           "instant": true,
           "range": false,
           "legendFormat": ""
@@ -1530,8 +1550,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#8e8e8e",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "orange",
@@ -1571,7 +1595,7 @@
     },
     {
       "title": "Fan 2",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: FAN. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: FAN. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -1665,7 +1689,7 @@
     },
     {
       "title": "",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: CPU. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: CPU. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -1680,7 +1704,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "(vector(2) and on() ((max((cpu_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((cpu_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((cpu_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((cpu_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((prochot_cpu{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((prochot_cpu{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((cpu1_thermtrip{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((cpu1_thermtrip{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((sts_cpu_mce{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_cpu_mce{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (vector(0) == 1))) or on() (vector(0) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((cpu_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((cpu_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((prochot_cpu{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((prochot_cpu{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((cpu1_thermtrip{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((cpu1_thermtrip{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((sts_cpu_mce{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_cpu_mce{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (vector(0) == 1))) or on() vector(3)",
+          "expr": "(vector(2) and on() ((max((cpu_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((cpu_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((cpu_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((cpu_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((prochot_cpu{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((prochot_cpu{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((cpu1_thermtrip{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((cpu1_thermtrip{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((sts_cpu_mce{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_cpu_mce{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (vector(0) == 1))) or on() (vector(0) and on() ((max((cpu_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((cpu_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((prochot_cpu{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((prochot_cpu{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((cpu1_thermtrip{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((cpu1_thermtrip{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((sts_cpu_mce{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((sts_cpu_mce{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"CPU\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (vector(0) == 1))) or on() vector(3)",
           "instant": true,
           "range": false,
           "legendFormat": ""
@@ -1720,8 +1744,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#8e8e8e",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "orange",
@@ -1761,7 +1789,7 @@
     },
     {
       "title": "CPU",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: CPU. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: CPU. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -1901,7 +1929,7 @@
     },
     {
       "title": "",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: DIMM. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: NIC. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -1916,7 +1944,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "(vector(2) and on() ((max(({node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\",__name__=~\"ddr5_.*_temperature_celcius\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max(({node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\",__name__=~\"ddr5_.*_temperature_celcius\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max(({node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\",__name__=~\"ddr5_.*_temperature_celcius\"} and on() (up{job=\"replay-fhs\"} == 1))) == max(({node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\",__name__=~\"ddr5_.*_temperature_celcius\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_a1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_a1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_b1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_b1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_c1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_c1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_e1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_e1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_g1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_g1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_h1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_h1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_i1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_i1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_k1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_k1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))))) or on() (vector(0) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max(({node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\",__name__=~\"ddr5_.*_temperature_celcius\"} and on() (up{job=\"replay-fhs\"} == 1))) == max(({node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\",__name__=~\"ddr5_.*_temperature_celcius\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_a1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_a1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_b1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_b1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_c1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_c1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_e1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_e1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_g1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_g1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_h1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_h1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_i1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_i1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((ddr5_k1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_k1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))))) or on() vector(3)",
+          "expr": "(vector(2) and on() ((max((nic_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((nic_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((nic_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((nic_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() (vector(0) and on() ((max((nic_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((nic_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() vector(3)",
           "instant": true,
           "range": false,
           "legendFormat": ""
@@ -1956,8 +1984,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#8e8e8e",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "orange",
@@ -1996,8 +2028,8 @@
       "id": 20
     },
     {
-      "title": "Memory",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: DIMM. Flags are raw, not asserted to mean healthy/faulty.",
+      "title": "NIC",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: NIC. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
@@ -2006,173 +2038,6 @@
       "gridPos": {
         "x": 14,
         "y": 18,
-        "w": 10,
-        "h": 4
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "max(({node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\",__name__=~\"ddr5_.*_temperature_celcius\"} and on() (up{job=\"replay-fhs\"} == 1)))",
-          "instant": true,
-          "range": false,
-          "legendFormat": "Hottest DIMM"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "noValue": "Unknown",
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "text"
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Hottest DIMM"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "celsius"
-              },
-              {
-                "id": "decimals",
-                "value": 1
-              }
-            ]
-          }
-        ]
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "orientation": "vertical",
-        "colorMode": "value",
-        "textMode": "value_and_name",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "wideLayout": false,
-        "text": {
-          "valueSize": 19,
-          "titleSize": 11
-        }
-      },
-      "id": 21
-    },
-    {
-      "title": "",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: NIC. Flags are raw, not asserted to mean healthy/faulty.",
-      "type": "stat",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "export-backed-prometheus"
-      },
-      "gridPos": {
-        "x": 0,
-        "y": 22,
-        "w": 2,
-        "h": 4
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "(vector(2) and on() ((max((nic_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((nic_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((nic_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((nic_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (vector(0) == 1))) or on() (vector(0) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((nic_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((nic_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"NIC\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (vector(0) == 1))) or on() vector(3)",
-          "instant": true,
-          "range": false,
-          "legendFormat": ""
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "decimals": 0,
-          "noValue": "Unknown",
-          "mappings": [
-            {
-              "type": "value",
-              "options": {
-                "0": {
-                  "text": "Healthy",
-                  "color": "green"
-                },
-                "1": {
-                  "text": "Degraded",
-                  "color": "orange"
-                },
-                "2": {
-                  "text": "Failed",
-                  "color": "red"
-                },
-                "3": {
-                  "text": "Unknown",
-                  "color": "#8e8e8e"
-                }
-              }
-            }
-          ],
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 1
-              },
-              {
-                "color": "red",
-                "value": 2
-              },
-              {
-                "color": "#8e8e8e",
-                "value": 3
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "orientation": "horizontal",
-        "colorMode": "background_solid",
-        "textMode": "value",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "text": {
-          "valueSize": 10
-        }
-      },
-      "id": 22
-    },
-    {
-      "title": "NIC",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: NIC. Flags are raw, not asserted to mean healthy/faulty.",
-      "type": "stat",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "export-backed-prometheus"
-      },
-      "gridPos": {
-        "x": 2,
-        "y": 22,
         "w": 10,
         "h": 4
       },
@@ -2231,18 +2096,18 @@
           "titleSize": 11
         }
       },
-      "id": 23
+      "id": 21
     },
     {
       "title": "",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: LAN. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: LAN. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
         "uid": "export-backed-prometheus"
       },
       "gridPos": {
-        "x": 12,
+        "x": 0,
         "y": 22,
         "w": 2,
         "h": 4
@@ -2250,7 +2115,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "(vector(2) and on() ((max((lan_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((lan_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((lan_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((lan_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1)))))) or on() (vector(0) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((lan_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((lan_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1)))))) or on() vector(3)",
+          "expr": "(vector(2) and on() ((max((lan_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((lan_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((lan_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((lan_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() (vector(0) and on() ((max((lan_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((lan_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"LAN\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() vector(3)",
           "instant": true,
           "range": false,
           "legendFormat": ""
@@ -2290,8 +2155,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#8e8e8e",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "orange",
@@ -2327,18 +2196,18 @@
           "valueSize": 10
         }
       },
-      "id": 24
+      "id": 22
     },
     {
       "title": "Network LAN",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: LAN. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: LAN. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
         "uid": "export-backed-prometheus"
       },
       "gridPos": {
-        "x": 14,
+        "x": 2,
         "y": 22,
         "w": 10,
         "h": 4
@@ -2398,26 +2267,26 @@
           "titleSize": 11
         }
       },
-      "id": 25
+      "id": 23
     },
     {
       "title": "",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: x550_bmc. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: x550_bmc. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
         "uid": "export-backed-prometheus"
       },
       "gridPos": {
-        "x": 0,
-        "y": 26,
+        "x": 12,
+        "y": 22,
         "w": 2,
         "h": 4
       },
       "targets": [
         {
           "refId": "A",
-          "expr": "(vector(2) and on() ((max((mb1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((mb2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((outlet1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((outlet2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((mb1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((mb2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((outlet1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((outlet2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((mb1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((mb1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((mb2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((mb2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((outlet1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((outlet1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((outlet2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((outlet2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))))) or on() (vector(0) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((mb1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((mb1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((mb2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((mb2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((outlet1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((outlet1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((outlet2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((outlet2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))))) or on() vector(3)",
+          "expr": "(vector(2) and on() ((max((mb1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((mb2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((outlet1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85) or on() (max((outlet2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((mb1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((mb2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((outlet1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70) or on() (max((outlet2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((mb1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((mb1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((mb2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((mb2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((outlet1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((outlet1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((outlet2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((outlet2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() (vector(0) and on() ((max((mb1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((mb1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((mb2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((mb2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((outlet1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((outlet1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((outlet2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((outlet2_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() vector(3)",
           "instant": true,
           "range": false,
           "legendFormat": ""
@@ -2457,8 +2326,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#8e8e8e",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "orange",
@@ -2494,19 +2367,19 @@
           "valueSize": 10
         }
       },
-      "id": 26
+      "id": 24
     },
     {
       "title": "Motherboard",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: x550_bmc. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: x550_bmc. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
         "uid": "export-backed-prometheus"
       },
       "gridPos": {
-        "x": 2,
-        "y": 26,
+        "x": 14,
+        "y": 22,
         "w": 10,
         "h": 4
       },
@@ -2634,18 +2507,18 @@
           "titleSize": 11
         }
       },
-      "id": 27
+      "id": 25
     },
     {
       "title": "",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: x550_bmc. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: x550_bmc. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
         "uid": "export-backed-prometheus"
       },
       "gridPos": {
-        "x": 12,
+        "x": 0,
         "y": 26,
         "w": 2,
         "h": 4
@@ -2653,7 +2526,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "(vector(0) and on() ((max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (max((volt_12v_volts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((volt_12v_volts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((volt_3v_volts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((volt_3v_volts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((watchdog2{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((watchdog2{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((chassis_intr{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((chassis_intr{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (vector(0) == 1))) or on() vector(3)",
+          "expr": "(vector(0) and on() ((max((volt_12v_volts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((volt_12v_volts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((volt_3v_volts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((volt_3v_volts{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((watchdog2{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((watchdog2{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((chassis_intr{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((chassis_intr{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"x550_bmc\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0) and on() (vector(0) == 1))) or on() vector(3)",
           "instant": true,
           "range": false,
           "legendFormat": ""
@@ -2693,8 +2566,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#8e8e8e",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
               },
               {
                 "color": "orange",
@@ -2730,18 +2607,18 @@
           "valueSize": 10
         }
       },
-      "id": 28
+      "id": 26
     },
     {
       "title": "BMC telemetry",
-      "description": "Worst observed limit; a known failure wins, otherwise incomplete or unverified data is Unknown. Source label: x550_bmc. Flags are raw, not asserted to mean healthy/faulty.",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: x550_bmc. Flags are raw; their healthy/fault encoding is unverified.",
       "type": "stat",
       "datasource": {
         "type": "prometheus",
         "uid": "export-backed-prometheus"
       },
       "gridPos": {
-        "x": 14,
+        "x": 2,
         "y": 26,
         "w": 10,
         "h": 4
@@ -2870,12 +2747,183 @@
           "titleSize": 11
         }
       },
+      "id": 27
+    },
+    {
+      "title": "",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 26,
+        "w": 2,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(vector(2) and on() ((max((ddr5_a1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((ddr5_a1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((ddr5_a1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_a1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() (vector(0) and on() ((max((ddr5_a1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_a1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() vector(3)",
+          "instant": true,
+          "range": false,
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#8e8e8e",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "colorMode": "background_solid",
+        "textMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 10
+        }
+      },
+      "id": 28
+    },
+    {
+      "title": "DIMM A1",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 26,
+        "w": 10,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max((ddr5_a1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Temperature"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "colorMode": "value",
+        "textMode": "value_and_name",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": false,
+        "text": {
+          "valueSize": 19,
+          "titleSize": 11
+        }
+      },
       "id": 29
     },
     {
-      "title": "Node interfaces \u00b7 OS state and traffic",
-      "description": "No assumed mapping from NIC temperature to an OS interface. Carrier is physical signal; administrative/up values are separate. Snapshot counters repeat, so demo rate is zero after two samples.",
-      "type": "table",
+      "title": "",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
       "datasource": {
         "type": "prometheus",
         "uid": "export-backed-prometheus"
@@ -2883,6 +2931,1673 @@
       "gridPos": {
         "x": 0,
         "y": 30,
+        "w": 2,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(vector(2) and on() ((max((ddr5_b1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((ddr5_b1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((ddr5_b1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_b1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() (vector(0) and on() ((max((ddr5_b1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_b1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() vector(3)",
+          "instant": true,
+          "range": false,
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#8e8e8e",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "colorMode": "background_solid",
+        "textMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 10
+        }
+      },
+      "id": 30
+    },
+    {
+      "title": "DIMM B1",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 2,
+        "y": 30,
+        "w": 10,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max((ddr5_b1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Temperature"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "colorMode": "value",
+        "textMode": "value_and_name",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": false,
+        "text": {
+          "valueSize": 19,
+          "titleSize": 11
+        }
+      },
+      "id": 31
+    },
+    {
+      "title": "",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 30,
+        "w": 2,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(vector(2) and on() ((max((ddr5_c1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((ddr5_c1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((ddr5_c1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_c1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() (vector(0) and on() ((max((ddr5_c1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_c1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() vector(3)",
+          "instant": true,
+          "range": false,
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#8e8e8e",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "colorMode": "background_solid",
+        "textMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 10
+        }
+      },
+      "id": 32
+    },
+    {
+      "title": "DIMM C1",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 30,
+        "w": 10,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max((ddr5_c1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Temperature"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "colorMode": "value",
+        "textMode": "value_and_name",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": false,
+        "text": {
+          "valueSize": 19,
+          "titleSize": 11
+        }
+      },
+      "id": 33
+    },
+    {
+      "title": "",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 34,
+        "w": 2,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(vector(2) and on() ((max((ddr5_e1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((ddr5_e1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((ddr5_e1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_e1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() (vector(0) and on() ((max((ddr5_e1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_e1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() vector(3)",
+          "instant": true,
+          "range": false,
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#8e8e8e",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "colorMode": "background_solid",
+        "textMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 10
+        }
+      },
+      "id": 34
+    },
+    {
+      "title": "DIMM E1",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 2,
+        "y": 34,
+        "w": 10,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max((ddr5_e1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Temperature"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "colorMode": "value",
+        "textMode": "value_and_name",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": false,
+        "text": {
+          "valueSize": 19,
+          "titleSize": 11
+        }
+      },
+      "id": 35
+    },
+    {
+      "title": "",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 34,
+        "w": 2,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(vector(2) and on() ((max((ddr5_g1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((ddr5_g1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((ddr5_g1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_g1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() (vector(0) and on() ((max((ddr5_g1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_g1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() vector(3)",
+          "instant": true,
+          "range": false,
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#8e8e8e",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "colorMode": "background_solid",
+        "textMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 10
+        }
+      },
+      "id": 36
+    },
+    {
+      "title": "DIMM G1",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 34,
+        "w": 10,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max((ddr5_g1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Temperature"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "colorMode": "value",
+        "textMode": "value_and_name",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": false,
+        "text": {
+          "valueSize": 19,
+          "titleSize": 11
+        }
+      },
+      "id": 37
+    },
+    {
+      "title": "",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 38,
+        "w": 2,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(vector(2) and on() ((max((ddr5_h1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((ddr5_h1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((ddr5_h1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_h1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() (vector(0) and on() ((max((ddr5_h1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_h1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() vector(3)",
+          "instant": true,
+          "range": false,
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#8e8e8e",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "colorMode": "background_solid",
+        "textMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 10
+        }
+      },
+      "id": 38
+    },
+    {
+      "title": "DIMM H1",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 2,
+        "y": 38,
+        "w": 10,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max((ddr5_h1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Temperature"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "colorMode": "value",
+        "textMode": "value_and_name",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": false,
+        "text": {
+          "valueSize": 19,
+          "titleSize": 11
+        }
+      },
+      "id": 39
+    },
+    {
+      "title": "",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 38,
+        "w": 2,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(vector(2) and on() ((max((ddr5_i1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((ddr5_i1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((ddr5_i1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_i1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() (vector(0) and on() ((max((ddr5_i1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_i1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() vector(3)",
+          "instant": true,
+          "range": false,
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#8e8e8e",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "colorMode": "background_solid",
+        "textMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 10
+        }
+      },
+      "id": 40
+    },
+    {
+      "title": "DIMM I1",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 38,
+        "w": 10,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max((ddr5_i1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Temperature"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "colorMode": "value",
+        "textMode": "value_and_name",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": false,
+        "text": {
+          "valueSize": 19,
+          "titleSize": 11
+        }
+      },
+      "id": 41
+    },
+    {
+      "title": "",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 42,
+        "w": 2,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(vector(2) and on() ((max((ddr5_k1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 85))) or on() (vector(1) and on() ((max((ddr5_k1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) >= 70)) and on() ((max((ddr5_k1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_k1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() (vector(0) and on() ((max((ddr5_k1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == max((ddr5_k1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))) and on() (max((num_metrics_unavailable{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) == 0) and on() (max((num_metrics_total{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1))) > 0))) or on() vector(3)",
+          "instant": true,
+          "range": false,
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#8e8e8e",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "colorMode": "background_solid",
+        "textMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 10
+        }
+      },
+      "id": 42
+    },
+    {
+      "title": "DIMM K1",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Source label: DIMM. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 2,
+        "y": 42,
+        "w": 10,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max((ddr5_k1_temperature_celcius{node_name=~\"$node\",job=\"fhs-exporter\",source=\"DIMM\"} and on() (up{job=\"replay-fhs\"} == 1)))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Temperature"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Temperature"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "colorMode": "value",
+        "textMode": "value_and_name",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": false,
+        "text": {
+          "valueSize": 19,
+          "titleSize": 11
+        }
+      },
+      "id": 43
+    },
+    {
+      "title": "",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Node Exporter hwmon and NVMe controller telemetry. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 42,
+        "w": 2,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(vector(2) and on() ((max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme0\",sensor=\"temp1\"} and on() (up{job=\"replay-node\"} == 1))) >= 85) or on() (max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme0\"} and on() (up{job=\"replay-node\"} == 1))) >= 85) or on() ((max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme0\",state=\"live\"} and on() (up{job=\"replay-node\"} == 1))) or on() (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme0\"} and on() (up{job=\"replay-node\"} == 1))) * 0)) == 0))) or on() (vector(1) and on() ((max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme0\",sensor=\"temp1\"} and on() (up{job=\"replay-node\"} == 1))) >= 70) or on() (max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme0\"} and on() (up{job=\"replay-node\"} == 1))) >= 70)) and on() ((max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme0\",sensor=\"temp1\"} and on() (up{job=\"replay-node\"} == 1))) == max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme0\",sensor=\"temp1\"} and on() (up{job=\"replay-node\"} == 1)))) and on() (max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme0\"} and on() (up{job=\"replay-node\"} == 1))) == max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme0\"} and on() (up{job=\"replay-node\"} == 1)))) and on() ((max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme0\",state=\"live\"} and on() (up{job=\"replay-node\"} == 1))) or on() (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme0\"} and on() (up{job=\"replay-node\"} == 1))) * 0)) == (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme0\",state=\"live\"} and on() (up{job=\"replay-node\"} == 1))) or on() (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme0\"} and on() (up{job=\"replay-node\"} == 1))) * 0))))) or on() (vector(0) and on() ((max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme0\",sensor=\"temp1\"} and on() (up{job=\"replay-node\"} == 1))) == max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme0\",sensor=\"temp1\"} and on() (up{job=\"replay-node\"} == 1)))) and on() (max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme0\"} and on() (up{job=\"replay-node\"} == 1))) == max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme0\"} and on() (up{job=\"replay-node\"} == 1)))) and on() ((max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme0\",state=\"live\"} and on() (up{job=\"replay-node\"} == 1))) or on() (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme0\"} and on() (up{job=\"replay-node\"} == 1))) * 0)) == (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme0\",state=\"live\"} and on() (up{job=\"replay-node\"} == 1))) or on() (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme0\"} and on() (up{job=\"replay-node\"} == 1))) * 0))))) or on() vector(3)",
+          "instant": true,
+          "range": false,
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#8e8e8e",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "colorMode": "background_solid",
+        "textMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 10
+        }
+      },
+      "id": 44
+    },
+    {
+      "title": "NVMe 0",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Node Exporter hwmon and NVMe controller telemetry. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 14,
+        "y": 42,
+        "w": 10,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme0\",sensor=\"temp1\"} and on() (up{job=\"replay-node\"} == 1)))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Composite"
+        },
+        {
+          "refId": "B",
+          "expr": "max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme0\"} and on() (up{job=\"replay-node\"} == 1)))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Hottest sensor"
+        },
+        {
+          "refId": "C",
+          "expr": "(max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme0\",state=\"live\"} and on() (up{job=\"replay-node\"} == 1))) or on() (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme0\"} and on() (up{job=\"replay-node\"} == 1))) * 0))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Controller live"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Composite"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hottest sensor"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Controller live"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Not live",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "Live",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "colorMode": "value",
+        "textMode": "value_and_name",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": false,
+        "text": {
+          "valueSize": 19,
+          "titleSize": 11
+        }
+      },
+      "id": 45
+    },
+    {
+      "title": "",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Node Exporter hwmon and NVMe controller telemetry. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 46,
+        "w": 2,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(vector(2) and on() ((max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme1\",sensor=\"temp1\"} and on() (up{job=\"replay-node\"} == 1))) >= 85) or on() (max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme1\"} and on() (up{job=\"replay-node\"} == 1))) >= 85) or on() ((max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme1\",state=\"live\"} and on() (up{job=\"replay-node\"} == 1))) or on() (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme1\"} and on() (up{job=\"replay-node\"} == 1))) * 0)) == 0))) or on() (vector(1) and on() ((max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme1\",sensor=\"temp1\"} and on() (up{job=\"replay-node\"} == 1))) >= 70) or on() (max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme1\"} and on() (up{job=\"replay-node\"} == 1))) >= 70)) and on() ((max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme1\",sensor=\"temp1\"} and on() (up{job=\"replay-node\"} == 1))) == max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme1\",sensor=\"temp1\"} and on() (up{job=\"replay-node\"} == 1)))) and on() (max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme1\"} and on() (up{job=\"replay-node\"} == 1))) == max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme1\"} and on() (up{job=\"replay-node\"} == 1)))) and on() ((max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme1\",state=\"live\"} and on() (up{job=\"replay-node\"} == 1))) or on() (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme1\"} and on() (up{job=\"replay-node\"} == 1))) * 0)) == (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme1\",state=\"live\"} and on() (up{job=\"replay-node\"} == 1))) or on() (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme1\"} and on() (up{job=\"replay-node\"} == 1))) * 0))))) or on() (vector(0) and on() ((max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme1\",sensor=\"temp1\"} and on() (up{job=\"replay-node\"} == 1))) == max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme1\",sensor=\"temp1\"} and on() (up{job=\"replay-node\"} == 1)))) and on() (max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme1\"} and on() (up{job=\"replay-node\"} == 1))) == max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme1\"} and on() (up{job=\"replay-node\"} == 1)))) and on() ((max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme1\",state=\"live\"} and on() (up{job=\"replay-node\"} == 1))) or on() (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme1\"} and on() (up{job=\"replay-node\"} == 1))) * 0)) == (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme1\",state=\"live\"} and on() (up{job=\"replay-node\"} == 1))) or on() (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme1\"} and on() (up{job=\"replay-node\"} == 1))) * 0))))) or on() vector(3)",
+          "instant": true,
+          "range": false,
+          "legendFormat": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "noValue": "Unknown",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Healthy",
+                  "color": "green"
+                },
+                "1": {
+                  "text": "Degraded",
+                  "color": "orange"
+                },
+                "2": {
+                  "text": "Failed",
+                  "color": "red"
+                },
+                "3": {
+                  "text": "Unknown",
+                  "color": "#8e8e8e"
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#8e8e8e",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              },
+              {
+                "color": "#8e8e8e",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "colorMode": "background_solid",
+        "textMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "text": {
+          "valueSize": 10
+        }
+      },
+      "id": 46
+    },
+    {
+      "title": "NVMe 1",
+      "description": "Status covers displayed readings, not a comprehensive hardware diagnostic. A known failure wins; incomplete or unverified readings are Unknown. Node Exporter hwmon and NVMe controller telemetry. Flags are raw; their healthy/fault encoding is unverified.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 2,
+        "y": 46,
+        "w": 10,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme1\",sensor=\"temp1\"} and on() (up{job=\"replay-node\"} == 1)))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Composite"
+        },
+        {
+          "refId": "B",
+          "expr": "max((node_hwmon_temp_celsius{node_name=~\"$node\",job=\"node\",chip=\"nvme_nvme1\"} and on() (up{job=\"replay-node\"} == 1)))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Hottest sensor"
+        },
+        {
+          "refId": "C",
+          "expr": "(max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme1\",state=\"live\"} and on() (up{job=\"replay-node\"} == 1))) or on() (max((node_nvme_info{node_name=~\"$node\",job=\"node\",device=\"nvme1\"} and on() (up{job=\"replay-node\"} == 1))) * 0))",
+          "instant": true,
+          "range": false,
+          "legendFormat": "Controller live"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Unknown",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Composite"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hottest sensor"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "celsius"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Controller live"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "0": {
+                        "text": "Not live",
+                        "color": "red"
+                      },
+                      "1": {
+                        "text": "Live",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "vertical",
+        "colorMode": "value",
+        "textMode": "value_and_name",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "wideLayout": false,
+        "text": {
+          "valueSize": 19,
+          "titleSize": 11
+        }
+      },
+      "id": 47
+    },
+    {
+      "title": "Node interfaces \u00b7 OS state and traffic",
+      "description": "All exported non-loopback OS interfaces; FPGA and BMC ports require their own telemetry if absent here. Carrier and node_network_up describe observed operational link state, not administrative configuration.",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 50,
         "w": 24,
         "h": 9
       },
@@ -2925,7 +4640,7 @@
             "renameByName": {
               "device": "Interface",
               "Value #A": "Carrier",
-              "Value #B": "OS up"
+              "Value #B": "Operational link"
             }
           }
         }
@@ -2941,7 +4656,7 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "Carrier|OS up"
+              "options": "Carrier|Operational link"
             },
             "properties": [
               {
@@ -2970,7 +4685,7 @@
         "showHeader": true,
         "cellHeight": "sm"
       },
-      "id": 30
+      "id": 48
     },
     {
       "title": "Interface traffic \u00b7 bits/s",
@@ -2982,7 +4697,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 39,
+        "y": 59,
         "w": 12,
         "h": 8
       },
@@ -3018,7 +4733,7 @@
           "mode": "multi"
         }
       },
-      "id": 31
+      "id": 49
     },
     {
       "title": "Interface error / drop rates",
@@ -3030,7 +4745,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 39,
+        "y": 59,
         "w": 12,
         "h": 8
       },
@@ -3080,7 +4795,55 @@
           "mode": "multi"
         }
       },
-      "id": 32
+      "id": 50
+    },
+    {
+      "title": "NVMe I/O \u00b7 bytes/s",
+      "description": "Per-drive read/write rates from Node Exporter. Missing telemetry remains absent.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "export-backed-prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 67,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(node_disk_read_bytes_total{node_name=~\"$node\",job=\"node\",device=~\"nvme[0-9]+n[0-9]+\"}[$__rate_interval]) and on() (up{job=\"replay-node\"} == 1)",
+          "instant": false,
+          "range": true,
+          "legendFormat": "{{device}} Read"
+        },
+        {
+          "refId": "B",
+          "expr": "rate(node_disk_written_bytes_total{node_name=~\"$node\",job=\"node\",device=~\"nvme[0-9]+n[0-9]+\"}[$__rate_interval]) and on() (up{job=\"replay-node\"} == 1)",
+          "instant": false,
+          "range": true,
+          "legendFormat": "{{device}} Write"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps",
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "id": 51
     },
     {
       "title": "Everything else \u00b7 FHS raw readings",
@@ -3092,7 +4855,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 47,
+        "y": 75,
         "w": 24,
         "h": 12
       },
@@ -3144,7 +4907,7 @@
           }
         ]
       },
-      "id": 33
+      "id": 52
     },
     {
       "title": "Everything else \u00b7 node readings",
@@ -3156,7 +4919,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 59,
+        "y": 87,
         "w": 24,
         "h": 12
       },
@@ -3208,7 +4971,7 @@
           }
         ]
       },
-      "id": 34
+      "id": 53
     }
   ]
 }

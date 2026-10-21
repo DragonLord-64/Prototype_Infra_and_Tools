@@ -23,16 +23,22 @@ def query(expr):
     return api('/api/v1/query', query=expr)['result']
 
 
-def expand(expr):
+def expand(expr, switch=False):
     # Use a selected node/switch/port exactly as the dashboard does. Do not
     # replace PromQL label_replace's $1 capture references.
     substitutions = {
         'node': 'demo-server-01', 'switch': 'demo-switch-01', 'port': '1',
+        'job': 'fhs-exporter', 'instance': '192.0.2.1:9110',
+        'node_job': 'node', 'node_instance': '192.0.2.1:9100',
         'node_metric': 'node_(load.*|memory_Mem.*|filesystem_.*|network_.*)',
         '__rate_interval': '1m', '__interval': '5s', '__range': '15m',
     }
-    return re.sub(r'\$\{([A-Za-z_][A-Za-z_0-9]*)(?::[^}]+)?\}|\$([A-Za-z_][A-Za-z_0-9]*)',
-                  lambda match: substitutions.get(match[1] or match[2], match[0]), expr)
+    if switch:
+        substitutions.update(job='switch-telegraf', instance='demo-switch-exporter:9273')
+    def substitute(match):
+        value = substitutions.get(match[1] or match[3], match[0])
+        return re.escape(value).replace("\\", "\\\\") if match[2] == "regex" else value
+    return re.sub(r'\$\{([A-Za-z_][A-Za-z_0-9]*)(?::([^}]+))?\}|\$([A-Za-z_][A-Za-z_0-9]*)', substitute, expr)
 
 
 @unittest.skipUnless(os.environ.get('EXPORT_LIVE_TEST') == '1', 'Start run.py and set EXPORT_LIVE_TEST=1')
@@ -51,18 +57,42 @@ class LiveTests(unittest.TestCase):
 
     def test_all_dashboard_queries_execute(self):
         count = 0
-        for path in sorted(ROOT.glob('*/grafana/dashboards/*.json')):
+        for path in sorted(list(ROOT.glob('*/grafana/dashboards/*.json')) + list((ROOT/'live-import').glob('*.json'))):
             dashboard = json.loads(path.read_text())
             for panel in dashboard['panels']:
                 for target in panel.get('targets', []):
                     if 'expr' not in target:
                         continue
                     with self.subTest(dashboard=dashboard['uid'], panel=panel['id'], ref=target['refId']):
-                        expression = expand(target['expr'])
+                        expression = expand(target['expr'], switch=dashboard['uid'].startswith('switch-'))
                         self.assertNotRegex(expression, r'\$[A-Za-z_{]', 'Unresolved Grafana variable')
                         query(expression)
                     count += 1
         self.assertGreater(count, 50)
+
+    def test_live_selections_return_actual_readings(self):
+        fhs = json.loads((ROOT/'live-import/fhs-export-backed.json').read_text())
+        for panel in fhs['panels']:
+            for target in panel.get('targets', []):
+                with self.subTest(panel=panel['title'], ref=target['refId']):
+                    self.assertTrue(query(expand(target['expr'])), "Live selection returned no data")
+        switch = json.loads((ROOT/'live-import/switch-export-backed.json').read_text())
+        panels = {p['title']: p for p in switch['panels']}
+        for title, expected in [('Interfaces',62),('Link Up',35),('Link Down',27)]:
+            result = query(expand(panels[title]['targets'][0]['expr'], switch=True))
+            self.assertEqual(float(result[0]['value'][1]), expected)
+
+    def test_live_variable_chains_resolve_without_saved_demo_defaults(self):
+        for path in sorted((ROOT/'live-import').glob('*.json')):
+            dashboard = json.loads(path.read_text())
+            for variable in dashboard['templating']['list']:
+                if variable['type'] != 'query':
+                    continue
+                expression = expand(variable['definition'], switch=dashboard['uid'].startswith('switch-'))
+                match = re.fullmatch(r'label_values\((.*),\s*(\w+)\)', expression)
+                self.assertIsNotNone(match)
+                values = api('/api/v1/label/'+match[2]+'/values', **{'match[]':match[1]})
+                self.assertTrue(values, (path.name, variable['name']))
 
     def test_exported_switch_links_and_parent_count(self):
         self.assertEqual(float(query('count(nexus_interfaces_ifIndex)')[0]['value'][1]), 62)

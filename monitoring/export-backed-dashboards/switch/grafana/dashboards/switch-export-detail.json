@@ -80,7 +80,7 @@
       },
       "options": {
         "mode": "markdown",
-        "content": "[\u2190 All ports](/d/switch-export-backed?var-switch=${switch:percentencode}) \u00b7 **EXPORT REPLAY**. RX/TX are measured counter rates; frozen counters produce zero after warm-up. Link/mode/VLAN IDs come directly from interface labels. VLAN names and per-port optic DOM are absent; no names, temperatures or voltages are invented."
+        "content": "[\u2190 All ports](/d/switch-export-backed/switch-ports?var-switch=${switch:percentencode}) \u00b7 **EXPORT REPLAY**. RX/TX are measured counter rates; frozen counters produce zero after warm-up. Link/mode/VLAN IDs come directly from interface labels. VLAN names and per-port optic DOM are absent; no names, temperatures or voltages are invented."
       }
     },
     {

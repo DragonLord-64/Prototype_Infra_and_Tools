@@ -173,3 +173,22 @@ Compose YAML validates but Compose execution was unavailable. Existing prototype
 remain running. Snapshot counters are static, flags/illustrative limits need
 operational confirmation, and no production deployment was performed. Included
 in the user's requested scoped commit and push.
+
+## 2026-10-20 — Portable live Prometheus dashboard imports
+
+Corrected the [export-backed dashboards](monitoring/export-backed-dashboards/README.md)
+after the user's production screenshot identified a missing hard-coded replay
+datasource. Added [ready-to-import live definitions](monitoring/export-backed-dashboards/live-import/README.md)
+with datasource/job/node/endpoint selection and separate FHS/Node Exporter
+instances. The FHS cards now identify both FPGAs, eight DIMMs and two NVMe drives;
+OS interfaces are discovered. Switch links retain selection and deployment
+subpaths. [Validation](monitoring/export-backed-dashboards/VALIDATION.md) records
+27 passing tests, all 206 executable queries, and passing Promtool health cases.
+The existing authenticated local Grafana session subsequently allowed visual
+verification without changing a password or bypassing a prompt. A second
+datasource UID retained readings; individual DIMM/NVMe cards and switch Canvas
+Port 33 navigation were verified. Browser checks also corrected IP interpolation
+and relative navigation; links open in a new tab and retain source selections.
+[Preview screenshots](monitoring/export-backed-dashboards/live-import/screenshots/)
+use captured fixtures. Seven/eight physical interface mapping and real rack
+metadata remain unresolved; no production deployment was performed.
